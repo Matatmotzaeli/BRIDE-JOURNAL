@@ -914,12 +914,12 @@ function renderGuestSummary(){
 function downloadGuestTemplate(){
   var rows = [
     ["שם","שם משפחה","צד (חתן / כלה)","שיוך","מספר מוזמנים","מספר טלפון"],
-    ["ישראל","ישראלי","חתן","משפחה גרעינית",2,"0501234567"]
-  ];
-  var ws = XLSX.utils.aoa_to_sheet(rows);
-  ws["!cols"] = [{wch:14},{wch:16},{wch:16},{wch:16},{wch:14},{wch:16}];
-  var wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "רשימת מוזמנים");
+   document.getElementById("btnGoogleAuth").addEventListener("click", function(){
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).catch(function(error){
+    alert("שגיאה בהתחברות Google: " + error.message);
+  });
+});
   XLSX.writeFile(wb, "רשימת_מוזמנים_BRIDE_JOURNAL.xlsx");
 }
 function handleGuestFile(file){
