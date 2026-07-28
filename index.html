@@ -8,10 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<!-- Firebase SDKs -->
+<!-- Firebase SDKs (Compat version for standard script integration) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
 <style>
   :root{
@@ -229,15 +230,19 @@
 
 /* ---------------- FIREBASE CONFIG & INIT ---------------- */
 const firebaseConfig = {
-  apiKey: "AIzaSy...",
+  apiKey: "AIzaSyAppiXGXUpsX8c1ql0WfA3rGlRxggFiz9c",
   authDomain: "bride-journal.firebaseapp.com",
   projectId: "bride-journal",
-  storageBucket: "bride-journal.appspot.com",
-  messagingSenderId: "123456789...",
-  appId: "1:123456789...:web:..."
+  storageBucket: "bride-journal.firebasestorage.app",
+  messagingSenderId: "321925391638",
+  appId: "1:321925391638:web:4b79d7b9ce9dd66cf31c37",
+  measurementId: "G-LQDYETTZLJ"
 };
 
 firebase.initializeApp(firebaseConfig);
+if (firebase.analytics) {
+  firebase.analytics();
+}
 var db = firebase.firestore();
 var currentUser = null;
 var MATAT_ADMIN_EMAIL = "matatmail@gmail.com";
