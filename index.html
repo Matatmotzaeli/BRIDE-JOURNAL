@@ -133,7 +133,7 @@
 </head>
 <body>
 
-<!-- מסך דף נחיתה והתחברות חובה -->
+<!-- מסך התחברות חובה -->
 <div id="authScreen" class="overlay-screen">
   <div class="inner">
     <p class="serif" style="font-size:32px;color:var(--rose-900);margin:0">BRIDE_JOURNAL</p>
@@ -151,7 +151,6 @@
       </button>
     </div>
 
-    <!-- קישור לטיקטוק -->
     <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="tiktok-link">
       🎵 עקבו אחרי ב-TikTok לקבלת טיפים
     </a>
@@ -167,7 +166,14 @@
     </div>
     
     <div class="card plain" style="font-size:12.5px;line-height:1.6">
-      <p><b>🏠 בית:</b> תמונה כללית של התקדמות התכנון, ספירה לאחור וגישה מהירה לכל הקטגוריות.</p>      <p><b>✅ משימות:</b> ציר זמן מפורט לפי חודשים עד החתונה, כולל אפשרות להורדת תזכורות ליומן.</p>      <p><b>🏰 אולם:</b> בדיקת תאריכים, ניהול רשימת אולמות, ומחשבון לחישוב מחיר מנה אמיתי.</p>      <p><b>💰 תקציב:</b> מעקב הוצאות והכנסות צפויות לקבלת תמונה פיננסית מדויקת.</p>      <p><b>🤝 ספקים:</b> ריכוז כל הספקים שנסגרו, חוזים ותשלומים שנותרו.</p>      <p><b>👥 אורחים:</b> ניהול מוזמנים, ייבוא מאקסל ומעקב אישורי הגעה.</p>      <p><b>🎒 ציוד:</b> רשימת ציוד מומלצת ליום החתונה עבור הכלה והחתן.</p>      <p><b>💡 השראה:</b> שמירת קישורים ותמונות מסודרות לפי קטגוריות.</p>
+      <p><b>🏠 בית:</b> תמונה כללית של התקדמות התכנון, ספירה לאחור וגישה מהירה לכל הקטגוריות.</p>
+      <p><b>✅ משימות:</b> ציר זמן מפורט לפי חודשים עד החתונה, כולל אפשרות להורדת תזכורות ליומן.</p>
+      <p><b>🏰 אולם:</b> בדיקת תאריכים, ניהול רשימת אולמות, ומחשבון לחישוב מחיר מנה אמיתי.</p>
+      <p><b>💰 תקציב:</b> מעקב הוצאות והכנסות צפויות לקבלת תמונה פיננסית מדויקת.</p>
+      <p><b>🤝 ספקים:</b> ריכוז כל הספקים שנסגרו, חוזים ותשלומים שנותרו.</p>
+      <p><b>👥 אורחים:</b> ניהול מוזמנים, ייבוא מאקסל ומעקב אישורי הגעה.</p>
+      <p><b>🎒 ציוד:</b> רשימת ציוד מומלצת ליום החתונה עבור הכלה והחתן.</p>
+      <p><b>💡 השראה:</b> שמירת קישורים ותמונות מסודרות לפי קטגוריות.</p>
     </div>
     <button class="primary" onclick="document.getElementById('guideModal').style.display='none'">הבנתי, תודה!</button>
   </div>
@@ -234,7 +240,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 var db = firebase.firestore();
 var currentUser = null;
-var MATAT_ADMIN_EMAIL = "matatmail@gmail.com"; // אימייל המנהל של מתת להרשאות עריכה ישירות
+var MATAT_ADMIN_EMAIL = "matatmail@gmail.com";
 
 /* ---------------- SEED DATA ---------------- */
 
@@ -525,8 +531,7 @@ var state = {
   venue:{ dates:[], list:[] },
   venueDB: [],
   inspiration: [],
-  coupleInfo: {bride:"", groom:"", email:"", phone:""},
-  leads: []
+  coupleInfo: {bride:"", groom:"", email:"", phone:""}
 };
 var currentTab = "home";
 var groupOpen = {7:true};
@@ -604,7 +609,6 @@ async function loadAll(){
   state.venueDB = await getOrDefault("venueDB", null, true) || VENUE_DB_SEED.slice();
   state.inspiration = await getOrDefault("inspiration", []);
   state.coupleInfo = await getOrDefault("coupleInfo", {bride:"", groom:"", email:"", phone:""});
-  state.leads = await getOrDefault("leads", [], true);
   if(state.tasks.length===0) state.tasks = seedTasks();
 }
 
@@ -620,7 +624,6 @@ function saveMatatPin(){ scheduleSave("matatPin", function(){ return state.matat
 function saveVenue(){ scheduleSave("venue", function(){ return state.venue; }); }
 function saveVenueDB(){ scheduleSave("venueDB", function(){ return state.venueDB; }, true); }
 function saveInspiration(){ scheduleSave("inspiration", function(){ return state.inspiration; }); }
-function saveLeads(){ scheduleSave("leads", function(){ return state.leads; }, true); }
 
 /* ---------------- HELPERS ---------------- */
 function ils(n){ return (Number(n)||0).toLocaleString("he-IL")+" ₪"; }
@@ -682,29 +685,13 @@ function renderHome(){
 
   + '<p class="sectionlabel">השראה ותוכן</p>'
   + renderMatatCard()
-  + renderLeadsCard()
   + navcard("inspiration","לוח השראה", state.inspiration.length+" שמורים")
   + '<div class="card plain" style="opacity:0.7"><div class="between"><span style="font-size:13px;font-weight:600">השראה לעיצוב הזמנה בקנבה</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<div class="card plain" style="opacity:0.7"><div class="between"><span style="font-size:13px;font-weight:600">המלצות להזמנות מהאינטרנט</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<p style="text-align:center;margin-top:20px"><button class="ghost plain" data-act="show-welcome" style="width:auto;padding:6px 14px">הצגת מסך הפתיחה מחדש</button></p>';
   return html;
 }
-function renderLeadsCard(){
-  var isMatatAdmin = currentUser && currentUser.email === MATAT_ADMIN_EMAIL;
-  if(!matatUnlocked && !isMatatAdmin){
-    return '<div class="card plain"><div class="between"><span style="font-size:13px;font-weight:700">לוח לידים</span><span class="tag tag-muted">מתת בלבד</span></div><button class="ghost" data-act="matat-unlock" style="margin-top:8px">🔒 צפייה (עבור מתת)</button></div>';
-  }
-  var html = '<div class="card plain"><div class="between" style="margin-bottom:8px"><span style="font-size:13px;font-weight:700">לוח לידים ('+state.leads.length+')</span><button class="ghost" data-act="venuedb-reset" style="width:auto;padding:4px 10px;font-size:10px">איפוס מאגר אולמות</button></div>';
-  if(state.leads.length===0){ html += '<p class="small muted">עדיין אין לידים במערכת</p>'; }
-  state.leads.slice().reverse().forEach(function(l){
-    var names = [l.bride,l.groom].filter(Boolean).join(" ו") || "ללא שם";
-    html += '<div class="itemwrap"><p style="font-size:12px;font-weight:600;margin:0 0 2px">'+esc(names)+'</p>'
-      + '<p class="small muted" style="margin:0">'+esc(l.email||"—")+' · '+esc(l.phone||"—")+'</p>'
-      + '<p class="small muted" style="margin:2px 0 0">'+(l.ts ? new Date(l.ts).toLocaleDateString("he-IL") : "")+'</p></div>';
-  });
-  html += '</div>';
-  return html;
-}
+
 function renderMatatCard(){
   var isMatatAdmin = currentUser && currentUser.email === MATAT_ADMIN_EMAIL;
   var html = '<div class="card">'
@@ -719,6 +706,7 @@ function renderMatatCard(){
   html += '</div>';
   return html;
 }
+
 function navcard(tab,label,meta){
   return '<div class="navcard" data-tab="'+tab+'"><span class="lbl">'+label+(meta?(' <span class="muted small">· '+meta+'</span>'):'')+'</span><span class="arrow">‹</span></div>';
 }
@@ -897,7 +885,7 @@ function renderVendors(){
         + '<input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="price" placeholder="מחיר כולל" value="'+esc(v.price)+'">'
         + '<input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="deposit" placeholder="מקדמה ששולמה" value="'+esc(v.deposit)+'">'
       + '</div>'
-      + '<div class="between" style="border-top:1px solid var(--border);padding-top:99px">'
+      + '<div class="between" style="border-top:1px solid var(--border);padding-top:9px">'
         + '<span class="small muted">נותר: <b id="vrem-'+v.id+'">'+ils(vendorRemain(v))+'</b></span>'
         + '<button data-act="vendor-contract" data-id="'+v.id+'" style="background:#fff;border:1px dashed '+(v.contract?'#1D9E75':'#CFC7B9')+';color:'+(v.contract?'#1D9E75':'var(--muted)')+';border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">'+(v.contract?'✓ חוזה הועלה':'העלאת חוזה חתום')+'</button>'
       + '</div>'
@@ -1289,7 +1277,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
     document.getElementById("authScreen").style.display = "none";
     document.getElementById("shell").style.display = "flex";
     
-    // Check if user is Matat Admin via Google
     if (user.email === MATAT_ADMIN_EMAIL) {
       matatUnlocked = true;
     }
@@ -1356,12 +1343,6 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     state.coupleInfo = {bride:bride, groom:groom, email:email, phone:phone};
     saveProfile();
     scheduleSave("coupleInfo", function(){ return state.coupleInfo; });
-    
-    if(email || phone){
-      // שמירה במסד הנתונים הראשי תחת קולקציית leads (עבור מתת בלבד)
-      var leadData = {bride:bride, groom:groom, email:email, phone:phone, ts:Date.now(), uid: currentUser ? currentUser.uid : ""};
-      db.collection("leads").add(leadData);
-    }
     
     state.meta.seenWelcome = true; saveMeta();
     document.getElementById("welcomeScreen").style.display = "none";
