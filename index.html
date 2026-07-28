@@ -3,10 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BRIDE_JOURNAL | עולם הכלות</title>
+<title>BRIDE_JOURNAL | by Matat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 <style>
   :root{
     --cream:#FFFBF6;
@@ -31,9 +37,13 @@
   .serif{ font-family:'Frank Ruhl Libre', serif; }
   #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); }
 
-  header.topbar{ padding:18px 20px 14px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--white); z-index:20; text-align:center; }
-  header.topbar .brand{ font-family:'Frank Ruhl Libre', serif; font-size:20px; color:var(--rose-900); margin:0; }
-  header.topbar .sub{ font-size:11px; color:var(--muted); margin:3px 0 0; }
+  header.topbar{ padding:16px 20px 12px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--white); z-index:20; display:flex; justify-content:space-between; align-items:center; }
+  header.topbar .brand-wrap{ text-align:center; flex:1; }
+  header.topbar .brand{ font-family:'Frank Ruhl Libre', serif; font-size:20px; color:var(--rose-900); margin:0; letter-spacing:0.5px; }
+  header.topbar .sub{ font-size:11px; color:var(--muted); margin:1px 0 0; font-weight:600; }
+
+  .icon-btn{ background:none; border:none; font-size:18px; cursor:pointer; color:var(--rose-600); padding:4px 8px; border-radius:8px; }
+  .icon-btn:hover{ background:var(--rose-50); }
 
   main{ flex:1; padding:18px 18px 100px; overflow-y:auto; }
   h2.pagetitle{ font-family:'Frank Ruhl Libre', serif; font-size:21px; margin:0 0 4px; color:var(--rose-900); }
@@ -52,7 +62,7 @@
   .card.blue{ background:var(--blue-bg); border:1px solid #85B7EB; }
   .card.locked{ opacity:0.55; }
 
-  input[type=text], input[type=number], input[type=tel], input[type=date], select, textarea{
+  input[type=text], input[type=number], input[type=tel], input[type=date], input[type=email], input[type=password], select, textarea{
     font-family:'Assistant',sans-serif; border:1px solid var(--border); border-radius:8px; padding:8px 10px;
     font-size:13px; background:#fff; color:var(--ink); width:100%; box-sizing:border-box;
   }
@@ -60,6 +70,7 @@
   input::placeholder{ color:#B8B0A4; }
 
   button.primary{ background:var(--rose-600); color:#fff; border:none; border-radius:10px; padding:12px; font-size:13px; font-weight:600; cursor:pointer; width:100%; }
+  button.secondary{ background:#fff; color:var(--rose-900); border:1px solid var(--rose-300); border-radius:10px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; }
   button.ghost{ background:none; border:1px dashed var(--rose-300); color:var(--rose-600); border-radius:9px; padding:9px; font-size:12px; cursor:pointer; width:100%; margin-top:2px; }
   button.ghost.plain{ border-color:#CFC7B9; color:var(--muted); }
   button.icon-del{ background:none; border:none; color:#B8ACA0; cursor:pointer; font-size:15px; padding:2px 6px; line-height:1; }
@@ -105,8 +116,9 @@
   .qitem .qtext{ font-size:12px; font-weight:500; margin:0 0 4px; }
   .qitem .qtip{ font-size:10px; color:var(--rose-600); margin:0 0 4px; font-style:italic; }
 
-  #welcomeScreen{ position:fixed; inset:0; background:var(--white); z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; }
-  #welcomeScreen .inner{ max-width:400px; width:100%; text-align:center; }
+  /* Full Screen Overlays */
+  .overlay-screen{ position:fixed; inset:0; background:var(--white); z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto; }
+  .overlay-screen .inner{ max-width:400px; width:100%; text-align:center; }
 
   .progress-track{ background:var(--border); border-radius:6px; height:8px; overflow:hidden; }
   .progress-fill{ background:var(--rose-600); height:100%; border-radius:6px; transition:width .3s; }
@@ -114,14 +126,61 @@
   .chip-filter.active{ background:var(--rose-600); color:#fff; border-color:var(--rose-600); }
   .calc-box{ background:#fff; border:1px dashed var(--rose-300); border-radius:10px; padding:10px 12px; margin-top:8px; }
 
+  .tiktok-link{ display:inline-flex; align-items:center; gap:6px; color:var(--rose-900); text-decoration:none; font-size:12px; font-weight:600; margin-top:10px; padding:6px 12px; border-radius:20px; background:var(--rose-50); border:1px solid var(--rose-300); }
+
   ::selection{ background:var(--rose-100); }
 </style>
 </head>
 <body>
+
+<!-- מסך דף נחיתה והתחברות חובה -->
+<div id="authScreen" class="overlay-screen">
+  <div class="inner">
+    <p class="serif" style="font-size:32px;color:var(--rose-900);margin:0">BRIDE_JOURNAL</p>
+    <p style="font-size:13px;color:var(--rose-600);font-weight:700;margin:0 0 16px">by Matat</p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 20px">המקום האישי שלכם לניהול ותכנון החתונה בראש שקט. התחברו כדי לשמור את המידע שלכם באופן מאובטח.</p>
+    
+    <div class="card plain" style="text-align:right;margin-bottom:16px">
+      <p style="font-size:12px;font-weight:600;margin:0 0 8px">התחברות / הרשמה למערכת</p>
+      <input type="email" id="authEmail" placeholder="אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
+      <input type="password" id="authPassword" placeholder="סיסמה" style="margin-bottom:8px;direction:ltr;text-align:right">
+      <button class="primary" id="btnEmailAuth" style="margin-bottom:8px">כניסה / הרשמה</button>
+      <button class="secondary" id="btnGoogleAuth">
+        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        התחברות מהירה עם Google
+      </button>
+    </div>
+
+    <!-- קישור לטיקטוק -->
+    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="tiktok-link">
+      🎵 עקבו אחרי ב-TikTok לקבלת טיפים
+    </a>
+  </div>
+</div>
+
+<!-- מודל מדריך למשתמש -->
+<div id="guideModal" class="overlay-screen" style="display:none">
+  <div class="inner" style="text-align:right">
+    <div class="between" style="margin-bottom:14px">
+      <h3 class="serif" style="margin:0;color:var(--rose-900)">מדריך לשימוש באפליקציה</h3>
+      <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='none'">✕</button>
+    </div>
+    
+    <div class="card plain" style="font-size:12.5px;line-height:1.6">
+      <p><b>🏠 בית:</b> תמונה כללית של התקדמות התכנון, ספירה לאחור וגישה מהירה לכל הקטגוריות.</p>      <p><b>✅ משימות:</b> ציר זמן מפורט לפי חודשים עד החתונה, כולל אפשרות להורדת תזכורות ליומן.</p>      <p><b>🏰 אולם:</b> בדיקת תאריכים, ניהול רשימת אולמות, ומחשבון לחישוב מחיר מנה אמיתי.</p>      <p><b>💰 תקציב:</b> מעקב הוצאות והכנסות צפויות לקבלת תמונה פיננסית מדויקת.</p>      <p><b>🤝 ספקים:</b> ריכוז כל הספקים שנסגרו, חוזים ותשלומים שנותרו.</p>      <p><b>👥 אורחים:</b> ניהול מוזמנים, ייבוא מאקסל ומעקב אישורי הגעה.</p>      <p><b>🎒 ציוד:</b> רשימת ציוד מומלצת ליום החתונה עבור הכלה והחתן.</p>      <p><b>💡 השראה:</b> שמירת קישורים ותמונות מסודרות לפי קטגוריות.</p>
+    </div>
+    <button class="primary" onclick="document.getElementById('guideModal').style.display='none'">הבנתי, תודה!</button>
+  </div>
+</div>
+
 <div id="shell">
   <header class="topbar">
-    <p class="brand">עולם הכלות</p>
-    <p class="sub" id="topSub">יומן המסע שלכם</p>
+    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
+    <div class="brand-wrap">
+      <p class="brand">BRIDE_JOURNAL</p>
+      <p class="sub">by Matat</p>
+    </div>
+    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="icon-btn" title="TikTok">🎵</a>
   </header>
   <main id="main"><div id="tabContent"></div></main>
   <nav class="bottom" id="bottomNav">
@@ -135,6 +194,7 @@
     <button data-tab="inspiration"><span class="dot"></span>השראה</button>
   </nav>
 </div>
+
 <div id="welcomeScreen" style="display:none">
   <div class="inner">
     <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
@@ -160,6 +220,21 @@
 
 <script>
 (function(){
+
+/* ---------------- FIREBASE CONFIG & INIT ---------------- */
+const firebaseConfig = {
+  apiKey: "AIzaSy...",
+  authDomain: "bride-journal.firebaseapp.com",
+  projectId: "bride-journal",
+  storageBucket: "bride-journal.appspot.com",
+  messagingSenderId: "123456789...",
+  appId: "1:123456789...:web:..."
+};
+
+firebase.initializeApp(firebaseConfig);
+var db = firebase.firestore();
+var currentUser = null;
+var MATAT_ADMIN_EMAIL = "matatmail@gmail.com"; // אימייל המנהל של מתת להרשאות עריכה ישירות
 
 /* ---------------- SEED DATA ---------------- */
 
@@ -476,37 +551,37 @@ function seedEquip(){
   };
 }
 
-/* ---------------- STORAGE ---------------- */
-var BACKEND = null;
-async function initBackend(){
-  try{
-    if(window.storage){
-      await window.storage.set("__probe__","1",false);
-      var r = await window.storage.get("__probe__", false);
-      if(r && r.value==="1"){ BACKEND="claude"; return; }
-    }
-  }catch(e){}
-  BACKEND="local";
-}
+/* ---------------- STORAGE & FIREBASE INTEGRATION ---------------- */
+
 async function getOrDefault(key, def, shared){
   try{
-    if(BACKEND==="claude"){
-      var r = await window.storage.get(key, !!shared);
-      return (r && r.value) ? JSON.parse(r.value) : def;
+    if(shared){
+      var doc = await db.collection("shared").doc(key).get();
+      return doc.exists ? doc.data().value : def;
+    } else if(currentUser){
+      var userDoc = await db.collection("users").doc(currentUser.uid).collection("data").doc(key).get();
+      return userDoc.exists ? userDoc.data().value : def;
     } else {
       var raw = localStorage.getItem("bj_"+(shared?"shared_":"")+key);
       return raw ? JSON.parse(raw) : def;
     }
   }catch(e){ return def; }
 }
+
 async function save(key, value, shared){
   try{
-    if(BACKEND==="claude"){ await window.storage.set(key, JSON.stringify(value), !!shared); }
-    else { localStorage.setItem("bj_"+(shared?"shared_":"")+key, JSON.stringify(value)); }
+    if(shared){
+      await db.collection("shared").doc(key).set({value: value});
+    } else if(currentUser){
+      await db.collection("users").doc(currentUser.uid).collection("data").doc(key).set({value: value});
+    } else {
+      localStorage.setItem("bj_"+(shared?"shared_":"")+key, JSON.stringify(value));
+    }
   }catch(e){
     console.error("save failed", key, e);
   }
 }
+
 var timers = {};
 function scheduleSave(key, getter, shared, delay){
   clearTimeout(timers[key]);
@@ -567,7 +642,6 @@ function renderHome(){
     var days = Math.ceil((new Date(wed) - new Date())/86400000);
     countdown = days>0 ? ("עוד "+days+" ימים לחתונה") : "מזל טוב!";
   }
-  document.getElementById("topSub").textContent = state.profile.name ? ("שלום, "+state.profile.name) : "יומן המסע שלכם";
 
   var doneT = state.tasks.filter(function(t){return t.done;}).length;
 
@@ -616,29 +690,31 @@ function renderHome(){
   return html;
 }
 function renderLeadsCard(){
-  if(!matatUnlocked){
-    return '<div class="card plain"><div class="between"><span style="font-size:13px;font-weight:700">לוח לידים</span><span class="tag tag-muted">מתת בלבד</span></div><button class="ghost" data-act="matat-unlock" style="margin-top:8px">🔒 צפייה (מוגן באותו קוד)</button></div>';
+  var isMatatAdmin = currentUser && currentUser.email === MATAT_ADMIN_EMAIL;
+  if(!matatUnlocked && !isMatatAdmin){
+    return '<div class="card plain"><div class="between"><span style="font-size:13px;font-weight:700">לוח לידים</span><span class="tag tag-muted">מתת בלבד</span></div><button class="ghost" data-act="matat-unlock" style="margin-top:8px">🔒 צפייה (עבור מתת)</button></div>';
   }
   var html = '<div class="card plain"><div class="between" style="margin-bottom:8px"><span style="font-size:13px;font-weight:700">לוח לידים ('+state.leads.length+')</span><button class="ghost" data-act="venuedb-reset" style="width:auto;padding:4px 10px;font-size:10px">איפוס מאגר אולמות</button></div>';
-  if(state.leads.length===0){ html += '<p class="small muted">עדיין אין לידים</p>'; }
+  if(state.leads.length===0){ html += '<p class="small muted">עדיין אין לידים במערכת</p>'; }
   state.leads.slice().reverse().forEach(function(l){
     var names = [l.bride,l.groom].filter(Boolean).join(" ו") || "ללא שם";
     html += '<div class="itemwrap"><p style="font-size:12px;font-weight:600;margin:0 0 2px">'+esc(names)+'</p>'
       + '<p class="small muted" style="margin:0">'+esc(l.email||"—")+' · '+esc(l.phone||"—")+'</p>'
-      + '<p class="small muted" style="margin:2px 0 0">'+new Date(l.ts).toLocaleDateString("he-IL")+'</p></div>';
+      + '<p class="small muted" style="margin:2px 0 0">'+(l.ts ? new Date(l.ts).toLocaleDateString("he-IL") : "")+'</p></div>';
   });
   html += '</div>';
   return html;
 }
 function renderMatatCard(){
+  var isMatatAdmin = currentUser && currentUser.email === MATAT_ADMIN_EMAIL;
   var html = '<div class="card">'
     + '<div class="between" style="margin-bottom:8px"><span style="font-size:13px;font-weight:700;color:var(--rose-900)">הפינה של מתת</span><span class="tag tag-rose">משותף לכולם</span></div>';
-  if(matatUnlocked){
+  if(matatUnlocked || isMatatAdmin){
     html += '<textarea data-act="matat-text" placeholder="כתבי כאן...">'+esc(state.matat)+'</textarea>'
       + '<button class="ghost" data-act="matat-lock" style="margin-top:6px">סיום עריכה ונעילה</button>';
   } else {
     html += '<p style="font-size:12px;line-height:1.7;color:var(--ink);margin:0 0 10px;white-space:pre-wrap">'+esc(state.matat)+'</p>'
-      + '<button class="ghost" data-act="matat-unlock">🔒 עריכה (מוגן בקוד)</button>';
+      + '<button class="ghost" data-act="matat-unlock">🔒 עריכה (מתת בלבד)</button>';
   }
   html += '</div>';
   return html;
@@ -821,7 +897,7 @@ function renderVendors(){
         + '<input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="price" placeholder="מחיר כולל" value="'+esc(v.price)+'">'
         + '<input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="deposit" placeholder="מקדמה ששולמה" value="'+esc(v.deposit)+'">'
       + '</div>'
-      + '<div class="between" style="border-top:1px solid var(--border);padding-top:9px">'
+      + '<div class="between" style="border-top:1px solid var(--border);padding-top:99px">'
         + '<span class="small muted">נותר: <b id="vrem-'+v.id+'">'+ils(vendorRemain(v))+'</b></span>'
         + '<button data-act="vendor-contract" data-id="'+v.id+'" style="background:#fff;border:1px dashed '+(v.contract?'#1D9E75':'#CFC7B9')+';color:'+(v.contract?'#1D9E75':'var(--muted)')+';border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">'+(v.contract?'✓ חוזה הועלה':'העלאת חוזה חתום')+'</button>'
       + '</div>'
@@ -851,7 +927,7 @@ function downloadGuestTemplate(){
   ws["!cols"] = [{wch:14},{wch:16},{wch:16},{wch:16},{wch:14},{wch:16}];
   var wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "רשימת מוזמנים");
-  XLSX.writeFile(wb, "רשימת_מוזמנים_עולם_הכלות.xlsx");
+  XLSX.writeFile(wb, "רשימת_מוזמנים_BRIDE_JOURNAL.xlsx");
 }
 function handleGuestFile(file){
   var reader = new FileReader();
@@ -945,7 +1021,7 @@ function renderEquipment(){
   return html;
 }
 
-/* ---------------- RENDER: VENUE (dates + list + questionnaire) ---------------- */
+/* ---------------- RENDER: VENUE ---------------- */
 function constrInfo(iso){
   if(CONSTR_SINGLES[iso]) return CONSTR_SINGLES[iso];
   for(var i=0;i<CONSTR_RANGES.length;i++){ var r=CONSTR_RANGES[i]; if(iso>=r.s && iso<=r.e) return {l:r.l,c:r.c,bg:r.bg}; }
@@ -1205,6 +1281,62 @@ function wireFileInput(){
   if(ifi) ifi.addEventListener("change", function(e){ if(e.target.files[0]) handleInspFile(e.target.files[0]); });
 }
 
+/* ---------------- AUTHENTICATION LISTENERS ---------------- */
+
+firebase.auth().onAuthStateChanged(async function(user) {
+  if (user) {
+    currentUser = user;
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("shell").style.display = "flex";
+    
+    // Check if user is Matat Admin via Google
+    if (user.email === MATAT_ADMIN_EMAIL) {
+      matatUnlocked = true;
+    }
+
+    await loadAll();
+
+    if(!state.meta.seenWelcome){
+      document.getElementById("welcomeScreen").style.display = "flex";
+      document.getElementById("bottomNav").style.display = "none";
+    } else {
+      document.getElementById("welcomeScreen").style.display = "none";
+      document.getElementById("bottomNav").style.display = "flex";
+    }
+    renderTab();
+  } else {
+    currentUser = null;
+    document.getElementById("authScreen").style.display = "flex";
+    document.getElementById("shell").style.display = "none";
+  }
+});
+
+document.getElementById("btnGoogleAuth").addEventListener("click", function(){
+  var provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).catch(function(error){
+    alert("שגיאה בהתחברות Google: " + error.message);
+  });
+});
+
+document.getElementById("btnEmailAuth").addEventListener("click", function(){
+  var email = document.getElementById("authEmail").value.trim();
+  var password = document.getElementById("authPassword").value.trim();
+  if(!email || !password){
+    alert("נא להזין אימייל וסיסמה");
+    return;
+  }
+  firebase.auth().signInWithEmailAndPassword(email, password)
+    .catch(function(error){
+      if(error.code === 'auth/user-not-found'){
+        return firebase.auth().createUserWithEmailAndPassword(email, password);
+      }
+      throw error;
+    })
+    .catch(function(error){
+      alert("שגיאה באימות: " + error.message);
+    });
+});
+
 /* ---------------- EVENT DELEGATION ---------------- */
 var mainEl = document.getElementById("main");
 var navEl = document.getElementById("bottomNav");
@@ -1224,10 +1356,13 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     state.coupleInfo = {bride:bride, groom:groom, email:email, phone:phone};
     saveProfile();
     scheduleSave("coupleInfo", function(){ return state.coupleInfo; });
+    
     if(email || phone){
-      state.leads.push({id:uid(), bride:bride, groom:groom, email:email, phone:phone, ts:Date.now()});
-      saveLeads();
+      // שמירה במסד הנתונים הראשי תחת קולקציית leads (עבור מתת בלבד)
+      var leadData = {bride:bride, groom:groom, email:email, phone:phone, ts:Date.now(), uid: currentUser ? currentUser.uid : ""};
+      db.collection("leads").add(leadData);
     }
+    
     state.meta.seenWelcome = true; saveMeta();
     document.getElementById("welcomeScreen").style.display = "none";
     document.getElementById("bottomNav").style.display = "flex";
@@ -1416,6 +1551,11 @@ mainEl.addEventListener("click", function(e){
     return;
   }
   if(act==="matat-unlock"){
+    if (currentUser && currentUser.email === MATAT_ADMIN_EMAIL) {
+      matatUnlocked = true;
+      renderTab();
+      return;
+    }
     if(!state.matatPin){
       var p1 = prompt("עדיין אין קוד הגנה לפינה שלך - בחרי קוד (מספר או מילה קצרה):");
       if(p1){ state.matatPin = p1; saveMatatPin(); matatUnlocked = true; renderTab(); }
@@ -1477,8 +1617,7 @@ mainEl.addEventListener("input", function(e){
   var t = e.target;
   var act = t.dataset.act;
 
-  if(act==="profile-name"){ state.profile.name = t.value; saveProfile();
-    document.getElementById("topSub").textContent = t.value ? ("שלום, "+t.value) : "יומן המסע שלכם"; return; }
+  if(act==="profile-name"){ state.profile.name = t.value; saveProfile(); return; }
 
   if(act==="matat-text"){ state.matat = t.value; saveMatat(); return; }
 
@@ -1531,20 +1670,6 @@ mainEl.addEventListener("input", function(e){
     return;
   }
 });
-
-/* ---------------- INIT ---------------- */
-async function init(){
-  await initBackend();
-  await loadAll();
-  if(!state.meta.seenWelcome){
-    document.getElementById("welcomeScreen").style.display = "flex";
-    document.getElementById("bottomNav").style.display = "none";
-  } else {
-    document.getElementById("welcomeScreen").style.display = "none";
-  }
-  renderTab();
-}
-init();
 
 })();
 </script>
