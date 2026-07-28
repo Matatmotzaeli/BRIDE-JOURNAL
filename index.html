@@ -913,12 +913,9 @@ function renderGuestSummary(){
 }
 function downloadGuestTemplate(){
   var rows = [
-    ["שם","שם משפחה","צד (חתן / כלה)","שיוך","מספר מוזמנים","מספר טלפון"],
-   document.getElementById("btnGoogleAuth").addEventListener("click", function(){
+    document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).catch(function(error){
-    alert("שגיאה בהתחברות Google: " + error.message);
-  });
+  firebase.auth().signInWithRedirect(provider);
 });
   XLSX.writeFile(wb, "רשימת_מוזמנים_BRIDE_JOURNAL.xlsx");
 }
