@@ -913,10 +913,13 @@ function renderGuestSummary(){
 }
 function downloadGuestTemplate(){
   var rows = [
-    document.getElementById("btnGoogleAuth").addEventListener("click", function(){
-  var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithRedirect(provider);
-});
+    ["שם","שם משפחה","צד (חתן / כלה)","שיוך","מספר מוזמנים","מספר טלפון"],
+    ["ישראל","ישראלי","חתן","משפחה גרעינית",2,"0501234567"]
+  ];
+  var ws = XLSX.utils.aoa_to_sheet(rows);
+  ws["!cols"] = [{wch:14},{wch:16},{wch:16},{wch:16},{wch:14},{wch:16}];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "רשימת מוזמנים");
   XLSX.writeFile(wb, "רשימת_מוזמנים_BRIDE_JOURNAL.xlsx");
 }
 function handleGuestFile(file){
@@ -1273,6 +1276,13 @@ function wireFileInput(){
 
 /* ---------------- AUTHENTICATION LISTENERS ---------------- */
 
+// טיפול בחזרה מהתחברות באמצעות Redirect
+firebase.auth().getRedirectResult().catch(function(error) {
+  if (error && error.message) {
+    alert("שגיאה בהתחברות Google: " + error.message);
+  }
+});
+
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
@@ -1302,9 +1312,7 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).catch(function(error){
-    alert("שגיאה בהתחברות Google: " + error.message);
-  });
+  firebase.auth().signInWithRedirect(provider);
 });
 
 document.getElementById("btnEmailAuth").addEventListener("click", function(){
