@@ -1276,13 +1276,6 @@ function wireFileInput(){
 
 /* ---------------- AUTHENTICATION LISTENERS ---------------- */
 
-// טיפול בחזרה מהתחברות באמצעות Redirect
-firebase.auth().getRedirectResult().catch(function(error) {
-  if (error && error.message) {
-    alert("שגיאה בהתחברות Google: " + error.message);
-  }
-});
-
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
@@ -1310,9 +1303,16 @@ firebase.auth().onAuthStateChanged(async function(user) {
   }
 });
 
+// התחברות גוגל יציבה באמצעות Popup עם Fallback ל-Redirect
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithRedirect(provider);
+  firebase.auth().signInWithPopup(provider).catch(function(error) {
+    if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+      firebase.auth().signInWithRedirect(provider);
+    } else {
+      alert("שגיאה בהתחברות Google: " + error.message);
+    }
+  });
 });
 
 document.getElementById("btnEmailAuth").addEventListener("click", function(){
