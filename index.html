@@ -164,8 +164,13 @@
     <div class="card plain" style="text-align:right;margin-bottom:12px">
       <p style="font-size:12px;font-weight:700;margin:0 0 6px">התחברות / הרשמה למערכת</p>
       <input type="email" id="authEmail" placeholder="אימייל" style="margin-bottom:6px;direction:ltr;text-align:right">
-      <input type="password" id="authPassword" placeholder="סיסמה" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <button class="primary" id="btnEmailAuth" style="margin-bottom:6px">כניסה / הרשמה</button>
+      <input type="password" id="authPassword" placeholder="סיסמה (לפחות 6 תווים)" style="margin-bottom:8px;direction:ltr;text-align:right">
+      
+      <div class="row" style="margin-bottom:8px">
+        <button class="primary" id="btnEmailLogin" style="flex:1">כניסה למערכת</button>
+        <button class="secondary" id="btnEmailSignup" style="flex:1">הרשמה חדשה</button>
+      </div>
+
       <button class="secondary" id="btnGoogleAuth">
         <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
         התחברות מהירה עם Google
@@ -1462,7 +1467,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
       document.getElementById("bottomNav").style.display = "flex";
     }
     
-    // Direct navigate to Home screen without leaving blank UI
     switchTab("home");
   } else {
     currentUser = null;
@@ -1488,7 +1492,8 @@ document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   });
 });
 
-document.getElementById("btnEmailAuth").addEventListener("click", function(){
+/* התחברות עם אימייל וסיסמה קיים */
+document.getElementById("btnEmailLogin").addEventListener("click", function(){
   var email = document.getElementById("authEmail").value.trim();
   var password = document.getElementById("authPassword").value.trim();
   if(!email || !password){
@@ -1497,13 +1502,37 @@ document.getElementById("btnEmailAuth").addEventListener("click", function(){
   }
   firebase.auth().signInWithEmailAndPassword(email, password)
     .catch(function(error){
-      if(error.code === 'auth/user-not-found'){
-        return firebase.auth().createUserWithEmailAndPassword(email, password);
+      if(error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential'){
+        alert("האימייל או הסיסמה שגויים. אם עדיין לא נרשמת, לחץ על 'הרשמה חדשה'.");
+      } else if(error.code === 'auth/invalid-email'){
+        alert("כתובת האימייל אינה תקינה.");
+      } else {
+        alert("שגיאה בהתחברות: " + error.message);
       }
-      throw error;
-    })
+    });
+});
+
+/* הרשמה חדשה עם אימייל וסיסמה */
+document.getElementById("btnEmailSignup").addEventListener("click", function(){
+  var email = document.getElementById("authEmail").value.trim();
+  var password = document.getElementById("authPassword").value.trim();
+  if(!email || !password){
+    alert("נא להזין אימייל וסיסמה להרשמה");
+    return;
+  }
+  if(password.length < 6){
+    alert("הסיסמה חייבת להכיל לפחות 6 תווים.");
+    return;
+  }
+  firebase.auth().createUserWithEmailAndPassword(email, password)
     .catch(function(error){
-      alert("שגיאה באימות: " + error.message);
+      if(error.code === 'auth/email-already-in-use'){
+        alert("כתובת אימייל זו כבר רשומה במערכת. לחצי על 'כניסה למערכת'.");
+      } else if(error.code === 'auth/invalid-email'){
+        alert("כתובת האימייל אינה תקינה.");
+      } else {
+        alert("שגיאה בהרשמה: " + error.message);
+      }
     });
 });
 
@@ -1529,7 +1558,6 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     state.coupleInfo = {bride:bride, groom:groom, email:email, phone:phone};
     saveProfile();
     
-    // Save couple information explicitly into Firebase Firestore
     save("coupleInfo", state.coupleInfo);
     
     state.meta.seenWelcome = true; 
@@ -1538,7 +1566,6 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     document.getElementById("welcomeScreen").style.display = "none";
     document.getElementById("bottomNav").style.display = "flex";
     
-    // Trigger festive Confetti Animation
     triggerConfetti();
     
     switchTab("home");
