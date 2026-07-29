@@ -225,7 +225,7 @@
   </div>
 </div>
 
-<div id="shell">
+<div id="shell" style="display:none">
   <header class="topbar">
     <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
     <div class="brand-wrap">
@@ -233,6 +233,7 @@
       <p class="sub">BY MATAT</p>
     </div>
     <a href="https://www.tiktok.com/@bride_journal" target="_blank" class="icon-btn" title="TikTok">🎵</a>
+    <button class="icon-btn" id="btnLogout" title="התנתקות" style="font-size:14px;margin-right:4px">🚪</button>
   </header>
   <main id="main"><div id="tabContent"></div></main>
   <nav class="bottom" id="bottomNav">
@@ -266,6 +267,10 @@ if (firebase.analytics) {
   firebase.analytics();
 }
 var db = firebase.firestore();
+db.enablePersistence().catch(function(err) {
+    console.log("Persistence error: ", err.code);
+});
+
 var currentUser = null;
 
 /* ---------------- SEED DATA ---------------- */
@@ -523,7 +528,6 @@ var ONB_STEPS = [
 
 var INSPIRATION_CATS = ["שמלות","פוזות","אולמות","מסיבת רווקות","עיצוב","אחר"];
 
-/* ---------------- FULL VENUE DATABASE RECOVERY ---------------- */
 var VENUE_DB_SEED = [
   {id:"sh1", name:"OPA, אשקלון", region:"דרום", priceEstimate:300, phone:"", verifiedCount:0, source:"sheet"},
   {id:"sh2", name:"אגדתא, צומת ראם", region:"דרום", priceEstimate:242, phone:"", verifiedCount:0, source:"sheet"},
@@ -626,7 +630,7 @@ function seedEquip(){
   };
 }
 
-/* ---------------- STORAGE & FIREBASE INTEGRATION ---------------- */
+/* ---------------- STORAGE & CLOUD SYNC ---------------- */
 
 async function getOrDefault(key, def, shared){
   try{
@@ -635,12 +639,21 @@ async function getOrDefault(key, def, shared){
       return doc.exists ? doc.data().value : def;
     } else if(currentUser){
       var userDoc = await db.collection("users").doc(currentUser.uid).collection("data").doc(key).get();
-      return userDoc.exists ? userDoc.data().value : def;
+      if(userDoc.exists){
+        return userDoc.data().value;
+      } else {
+        // Fallback check in LocalStorage before defaulting
+        var local = localStorage.getItem("bj_"+currentUser.uid+"_"+key);
+        return local ? JSON.parse(local) : def;
+      }
     } else {
-      var raw = localStorage.getItem("bj_"+(shared?"shared_":"")+key);
+      var raw = localStorage.getItem("bj_guest_"+key);
       return raw ? JSON.parse(raw) : def;
     }
-  }catch(e){ return def; }
+  }catch(e){
+    console.error("Error reading key: ", key, e);
+    return def;
+  }
 }
 
 async function save(key, value, shared){
@@ -648,28 +661,34 @@ async function save(key, value, shared){
     if(shared){
       await db.collection("shared").doc(key).set({value: value});
     } else if(currentUser){
-      await db.collection("users").doc(currentUser.uid).collection("data").doc(key).set({value: value});
+      // Save both to Firestore cloud and LocalStorage for immediate persistence
+      localStorage.setItem("bj_"+currentUser.uid+"_"+key, JSON.stringify(value));
+      await db.collection("users").doc(currentUser.uid).collection("data").doc(key).set({value: value, updatedAt: firebase.firestore.FieldValue.serverTimestamp()});
     } else {
-      localStorage.setItem("bj_"+(shared?"shared_":"")+key, JSON.stringify(value));
+      localStorage.setItem("bj_guest_"+key, JSON.stringify(value));
     }
   }catch(e){
-    console.error("save failed", key, e);
+    console.error("Save failed for key:", key, e);
   }
 }
 
 var timers = {};
 function scheduleSave(key, getter, shared, delay){
   clearTimeout(timers[key]);
-  timers[key] = setTimeout(function(){ save(key, getter(), shared); }, delay||450);
+  timers[key] = setTimeout(function(){ save(key, getter(), shared); }, delay||300);
 }
 
 async function loadAll(){
   state.profile = await getOrDefault("profile", {name:"", weddingDate:"", email:"", phone:""});
   state.meta = await getOrDefault("meta", {seenWelcome:false, onbDone:[false,false,false,false]});
-  state.tasks = await getOrDefault("tasks", null) || seedTasks();
+  
+  var tData = await getOrDefault("tasks", null);
+  state.tasks = (tData && tData.length > 0) ? tData : seedTasks();
+
   var budget = await getOrDefault("budget", null);
-  if(budget){ state.budgetCats = budget.cats; state.income = budget.income; }
+  if(budget && budget.cats){ state.budgetCats = budget.cats; state.income = budget.income; }
   else { state.budgetCats = seedBudget(); }
+
   state.vendors = await getOrDefault("vendors", []);
   state.guests = await getOrDefault("guests", []);
   
@@ -691,7 +710,6 @@ async function loadAll(){
   }
   state.inspiration = await getOrDefault("inspiration", []);
   state.coupleInfo = await getOrDefault("coupleInfo", {bride:"", groom:"", email:"", phone:""});
-  if(state.tasks.length===0) state.tasks = seedTasks();
 }
 
 function saveProfile(){ scheduleSave("profile", function(){ return state.profile; }); }
@@ -1410,14 +1428,14 @@ function wireFileInput(){
   if(ifi) ifi.addEventListener("change", function(e){ if(e.target.files[0]) handleInspFile(e.target.files[0]); });
 }
 
-/* ---------------- AUTHENTICATION LISTENERS ---------------- */
+/* ---------------- AUTHENTICATION LISTENERS & SYNC ---------------- */
 
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
     document.getElementById("authScreen").style.display = "none";
     document.getElementById("shell").style.display = "flex";
-    
+
     await loadAll();
 
     if(!state.meta.seenWelcome){
@@ -1432,6 +1450,12 @@ firebase.auth().onAuthStateChanged(async function(user) {
     currentUser = null;
     document.getElementById("authScreen").style.display = "flex";
     document.getElementById("shell").style.display = "none";
+  }
+});
+
+document.getElementById("btnLogout").addEventListener("click", function(){
+  if(confirm("האם להתנתק מהחשבון?")){
+    firebase.auth().signOut();
   }
 });
 
