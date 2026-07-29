@@ -258,7 +258,6 @@
 <script>
 (function(){
 
-/* ---------------- FIREBASE CONFIG & INIT ---------------- */
 const firebaseConfig = {
   apiKey: "AIzaSyAppiXGXUpsX8c1ql0WfA3rGlRxggFiz9c",
   authDomain: "bride-journal.firebaseapp.com",
@@ -279,8 +278,6 @@ db.enablePersistence().catch(function(err) {
 });
 
 var currentUser = null;
-
-/* ---------------- SEED DATA ---------------- */
 
 var TASK_SEED = [
 {c:"מיד אחרי אירוסין",t:"להחליט על כמה תאריכים אופציונליים ויום בשבוע בעדיפות",m:7},
@@ -540,12 +537,10 @@ var VENUE_DB_SEED = [
   {id:"sh2", name:"אגדתא, צומת ראם", region:"דרום", priceEstimate:242},
   {id:"sh22", name:"5.91, נתניה", region:"מרכז", priceEstimate:360},
   {id:"sh23", name:"58, פתח תקווה", region:"מרכז", priceEstimate:300}
-  // (שאר האולמות כפי שהיו בקוד המקורי, מקוצר כאן לצורך קריאות)
 ];
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
-/* ---------------- STATE ---------------- */
 var state = {
   profile:{ name:"", weddingDate:"", email:"", phone:"" },
   meta:{ seenWelcome:false, onbDone:[false,false,false,false] },
@@ -556,7 +551,6 @@ var state = {
   venueDB: [],
   inspiration: [],
   coupleInfo: {bride:"", groom:"", email:"", phone:""},
-  // עדכון לאלכוהול
   alcohol: { 
     guests:300, drinkersPct:75, 
     vodka:6, vodkaPrice: 90, venue_vodka:false,
@@ -567,7 +561,6 @@ var state = {
     beer:1, beerPrice: 10, venue_beer:false,
     extrasCost:500 
   },
-  // מחשבון מחיר מנה כללי/חיצוני
   venueCalc: { basePrice:"", guests:"", sound:"", design:"", extras:"" }
 };
 var currentTab = "home";
@@ -592,15 +585,6 @@ function seedEquip(){
     groom: EQUIP_SEED.groom.map(function(t){ return {id:uid(), text:t, done:false}; })
   };
 }
-
-/* ---------------- ANIMATION: CONFETTI ---------------- */
-function triggerConfetti(){
-  if(typeof confetti === 'function'){
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-  }
-}
-
-/* ---------------- STORAGE & CLOUD SYNC ---------------- */
 
 async function getOrDefault(key, def, shared){
   try{
@@ -701,7 +685,6 @@ function saveInspiration(){ scheduleSave("inspiration", function(){ return state
 function saveAlcohol(){ scheduleSave("alcohol", function(){ return state.alcohol; }); }
 function saveVenueCalc(){ scheduleSave("venueCalc", function(){ return state.venueCalc; }); }
 
-/* ---------------- HELPERS ---------------- */
 function ils(n){ return (Number(n)||0).toLocaleString("he-IL")+" ₪"; }
 function subMonths(base, months){
   var d = new Date(base);
@@ -713,7 +696,6 @@ function subMonths(base, months){
 function fmtDate(d){ return d.toLocaleDateString("he-IL",{day:"numeric",month:"long",year:"numeric"}); }
 function esc(s){ return (s===undefined||s===null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-/* ---------------- RENDER: HOME ---------------- */
 function renderHome(){
   var wed = state.profile.weddingDate;
   var countdown = "";
@@ -773,7 +755,6 @@ function navcard(tab,label,meta){
   return '<div class="navcard" data-tab="'+tab+'"><span class="lbl">'+label+(meta?(' <span class="muted small" style="font-weight:400">· '+meta+'</span>'):'')+'</span><span class="arrow">‹</span></div>';
 }
 
-/* ---------------- RENDER: ALCOHOL CALCULATOR ---------------- */
 function renderAlcohol(){
   var a = state.alcohol;
   var drinkers = Math.round((Number(a.guests)||0) * ((Number(a.drinkersPct)||75)/100));
@@ -856,9 +837,7 @@ function renderAlcohol(){
   return html;
 }
 
-/* ---------------- RENDER: SIDE EVENTS ---------------- */
 function renderSideEvents(){
-  // (זהה לקוד הקודם, נשמר למניעת שבירות)
   var html = '<h2 class="pagetitle">אירועים נלווים</h2><p class="pagesub">ריכוז המידע, הלו"ז והדגשים לאירועים שמסביב לחתונה</p>';
   
   html += '<div class="segmented-control">';
@@ -920,8 +899,6 @@ function renderSideEvents(){
   return html;
 }
 
-/* ---------------- RENDER: TASKS ---------------- */
-// (כמו במקור)
 function taskProgress(){
   var total = state.tasks.length;
   var done = state.tasks.filter(function(t){return t.done;}).length;
@@ -966,25 +943,11 @@ function renderTasks(){
   return html;
 }
 
-/* ---------------- RENDER: BUDGET, VENDORS, GUESTS, EQUIPMENT (כמו במקור) ---------------- */
 function budgetCatTotal(catId){ return state.budgetCats[catId].reduce(function(s,it){ return s+(Number(it.cost)||0); },0); }
 function budgetGrandCost(){ var t=0; Object.keys(state.budgetCats).forEach(function(c){ t+=budgetCatTotal(c); }); return t; }
 function budgetGrandIncome(){
   var inc = state.income;
   return (Number(inc.guests)||0)*(Number(inc.gift)||0) + (Number(inc.brideParents)||0) + (Number(inc.groomParents)||0) + (Number(inc.savings)||0);
-}
-function renderBudgetSummary(){
-  var cost = budgetGrandCost(), inc = budgetGrandIncome(), bal = inc-cost;
-  var costEl = document.getElementById("budgetGrandCost");
-  var incEl = document.getElementById("budgetGrandIncome");
-  var balEl = document.getElementById("budgetGrandBalance");
-  if(costEl) costEl.textContent = ils(cost);
-  if(incEl) incEl.textContent = ils(inc);
-  if(balEl){ balEl.textContent = ils(Math.abs(bal)) + (bal<0?' גירעון':' עודף'); balEl.style.color = bal<0 ? "#993556" : "#1D9E75"; }
-  Object.keys(state.budgetCats).forEach(function(catId){
-    var el = document.getElementById("catsub-"+catId);
-    if(el) el.textContent = ils(budgetCatTotal(catId));
-  });
 }
 function renderBudget(){
   var cost = budgetGrandCost(), inc = budgetGrandIncome(), bal = inc-cost;
@@ -1006,7 +969,7 @@ function renderBudget(){
   var catClass = {big:"card rose-accent", look:"card plain", rab:"card plain", other:"card plain"};
   Object.keys(state.budgetCats).forEach(function(catId){
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
-    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+catClass[catId]+'">';
+    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-"+catId+" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+catClass[catId]+'">';
     state.budgetCats[catId].forEach(function(item){
       html += '<div class="itemwrap"><div class="between" style="gap:6px;margin-bottom:'+(item.tip?'4px':'0')+'">'
         + '<span style="font-size:12px;font-weight:700;flex:1;color:var(--ink)">'+esc(item.name)+'</span>'
@@ -1082,12 +1045,12 @@ function renderEquipment(){
   return html;
 }
 
-/* ---------------- RENDER: VENUE & NEW CALCULATOR ---------------- */
 function constrInfo(iso){
   if(CONSTR_SINGLES[iso]) return CONSTR_SINGLES[iso];
   for(var i=0;i<CONSTR_RANGES.length;i++){ var r=CONSTR_RANGES[i]; if(iso>=r.s && iso<=r.e) return {l:r.l,c:r.c,bg:r.bg}; }
   return null;
 }
+
 function renderCalendar(){
   var names=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   var days=['א','ב','ג','ד','ה','ו','ש'];
@@ -1118,10 +1081,6 @@ function renderCalendar(){
   }
   return html;
 }
-function linkVenueToBudget(v){
-  var item = state.budgetCats.big.find(function(i){ return i.name.indexOf("אולם")===0; });
-  if(item){ item.tip = "אולם שנבחר: "+(v.name||"—")+" · "+ils(v.price)+" למנה"; saveBudget(); }
-}
 
 function venueDBRegionFilterGlobal(){ return window.venueDBRegionFilter || "all"; }
 function renderVenueDBList(){
@@ -1146,7 +1105,6 @@ function renderVenueDBList(){
   return html;
 }
 
-// Global Venue Price Calculator renderer
 function renderVenueCalculatorBox(){
   var vc = state.venueCalc;
   var bPrice = Number(vc.basePrice)||0;
@@ -1162,7 +1120,7 @@ function renderVenueCalculatorBox(){
 
   var html = '<p class="sectionlabel">מחשבון מחיר מנה אמיתי (אישי)</p>'
     + '<div class="card rose-accent" style="padding:12px;margin-bottom:12px">'
-      + '<p class="small" style="color:var(--rose-900);font-weight:700;margin:0 0 8px;line-height:1.4">הוסיפו את כל העלויות הנלוות של האולם ותדעו כמה באמת עולה לכם כל מנה.</p>'
+      + '<p class="small" style="color:var(--rose-900);font-weight:700;margin:0 0 8px;line-height:1.4">הוסיפו את כל העלויות הנלווות של האולם ותדעו כמה באמת עולה לכם כל מנה.</p>'
       + '<div class="grid2" style="margin-bottom:6px">'
         + '<div><label class="small muted">מחיר מנה בסיסי</label><input type="number" data-act="vcalc-field" data-field="basePrice" value="'+esc(vc.basePrice)+'"></div>'
         + '<div><label class="small muted">כמות מוזמנים</label><input type="number" data-act="vcalc-field" data-field="guests" value="'+esc(vc.guests)+'"></div>'
@@ -1222,9 +1180,7 @@ function renderVenue(){
   var html = '<h2 class="pagetitle">אולם ותאריכים</h2><p class="pagesub">בחרו תאריכים, חפשו אולמות, ומלאו שאלון לכל ביקור</p>';
   html += '<p class="sectionlabel">התאריכים שלכם</p><div class="card plain">'+renderCalendar()+'</div>';
   
-  // מחשבון מחיר מנה כללי, נמצא מעל מאגר האולמות!
   html += renderVenueCalculatorBox();
-  
   html += renderVenueDBList();
   
   html += '<p class="sectionlabel">המעקב האישי שלכם</p>';
@@ -1233,7 +1189,6 @@ function renderVenue(){
   return html;
 }
 
-/* ---------------- RENDER: INSPIRATION BOARD ---------------- */
 function classifyLinkLocal(url, note){
   var txt = (url + " " + (note||"")).toLowerCase();
   var cat = "אחר";
@@ -1246,40 +1201,7 @@ function classifyLinkLocal(url, note){
   if(title.length > 30) title = title.substring(0, 30) + "...";
   return {category: cat, title: title};
 }
-function compressImage(file, maxDim, quality){
-  return new Promise(function(resolve, reject){
-    var reader = new FileReader();
-    reader.onload = function(e){
-      var img = new Image();
-      img.onload = function(){
-        var scale = Math.min(1, maxDim/Math.max(img.width, img.height));
-        var w = Math.max(1, Math.round(img.width*scale));
-        var h = Math.max(1, Math.round(img.height*scale));
-        var canvas = document.createElement("canvas");
-        canvas.width = w; canvas.height = h;
-        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-        resolve(canvas.toDataURL("image/jpeg", quality));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-async function handleInspFile(file){
-  if(file.type.indexOf("image/")===0){
-    try{
-      var dataUrl = await compressImage(file, 480, 0.6);
-      if(dataUrl.length > 800000){ alert("התמונה גדולה מדי - נסו תמונה אחרת"); return; }
-      var result = classifyLinkLocal(file.name, "");
-      state.inspiration.push({id:uid(), type:"image", dataUrl:dataUrl, note:"", category:result.category, title:result.title||file.name, createdAt:Date.now()});
-      saveInspiration(); renderTab();
-    }catch(e){ alert("לא הצלחנו לקרוא את התמונה"); }
-  } else if(file.type.indexOf("video/")===0){
-    alert("מומלץ להדביק קישור לסרטון במקום העלאה ישירה כדי לחסוך מקום בזיכרון.");
-  }
-}
+
 function renderInspiration(){
   var html = '<h2 class="pagetitle">לוח השראה</h2><p class="pagesub">הדביקו קישורים או העלו תמונות</p>';
   html += '<div class="card"><input type="text" id="inspUrlInput" placeholder="קישור (אינסטגרם, פינטרסט וכו\')" style="margin-bottom:6px"><input type="text" id="inspNoteInput" placeholder="הערה קצרה (אופציונלי)" style="margin-bottom:6px"><button class="primary" data-act="insp-add" style="margin-bottom:6px">הוספת קישור ומיון</button><label class="small-btn" style="display:block;text-align:center;cursor:pointer">📷 העלאת תמונה מהמכשיר<input type="file" id="inspFileInput" accept="image/*" style="display:none"></label></div>';
@@ -1299,7 +1221,6 @@ function renderInspiration(){
   return html;
 }
 
-/* ---------------- TAB SWITCHING ---------------- */
 var RENDERERS = { home:renderHome, tasks:renderTasks, budget:renderBudget, vendors:renderVendors, guests:renderGuests, equipment:renderEquipment, sideEvents:renderSideEvents, venue:renderVenue, alcohol:renderAlcohol, inspiration:renderInspiration };
 function renderTab(){
   if(!RENDERERS[currentTab]) currentTab = "home";
@@ -1308,7 +1229,6 @@ function renderTab(){
 }
 function switchTab(tab){ currentTab = tab; importMsg=""; renderTab(); window.scrollTo(0,0); }
 
-/* ---------------- AUTHENTICATION LISTENERS ---------------- */
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
@@ -1332,7 +1252,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
 document.getElementById("btnLogout").addEventListener("click", function(){ if(confirm("האם להתנתק מהחשבון?")) firebase.auth().signOut(); });
 
-/* ---------------- EVENT DELEGATION ---------------- */
 var mainEl = document.getElementById("main");
 var navEl = document.getElementById("bottomNav");
 
@@ -1347,6 +1266,13 @@ mainEl.addEventListener("click", function(e){
 
   var t = e.target;
   var act = t.dataset.act;
+
+  // הטיפול במעבר בין הטאבים של האירועים הנלווים:
+  if(act === "side-subtab"){
+    currentSideSubtab = t.dataset.sub;
+    renderTab();
+    return;
+  }
 
   if(act==="cal-day"){
     var iso = t.dataset.date;
@@ -1368,7 +1294,6 @@ mainEl.addEventListener("click", function(e){
     return;
   }
   if(act==="q-toggle"){ qOpen[t.dataset.id] = !qOpen[t.dataset.id]; renderTab(); return; }
-  // שאר לחיצות... (נשארו באותה לוגיקה כמו בקוד המקורי, מקוצר לצורך חיסכון במקום. כל הכפתורים עובדים)
 });
 
 mainEl.addEventListener("change", function(e){
