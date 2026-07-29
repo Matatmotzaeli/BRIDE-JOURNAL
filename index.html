@@ -36,7 +36,7 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Assistant',sans-serif; direction:rtl; }
   .serif{ font-family:'Frank Ruhl Libre', serif; }
-  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); position:relative; }
+  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); }
 
   header.topbar{ padding:16px 20px 12px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--white); z-index:20; display:flex; justify-content:space-between; align-items:center; }
   header.topbar .brand-wrap{ text-align:center; flex:1; }
@@ -180,29 +180,6 @@
   </div>
 </div>
 
-<div id="welcomeScreen" class="overlay-screen" style="display:none">
-  <div class="inner">
-    <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
-    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 26px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה שלכם - צעד אחד בכל פעם.</p>
-    <div class="card plain" style="text-align:right;margin-bottom:22px">
-      <div class="row" style="margin-bottom:10px">
-        <div style="width:40px;height:40px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--rose-900);font-weight:500">מ</div>
-        <div><p style="font-size:14px;font-weight:600;margin:0">היי, אני מתת</p><p style="font-size:12px;color:var(--muted);margin:0">מלווה אתכם עד החופה</p></div>
-      </div>
-      <p style="font-size:13px;line-height:1.7;color:var(--muted);margin:0">אני כאן איתכם מהרגע הזה ועד החופה. זמינה לכם בקבוצת הוואטסאפ לכל שאלה שתעלה בדרך - אין שאלות טיפשיות.</p>
-    </div>
-    <div class="card plain" style="text-align:right;margin-bottom:16px">
-      <p style="font-size:12px;font-weight:600;margin:0 0 8px">קצת עליכם (כדי שהיומן יהיה אישי)</p>
-      <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:8px">
-      <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:8px">
-      <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
-    </div>
-    <p class="small muted" style="margin:0 0 14px;line-height:1.6">הפרטים נשמרים ביומן שלכם בלבד.</p>
-    <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
-  </div>
-</div>
-
 <div id="shell">
   <header class="topbar">
     <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
@@ -223,6 +200,29 @@
     <button data-tab="equipment"><span class="dot"></span>ציוד</button>
     <button data-tab="inspiration"><span class="dot"></span>השראה</button>
   </nav>
+</div>
+
+<div id="welcomeScreen" style="display:none">
+  <div class="inner">
+    <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 26px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה שלכם - צעד אחד בכל פעם.</p>
+    <div class="card plain" style="text-align:right;margin-bottom:22px">
+      <div class="row" style="margin-bottom:10px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--rose-900);font-weight:500">מ</div>
+        <div><p style="font-size:14px;font-weight:600;margin:0">היי, אני מתת</p><p style="font-size:12px;color:var(--muted);margin:0">מלווה אתכם עד החופה</p></div>
+      </div>
+      <p style="font-size:13px;line-height:1.7;color:var(--muted);margin:0">אני כאן איתכם מהרגע הזה ועד החופה. זמינה לכם בקבוצת הוואטסאפ לכל שאלה שתעלה בדרך - אין שאלות טיפשיות.</p>
+    </div>
+    <div class="card plain" style="text-align:right;margin-bottom:16px">
+      <p style="font-size:12px;font-weight:600;margin:0 0 8px">קצת עליכם (כדי שהיומן יהיה אישי)</p>
+      <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:8px">
+      <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:8px">
+      <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
+      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
+    </div>
+    <p class="small muted" style="margin:0 0 14px;line-height:1.6">הפרטים נשמרים ביומן שלכם בלבד.</p>
+    <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
+  </div>
 </div>
 
 <script>
@@ -1280,6 +1280,7 @@ firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
     document.getElementById("authScreen").style.display = "none";
+    document.getElementById("shell").style.display = "flex";
     
     if (user.email === MATAT_ADMIN_EMAIL) {
       matatUnlocked = true;
@@ -1298,6 +1299,7 @@ firebase.auth().onAuthStateChanged(async function(user) {
   } else {
     currentUser = null;
     document.getElementById("authScreen").style.display = "flex";
+    document.getElementById("shell").style.display = "none";
   }
 });
 
