@@ -1201,6 +1201,14 @@ function renderVenue(){
   html += '<p class="sectionlabel">התאריכים שלכם</p><div class="card plain">'+renderCalendar()+'</div>';
   
   html += renderVenueCalculatorBox();
+
+  // הועלה לכאן מעל מאגר האולמות הארצי לפי בקשתך
+  html += '<p class="sectionlabel">שאלון ותחקור אולם</p>';
+  html += '<div class="card rose-accent" style="margin-bottom:10px">';
+  html += '<p style="font-size:12px;font-weight:700;color:var(--rose-900);margin:0 0 6px">רשימת השאלות החשובות לכל אולם שאתם מבקרים בו:</p>';
+  html += '<button class="small-btn primary" data-act="global-q-open" style="width:100%">צפייה בשאלון המלא לבדיקת אולמות</button>';
+  html += '</div>';
+
   html += renderVenueDBList();
   
   html += '<p class="sectionlabel">המעקב האישי שלכם</p>';
@@ -1249,12 +1257,6 @@ function renderTab(){
 }
 function switchTab(tab){ currentTab = tab; importMsg=""; renderTab(); window.scrollTo(0,0); }
 
-firebase.auth().getRedirectResult().then(function(result) {
-  // תוצאת חזרה מהתחברות באמצעות Redirect במסך נייד
-}).catch(function(error) {
-  console.error("Redirect auth error:", error);
-});
-
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
@@ -1278,10 +1280,10 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
 document.getElementById("btnLogout").addEventListener("click", function(){ if(confirm("האם להתנתק מהחשבון?")) firebase.auth().signOut(); });
 
-// חיבור כפתור Google באמצעות redirect במקום popup כדי שלא יחסם בטלפונים
+// חזרה לשימוש ב-popup שמאפשר גם התחברות מהירה עם גוגל וגם התחברות קיימת
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithRedirect(provider).catch(function(error){
+  firebase.auth().signInWithPopup(provider).catch(function(error){
     alert("שגיאה בהתחברות עם Google: " + error.message);
   });
 });
@@ -1322,6 +1324,11 @@ mainEl.addEventListener("click", function(e){
   if(act === "side-subtab"){
     currentSideSubtab = t.dataset.sub;
     renderTab();
+    return;
+  }
+
+  if(act==="global-q-open"){
+    alert("שאלון האולמות המלא זמין תחת כרטיסיות המעקב האישיות של האולמות למטה בהמשך המסך.");
     return;
   }
 
