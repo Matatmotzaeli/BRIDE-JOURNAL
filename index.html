@@ -798,8 +798,8 @@ function renderAlcohol(){
         + '<span style="font-size:13px;font-weight:800;color:var(--rose-900)">🍸 '+d.n+'</span>'
       + '</div>'
       + '<div class="grid2" style="margin-bottom:4px">'
-        + '<div><label class="small muted">יחס: אורחים לבקבוק 1</label><input type="number" data-act="alc-field" data-field="'+d.k+'" value="'+esc(a[d.k])+'" '+(isVenueProvides?'disabled':'')+'></div>'
-        + '<div><label class="small muted">מחיר לבקבוק</label><input type="number" data-act="alc-field" data-field="'+d.k+'Price" value="'+esc(a[d.k+"Price"])+'" '+(isVenueProvides?'disabled':'')+'></div>'
+        + '<div><label class="small muted">כמות שותים לבקבוק אחד</label><input type="number" data-act="alc-field" data-field="'+d.k+'" value="'+esc(a[d.k])+'" '+(isVenueProvides?'disabled':'')+'></div>'
+        + '<div><label class="small muted">מחיר לבקבוק (₪)</label><input type="text" inputmode="numeric" data-act="alc-field" data-field="'+d.k+'Price" value="'+esc(a[d.k+"Price"])+'" '+(isVenueProvides?'disabled':'')+'></div>'
       + '</div>';
 
     if(d.canVenue){
@@ -1008,7 +1008,14 @@ function renderGuests(){
   var seats=0, confirmed=0;
   state.guests.forEach(function(g){ var s=Number(g.seats)||0; seats+=s; if(g.status==="yes") confirmed+=s; });
   
-  html += '<div class="card rose-accent" style="margin-bottom:10px;padding:10px">'
+  // הוספת הטיפים של מתת לפי התמונה
+  html += '<div class="card rose-accent" style="margin-bottom:10px;padding:10px;font-size:11.5px;line-height:1.5">'
+    + '<p style="margin:0 0 6px;color:var(--rose-900)"><b>💡 טיפ:</b> תדייקו כמה שיותר את "שיוך לקבוצה" זה יעזור לכם בהושבה!!</p>'
+    + '<p style="margin:0 0 6px;color:var(--rose-900)"><b>📊 הערכת מגיעים:</b> מוזמנים פחות 30% = יאשרו הגעה, מאשרים הגעה פחות 10% = מגיעים בפועל</p>'
+    + '<p style="margin:0;color:var(--rose-900)"><b>🏰 התחייבות לאולם:</b> תגידו לאולם 100 אנשים פחות ממה שאתם מתכוונים להזמין בפועל. תתחייבו על המינימום שחייבים, תתעקשו על מדרגות תשלום (התחייבות 350 - בפועל אם מגיעים 400 ירדו 10 שקלים למנה לדוגמה). מתחייבים לכמות האנשים שאתם מתכוונים שומעים שגיעים פחות 10%.</p>'
+  + '</div>';
+
+  html += '<div class="card plain" style="margin-bottom:10px;padding:10px">'
     + '<p style="font-size:12px;font-weight:800;color:var(--rose-900);margin:0 0 6px">ייבוא / ייצוא מוזמנים באקסל</p>'
     + '<div class="row" style="margin-bottom:6px">'
       + '<button class="small-btn primary" data-act="guests-template" style="flex:1">הורדת תבנית אקסל</button>'
@@ -1024,11 +1031,14 @@ function renderGuests(){
   + '</div>';
 
   state.guests.forEach(function(g){
-    html += '<div class="card plain"><div class="row" style="margin-bottom:6px"><input type="text" data-act="guest-field" data-id="'+g.id+'" data-field="name" placeholder="שם (משפחת כהן)" value="'+esc(g.name)+'" style="font-weight:700"><button class="icon-del" data-act="guest-del" data-id="'+g.id+'">×</button></div>'
+    html += '<div class="card plain"><div class="row" style="margin-bottom:6px"><input type="text" data-act="guest-field" data-id="'+g.id+'" data-field="name" placeholder="שם מלא" value="'+esc(g.name)+'" style="font-weight:700"><button class="icon-del" data-act="guest-del" data-id="'+g.id+'">×</button></div>'
       + '<div class="row" style="margin-bottom:6px">'
-        + '<select data-act="guest-field" data-id="'+g.id+'" data-field="side" style="flex:1"><option value="">צד</option>'+['כלה','חתן','משותף'].map(function(o){return '<option '+(g.side===o?'selected':'')+'>'+o+'</option>';}).join('')+'</select>'
-        + '<input type="tel" data-act="guest-field" data-id="'+g.id+'" data-field="phone" placeholder="טלפון" value="'+esc(g.phone)+'" style="flex:1.2;direction:ltr;text-align:right">'
-        + '<input type="number" data-act="guest-field" data-id="'+g.id+'" data-field="seats" placeholder="מקומות" value="'+esc(g.seats)+'" style="width:60px">'
+        + '<select data-act="guest-field" data-id="'+g.id+'" data-field="side" style="flex:1"><option value="">צד חתן/כלה</option>'+['כלה','חתן','משותף'].map(function(o){return '<option '+(g.side===o?'selected':'')+'>'+o+'</option>';}).join('')+'</select>'
+        + '<input type="text" data-act="guest-field" data-id="'+g.id+'" data-field="group" placeholder="שיוך לקבוצה" value="'+esc(g.group)+'" style="flex:1">'
+      + '</div>'
+      + '<div class="row" style="margin-bottom:6px">'
+        + '<input type="tel" data-act="guest-field" data-id="'+g.id+'" data-field="phone" placeholder="מספר טלפון" value="'+esc(g.phone)+'" style="flex:1.2;direction:ltr;text-align:right">'
+        + '<input type="number" data-act="guest-field" data-id="'+g.id+'" data-field="seats" placeholder="מוזמנים" value="'+esc(g.seats)+'" style="width:70px">'
       + '</div>'
       + '<select data-act="guest-field" data-id="'+g.id+'" data-field="status">'
         + '<option value="unknown" '+(g.status==='unknown'||!g.status?'selected':'')+'>טרם ידוע</option>'
@@ -1278,14 +1288,12 @@ mainEl.addEventListener("click", function(e){
   var t = e.target;
   var act = t.dataset.act;
 
-  // מעבר בין הטאבים של האירועים הנלווים
   if(act === "side-subtab"){
     currentSideSubtab = t.dataset.sub;
     renderTab();
     return;
   }
 
-  // לחצני "התחלת הדרך" במסך הבית
   if(act==="onb-goto"){
     switchTab(t.dataset.tab);
     return;
@@ -1302,7 +1310,6 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
-  // הוספת ספק
   if(act==="vendor-add"){
     state.vendors.push({id:uid(), name:"", phone:"", price:"", deposit:"", contract:false});
     saveVendors(); renderTab(); return;
@@ -1317,9 +1324,8 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
-  // אורחים ואקסל
   if(act==="guest-add"){
-    state.guests.push({id:uid(), name:"", side:"", phone:"", seats:"2", status:"unknown"});
+    state.guests.push({id:uid(), name:"", side:"", group:"", phone:"", seats:"2", status:"unknown"});
     saveGuests(); renderTab(); return;
   }
   if(act==="guest-del"){
@@ -1328,7 +1334,7 @@ mainEl.addEventListener("click", function(e){
   }
   if(act==="guests-template"){
     var wb = XLSX.utils.book_new();
-    var wsData = [["שם משפחה/אורח", "צד (כלה/חתן/משותף)", "טלפון", "כמות מקומות", "סטטוס (yes/no/unknown)"]];
+    var wsData = [["שם מלא", "צד חתן/כלה", "שיוך לקבוצה", "מס' מוזמנים", "מספר טלפון"]];
     var ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, "מוזמנים");
     XLSX.writeFile(wb, "guests_template.xlsx");
@@ -1378,9 +1384,10 @@ mainEl.addEventListener("change", function(e){
               id: uid(),
               name: String(r[0]||""),
               side: String(r[1]||""),
-              phone: String(r[2]||""),
+              group: String(r[2]||""),
               seats: String(r[3]||"2"),
-              status: String(r[4]||"unknown")
+              phone: String(r[4]||""),
+              status: "unknown"
             });
             importedCount++;
           }
@@ -1413,7 +1420,7 @@ mainEl.addEventListener("input", function(e){
   
   if(act==="alc-field"){
     state.alcohol[t.dataset.field] = t.value;
-    saveAlcohol(); renderTab(); return;
+    saveAlcohol(); return;
   }
   
   if(act==="vendor-field"){
