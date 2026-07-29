@@ -533,6 +533,27 @@ var ONB_STEPS = [
 var INSPIRATION_CATS = ["שמלות","פוזות","אולמות","מסיבת רווקות","עיצוב","אחר"];
 
 var VENUE_DB_SEED = [
+  {id:"v1", name:"אבניו, שדה התעופה", region:"מרכז", priceEstimate:420},
+  {id:"v2", name:"אווניו גן השרון, חדרה", region:"מרכז", priceEstimate:380},
+  {id:"v3", name:"אירועים על המים, קיסריה", region:"מרכז", priceEstimate:450},
+  {id:"v4", name:"בלאקסטון, חיפה", region:"צפון", priceEstimate:350},
+  {id:"v5", name:"גבריאל, נס ציונה", region:"מרכז", priceEstimate:390},
+  {id:"v6", name:"גני כנען, ראש פינה", region:"צפון", priceEstimate:320},
+  {id:"v7", name:"הויה, רחובות", region:"מרכז", priceEstimate:370},
+  {id:"v8", name:"טراسا (טראסה), בת ים", region:"מרכז", priceEstimate:410},
+  {id:"v9", name:"ירוק על הים, שדות דב", region:"מרכז", priceEstimate:440},
+  {id:"v10", name:"כנען בגולן, ראש פינה", region:"צפון", priceEstimate:330},
+  {id:"v11", name:"לביא, ירושלים", region:"ירושלים", priceEstimate:340},
+  {id:"v12", name:"מי האוקיינוס, אשקלון", region:"דרום", priceEstimate:300},
+  {id:"v13", name:"ניואה, פתח תקווה", region:"מרכז", priceEstimate:380},
+  {id:"v14", name:"סנדרין, צומת כברי", region:"צפון", priceEstimate:310},
+  {id:"v15", name:"עايا (עאיה), דרום", region:"דרום", priceEstimate:290},
+  {id:"v16", name:"פวיליון, ירושלים", region:"ירושלים", priceEstimate:360},
+  {id:"v17", name:"צואה, חדרה", region:"מרכז", priceEstimate:350},
+  {id:"v18", name:"קסאנדו, פתח תקווה", region:"מרכז", priceEstimate:390},
+  {id:"v19", name:"רויאל גארדן, פתח תקווה", region:"מרכז", priceEstimate:370},
+  {id:"v20", name:"שטים, תל אביב", region:"מרכז", priceEstimate:480},
+  {id:"v21", name:"תשבי, זכרון יעקב", region:"צפון", priceEstimate:360},
   {id:"sh1", name:"OPA, אשקלון", region:"דרום", priceEstimate:300},
   {id:"sh2", name:"אגדתא, צומת ראם", region:"דרום", priceEstimate:242},
   {id:"sh22", name:"5.91, נתניה", region:"מרכז", priceEstimate:360},
@@ -561,7 +582,7 @@ var state = {
     beer:1, beerPrice: 10, venue_beer:false,
     extrasCost:500 
   },
-  venueCalc: { basePrice:"", guests:"", sound:"", design:"", extras:"" }
+  venueCalc: { basePrice:"", guests:"", sound:"", design:"", extrasPerPerson:"", tipsPerPerson:"" }
 };
 var currentTab = "home";
 var currentSideSubtab = "challah";
@@ -667,7 +688,14 @@ async function loadAll(){
   var alcDef = { guests:300, drinkersPct:75, vodka:6, vodkaPrice:90, venue_vodka:false, whiskey:8, whiskeyPrice:120, venue_whiskey:false, arak:8, arakPrice:70, venue_arak:false, wine:4, winePrice:40, venue_wine:false, cava:4, cavaPrice:30, venue_cava:false, beer:1, beerPrice:10, venue_beer:false, extrasCost:500 };
   state.alcohol = await getOrDefault("alcohol", alcDef);
   
-  state.venueCalc = await getOrDefault("venueCalc", { basePrice:"", guests:"", sound:"", design:"", extras:"" });
+  var vcDef = { basePrice:"", guests:"", sound:"", design:"", extrasPerPerson:"", tipsPerPerson:"" };
+  var storedVC = await getOrDefault("venueCalc", vcDef);
+  // Migrate old fields if needed
+  if(storedVC.extras !== undefined && storedVC.extrasPerPerson === undefined) {
+    storedVC.extrasPerPerson = storedVC.extras || "";
+  }
+  if(storedVC.tipsPerPerson === undefined) storedVC.tipsPerPerson = "";
+  state.venueCalc = storedVC;
 }
 
 function saveProfile(){ scheduleSave("profile", function(){ return state.profile; }); }
@@ -1129,11 +1157,14 @@ function renderVenueCalculatorBox(){
   var g = Number(vc.guests)||0;
   var s = Number(vc.sound)||0;
   var d = Number(vc.design)||0;
-  var ex = Number(vc.extras)||0;
+  var exPerPerson = Number(vc.extrasPerPerson)||0;
+  var tipsPerPerson = Number(vc.tipsPerPerson)||0;
   
   var truePrice = null;
   if(g > 0){
-    truePrice = Math.round(bPrice + (s + d + ex)/g);
+    var fixedTotals = s + d;
+    var perPersonTotal = exPerPerson + tipsPerPerson;
+    truePrice = Math.round(bPrice + perPersonTotal + (fixedTotals / g));
   }
 
   var html = '<p class="sectionlabel">מחשבון מחיר מנה אמיתי (אישי)</p>'
@@ -1143,10 +1174,13 @@ function renderVenueCalculatorBox(){
         + '<div><label class="small muted">מחיר מנה בסיסי</label><input type="number" data-act="vcalc-field" data-field="basePrice" value="'+esc(vc.basePrice)+'"></div>'
         + '<div><label class="small muted">כמות מוזמנים</label><input type="number" data-act="vcalc-field" data-field="guests" value="'+esc(vc.guests)+'"></div>'
       + '</div>'
-      + '<div class="grid3" style="margin-bottom:8px">'
-        + '<div><label class="small muted">הגברה ותאורה</label><input type="number" data-act="vcalc-field" data-field="sound" value="'+esc(vc.sound)+'"></div>'
-        + '<div><label class="small muted">עיצוב בסיסי</label><input type="number" data-act="vcalc-field" data-field="design" value="'+esc(vc.design)+'"></div>'
-        + '<div><label class="small muted">תוספות (סה"כ)</label><input type="number" data-act="vcalc-field" data-field="extras" value="'+esc(vc.extras)+'" title="דמי חליצה, מזיגה, טיפים וכו\'"></div>'
+      + '<div class="grid2" style="margin-bottom:6px">'
+        + '<div><label class="small muted">הגברה ותאורה (סה"כ)</label><input type="number" data-act="vcalc-field" data-field="sound" value="'+esc(vc.sound)+'"></div>'
+        + '<div><label class="small muted">עיצוב בסיסי (סה"כ)</label><input type="number" data-act="vcalc-field" data-field="design" value="'+esc(vc.design)+'"></div>'
+      + '</div>'
+      + '<div class="grid2" style="margin-bottom:8px">'
+        + '<div><label class="small muted">דמי חליצה (לאדם)</label><input type="number" data-act="vcalc-field" data-field="extrasPerPerson" value="'+esc(vc.extrasPerPerson)+'"></div>'
+        + '<div><label class="small muted">טיפים/תוספות (לאדם)</label><input type="number" data-act="vcalc-field" data-field="tipsPerPerson" value="'+esc(vc.tipsPerPerson)+'"></div>'
       + '</div>'
       + '<div class="between" style="border-top:1px dashed var(--rose-300);padding-top:8px">'
         + '<span style="font-size:12.5px;font-weight:800;color:var(--rose-900)">המחיר האמיתי למנה:</span>'
@@ -1200,7 +1234,6 @@ function renderVenue(){
   
   html += renderVenueCalculatorBox();
 
-  // שאלון אולמות ממוקם למעלה לפני מאגר האולמות הארצי, וסגור כברירת מחדל
   html += '<p class="sectionlabel">שאלון ותחקור אולם</p>';
   html += '<div class="card rose-accent" style="margin-bottom:10px">';
   html += '<p style="font-size:12px;font-weight:700;color:var(--rose-900);margin:0 0 6px">רשימת השאלות החשובות לכל אולם שאתם מבקרים בו:</p>';
@@ -1481,7 +1514,24 @@ mainEl.addEventListener("input", function(e){
   
   if(act==="vcalc-field"){
     state.venueCalc[t.dataset.field] = t.value;
-    saveVenueCalc(); renderTab(); return;
+    saveVenueCalc(); 
+    // Update only the result display live without re-rendering everything to preserve input focus
+    var vc = state.venueCalc;
+    var bPrice = Number(vc.basePrice)||0;
+    var g = Number(vc.guests)||0;
+    var s = Number(vc.sound)||0;
+    var d = Number(vc.design)||0;
+    var exPerPerson = Number(vc.extrasPerPerson)||0;
+    var tipsPerPerson = Number(vc.tipsPerPerson)||0;
+    var truePrice = null;
+    if(g > 0){
+      var fixedTotals = s + d;
+      var perPersonTotal = exPerPerson + tipsPerPerson;
+      truePrice = Math.round(bPrice + perPersonTotal + (fixedTotals / g));
+    }
+    var resEl = t.closest('.card').querySelector('.between:last-of-type span:last-child');
+    if(resEl) resEl.textContent = truePrice !== null ? ils(truePrice) : 'הזינו אורחים';
+    return;
   }
   
   if(act==="alc-field"){
