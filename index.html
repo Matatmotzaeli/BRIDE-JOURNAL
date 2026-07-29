@@ -50,7 +50,7 @@
   h2.pagetitle{ font-family:'Frank Ruhl Libre', serif; font-size:21px; margin:0 0 4px; color:var(--rose-900); }
   p.pagesub{ font-size:12px; color:var(--muted); margin:0 0 18px; line-height:1.6; }
 
-  nav.bottom{ position:sticky; bottom:0; background:var(--white); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 2px calc(8px + env(safe-area-inset-bottom)); z-index:20; }
+  nav.bottom{ position:sticky; bottom:0; background:var(--white); border-top:1px solid var(--border); display:flex; justify-space-around; padding:8px 2px calc(8px + env(safe-area-inset-bottom)); z-index:20; }
   nav.bottom button{ background:none; border:none; font-family:'Assistant',sans-serif; font-size:10px; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:5px 4px; border-radius:10px; flex:1; }
   nav.bottom button .dot{ width:5px; height:5px; border-radius:50%; background:transparent; }
   nav.bottom button.active{ color:var(--rose-600); font-weight:700; }
@@ -401,7 +401,7 @@ var EQUIP_SEED = {
     "תחתונים ללא תפר",
     "מברשת שיער",
     "מקלוני אוזניים",
-    "קרם גוף/שיזוף",
+    "קרם גוף שיזוף",
     "דאודורנט",
     "בושם",
     "פודרה",
@@ -412,11 +412,11 @@ var EQUIP_SEED = {
     "תכשיטים",
     "חוט ומחט",
     "מטען לטלפון",
-    "הזמנה מודפסת + טבעות + אקססוריז לצילום"
+    "הזמנה מודפסת, טבעות ועוד"
   ],
   groom: [
     "חליפה",
-    "נעליים + נעליים להחלפה",
+    "נעליים +נעליים להחלפה",
     "חגורה",
     "כיפה וסיכה",
     "טלית",
@@ -431,7 +431,7 @@ var EQUIP_SEED = {
     "מעטפות לספקים",
     "שעון",
     "מטען נייד לטלפון",
-    "סלסלאות נוחות אם יש",
+    "סלסלאות נוחיות אם יש",
     "אלכוהול לאולם"
   ]
 };
@@ -657,10 +657,11 @@ async function loadAll(){
   state.guests = await getOrDefault("guests", []);
   
   var eqData = await getOrDefault("equipment", null);
-  if(eqData && eqData.bride && eqData.groom && (eqData.bride.length > 0 || eqData.groom.length > 0)){
+  if(eqData && eqData.bride && eqData.groom && eqData.bride.length > 0 && eqData.groom.length > 0){
     state.equipment = eqData;
   } else {
     state.equipment = seedEquip();
+    saveEquip();
   }
 
   state.matat = await getOrDefault("matat", MATAT_DEFAULT, true);
