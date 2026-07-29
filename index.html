@@ -690,7 +690,6 @@ async function loadAll(){
   
   var vcDef = { basePrice:"", guests:"", sound:"", design:"", extrasPerPerson:"", tipsPerPerson:"" };
   var storedVC = await getOrDefault("venueCalc", vcDef);
-  // Migrate old fields if needed
   if(storedVC.extras !== undefined && storedVC.extrasPerPerson === undefined) {
     storedVC.extrasPerPerson = storedVC.extras || "";
   }
@@ -1273,18 +1272,37 @@ function classifyLinkLocal(url, note){
 
 function renderInspiration(){
   var html = '<h2 class="pagetitle">לוח השראה</h2><p class="pagesub">הדביקו קישורים או העלו תמונות</p>';
-  html += '<div class="card"><input type="text" id="inspUrlInput" placeholder="קישור (אינסטגרם, פינטרסט וכו\')" style="margin-bottom:6px"><input type="text" id="inspNoteInput" placeholder="הערה קצרה (אופציונלי)" style="margin-bottom:6px"><button class="primary" data-act="insp-add" style="margin-bottom:6px">הוספת קישור ומיון</button><label class="small-btn" style="display:block;text-align:center;cursor:pointer">📷 העלאת תמונה מהמכשיר<input type="file" id="inspFileInput" accept="image/*" style="display:none"></label></div>';
+  html += '<div class="card">'
+    + '<input type="text" id="inspUrlInput" placeholder="קישור (אינסטגרם, פינטרסט וכו\')" style="margin-bottom:6px">'
+    + '<input type="text" id="inspNoteInput" placeholder="הערה קצרה (אופציונלי)" style="margin-bottom:6px">'
+    + '<select id="inspCategorySelect" style="margin-bottom:6px">'
+    + '<option value="">בחר קטגוריה אוטומטית / ידנית</option>'
+    + INSPIRATION_CATS.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('')
+    + '</select>'
+    + '<button class="primary" data-act="insp-add" style="margin-bottom:6px">הוספת קישור ומיון</button>'
+    + '<label class="small-btn" style="display:block;text-align:center;cursor:pointer">📷 העלאת תמונה מהגלריה<input type="file" id="inspFileInput" accept="image/*" style="display:none"></label>'
+  + '</div>';
+
   html += '<div style="margin-bottom:8px"><span class="chip-filter'+(inspFilter==="all"?" active":"")+'" data-act="insp-filter" data-cat="all">הכל</span>';
   INSPIRATION_CATS.forEach(function(c){ html += '<span class="chip-filter'+(inspFilter===c?" active":"")+'" data-act="insp-filter" data-cat="'+c+'">'+c+'</span>'; });
   html += '</div>';
+
   var list = state.inspiration.filter(function(it){ return inspFilter==="all" || it.category===inspFilter; });
   if(list.length===0){ html += '<p class="small muted" style="text-align:center;padding:16px 0">עדיין אין כלום שמור כאן</p>'; }
+  
   list.slice().reverse().forEach(function(it){
     html += '<div class="card plain">';
-    if(it.type==="image") html += '<img src="'+it.dataUrl+'" style="width:100%;border-radius:6px;margin-bottom:6px;display:block">';
-    html += '<div class="between" style="margin-bottom:4px"><span style="font-size:12px;font-weight:800;color:var(--rose-900)">'+esc(it.title||it.url||"")+'</span><span class="tag tag-rose">'+esc(it.category)+'</span></div>'+(it.note ? '<p class="small muted" style="margin:0 0 6px">'+esc(it.note)+'</p>' : '');
-    if(it.url) html += '<div class="row"><a href="'+esc(it.url)+'" target="_blank" rel="noopener" class="small-btn" style="flex:1;text-align:center;text-decoration:none;color:var(--ink)">פתיחת הקישור</a><button class="icon-del" data-act="insp-del" data-id="'+it.id+'">×</button></div>';
-    else html += '<button class="ghost plain" data-act="insp-del" data-id="'+it.id+'">מחיקה</button>';
+    if(it.type==="image") {
+      html += '<img src="'+it.dataUrl+'" style="width:100%;max-height:250px;object-fit:cover;border-radius:6px;margin-bottom:6px;display:block">';
+    }
+    html += '<div class="between" style="margin-bottom:4px"><span style="font-size:12px;font-weight:800;color:var(--rose-900)">'+esc(it.title||it.url||"תמונה מעולה")+'</span><span class="tag tag-rose">'+esc(it.category)+'</span></div>';
+    if(it.note) html += '<p class="small muted" style="margin:0 0 6px">'+esc(it.note)+'</p>';
+    
+    if(it.url) {
+      html += '<div class="row"><a href="'+esc(it.url)+'" target="_blank" rel="noopener" class="small-btn" style="flex:1;text-align:center;text-decoration:none;color:var(--ink)">פתיחת הקישור</a><button class="icon-del" data-act="insp-del" data-id="'+it.id+'">×</button></div>';
+    } else {
+      html += '<button class="ghost plain" data-act="insp-del" data-id="'+it.id+'">מחיקה</button>';
+    }
     html += '</div>';
   });
   return html;
@@ -1460,6 +1478,50 @@ mainEl.addEventListener("click", function(e){
     return;
   }
   if(act==="q-toggle"){ qOpen[t.dataset.id] = !qOpen[t.dataset.id]; renderTab(); return; }
+
+  // Inspiration actions
+  if(act==="insp-add"){
+    var urlInput = document.getElementById("inspUrlInput");
+    var noteInput = document.getElementById("inspNoteInput");
+    var catSelect = document.getElementById("inspCategorySelect");
+    var url = urlInput ? urlInput.value.trim() : "";
+    var note = noteInput ? noteInput.value.trim() : "";
+    var manualCat = catSelect ? catSelect.value : "";
+
+    if(!url && !note){
+      alert("נא להזין קישור או הערה");
+      return;
+    }
+
+    var classified = classifyLinkLocal(url, note);
+    var category = manualCat || classified.category;
+    var title = classified.title;
+
+    state.inspiration.push({
+      id: uid(),
+      type: "link",
+      url: url,
+      note: note,
+      category: category,
+      title: title
+    });
+    saveInspiration();
+    renderTab();
+    return;
+  }
+
+  if(act==="insp-del"){
+    state.inspiration = state.inspiration.filter(function(it){ return it.id !== t.dataset.id; });
+    saveInspiration();
+    renderTab();
+    return;
+  }
+
+  if(act==="insp-filter"){
+    inspFilter = t.dataset.cat;
+    renderTab();
+    return;
+  }
 });
 
 mainEl.addEventListener("change", function(e){
@@ -1502,6 +1564,27 @@ mainEl.addEventListener("change", function(e){
     return;
   }
 
+  // Handle Image Upload for Inspiration
+  if(t.id === "inspFileInput" && t.files && t.files[0]){
+    var file = t.files[0];
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      var dataUrl = evt.target.result;
+      state.inspiration.push({
+        id: uid(),
+        type: "image",
+        dataUrl: dataUrl,
+        category: "עיצוב", // ברירת מחדל לתמונות מהגלריה
+        title: "תמונה מהגלריה",
+        note: file.name || ""
+      });
+      saveInspiration();
+      renderTab();
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
   if(act==="alc-check"){
     state.alcohol[t.dataset.field] = t.checked;
     saveAlcohol(); renderTab(); return;
@@ -1515,7 +1598,6 @@ mainEl.addEventListener("input", function(e){
   if(act==="vcalc-field"){
     state.venueCalc[t.dataset.field] = t.value;
     saveVenueCalc(); 
-    // Update only the result display live without re-rendering everything to preserve input focus
     var vc = state.venueCalc;
     var bPrice = Number(vc.basePrice)||0;
     var g = Number(vc.guests)||0;
