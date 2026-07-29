@@ -1017,7 +1017,7 @@ function renderBudget(){
   var catClass = {big:"card rose-accent", look:"card plain", rab:"card plain", other:"card plain"};
   Object.keys(state.budgetCats).forEach(function(catId){
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
-    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p>';
+    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-"+catId+"'+' style="float:left">'+ils(budgetCatTotal(catId))+'</span></p>';
     html += '<div class="'+catClass[catId]+'">';
     state.budgetCats[catId].forEach(function(item){
       html += '<div class="itemwrap">'
@@ -1557,8 +1557,21 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     
     state.coupleInfo = {bride:bride, groom:groom, email:email, phone:phone};
     saveProfile();
-    
     save("coupleInfo", state.coupleInfo);
+
+    /* --- שמירת עותק מרוכז בקולקשן LEADS ב-FIRESTORE --- */
+    if (db) {
+      var leadId = currentUser ? currentUser.uid : uid();
+      db.collection("leads").doc(leadId).set({
+        bride: bride,
+        groom: groom,
+        email: email || (currentUser ? currentUser.email : ""),
+        phone: phone,
+        userUid: currentUser ? currentUser.uid : null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).catch(function(err){ console.error("Error saving lead:", err); });
+    }
+    /* -------------------------------------------------- */
     
     state.meta.seenWelcome = true; 
     saveMeta();
@@ -1653,7 +1666,8 @@ mainEl.addEventListener("click", function(e){
   if(act==="equip-del"){
     var side2 = t.dataset.side;
     state.equipment[side2] = state.equipment[side2].filter(function(i){return i.id!==t.dataset.id;});
-    saveEquip(); renderTab(); return;
+    saveEquip(); renderTab();
+    return;
   }
   if(act==="cal-prev"){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderTab(); return; }
   if(act==="cal-next"){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderTab(); return; }
