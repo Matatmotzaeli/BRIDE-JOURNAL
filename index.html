@@ -36,7 +36,7 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Assistant',sans-serif; direction:rtl; }
   .serif{ font-family:'Frank Ruhl Libre', serif; }
-  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); }
+  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); position:relative; }
 
   header.topbar{ padding:16px 20px 12px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--white); z-index:20; display:flex; justify-content:space-between; align-items:center; }
   header.topbar .brand-wrap{ text-align:center; flex:1; }
@@ -180,29 +180,7 @@
   </div>
 </div>
 
-<div id="shell">
-  <header class="topbar">
-    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
-    <div class="brand-wrap">
-      <p class="brand">BRIDE_JOURNAL</p>
-      <p class="sub">by Matat</p>
-    </div>
-    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="icon-btn" title="TikTok">🎵</a>
-  </header>
-  <main id="main"><div id="tabContent"></div></main>
-  <nav class="bottom" id="bottomNav">
-    <button data-tab="home"><span class="dot"></span>בית</button>
-    <button data-tab="tasks"><span class="dot"></span>משימות</button>
-    <button data-tab="venue"><span class="dot"></span>אולם</button>
-    <button data-tab="budget"><span class="dot"></span>תקציב</button>
-    <button data-tab="vendors"><span class="dot"></span>ספקים</button>
-    <button data-tab="guests"><span class="dot"></span>אורחים</button>
-    <button data-tab="equipment"><span class="dot"></span>ציוד</button>
-    <button data-tab="inspiration"><span class="dot"></span>השראה</button>
-  </nav>
-</div>
-
-<div id="welcomeScreen" style="display:none">
+<div id="welcomeScreen" class="overlay-screen" style="display:none">
   <div class="inner">
     <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
     <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 26px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה שלכם - צעד אחד בכל פעם.</p>
@@ -223,6 +201,28 @@
     <p class="small muted" style="margin:0 0 14px;line-height:1.6">הפרטים נשמרים ביומן שלכם בלבד.</p>
     <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
   </div>
+</div>
+
+<div id="shell">
+  <header class="topbar">
+    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
+    <div class="brand-wrap">
+      <p class="brand">BRIDE_JOURNAL</p>
+      <p class="sub">by Matat</p>
+    </div>
+    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="icon-btn" title="TikTok">🎵</a>
+  </header>
+  <main id="main"><div id="tabContent"></div></main>
+  <nav class="bottom" id="bottomNav">
+    <button data-tab="home"><span class="dot"></span>בית</button>
+    <button data-tab="tasks"><span class="dot"></span>משימות</button>
+    <button data-tab="venue"><span class="dot"></span>אולם</button>
+    <button data-tab="budget"><span class="dot"></span>תקציב</button>
+    <button data-tab="vendors"><span class="dot"></span>ספקים</button>
+    <button data-tab="guests"><span class="dot"></span>אורחים</button>
+    <button data-tab="equipment"><span class="dot"></span>ציוד</button>
+    <button data-tab="inspiration"><span class="dot"></span>השראה</button>
+  </nav>
 </div>
 
 <script>
@@ -1280,7 +1280,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     currentUser = user;
     document.getElementById("authScreen").style.display = "none";
-    document.getElementById("shell").style.display = "flex";
     
     if (user.email === MATAT_ADMIN_EMAIL) {
       matatUnlocked = true;
@@ -1299,7 +1298,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
   } else {
     currentUser = null;
     document.getElementById("authScreen").style.display = "flex";
-    document.getElementById("shell").style.display = "none";
   }
 });
 
