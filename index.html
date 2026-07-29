@@ -169,7 +169,7 @@
       </button>
     </div>
 
-    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="tiktok-link">
+    <a href="https://www.tiktok.com/@bride_journal" target="_blank" class="tiktok-link">
       🎵 עקבו אחרי ב-TikTok לקבלת טיפים
     </a>
   </div>
@@ -232,7 +232,7 @@
       <p class="brand">BRIDE_JOURNAL</p>
       <p class="sub">BY MATAT</p>
     </div>
-    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="icon-btn" title="TikTok">🎵</a>
+    <a href="https://www.tiktok.com/@bride_journal" target="_blank" class="icon-btn" title="TikTok">🎵</a>
   </header>
   <main id="main"><div id="tabContent"></div></main>
   <nav class="bottom" id="bottomNav">
@@ -267,7 +267,6 @@ if (firebase.analytics) {
 }
 var db = firebase.firestore();
 var currentUser = null;
-var MATAT_ADMIN_EMAIL = "matatmail@gmail.com";
 
 /* ---------------- SEED DATA ---------------- */
 
@@ -457,8 +456,6 @@ var EQUIP_SEED = {
   ]
 };
 
-var MATAT_DEFAULT = "כאן אני אכתוב לכם על האירועים הנלווים לחתונה - הפרשת חלה, מסיבת רווקות/רווקים, ומה שעוד עולה בדרך. אני עורכת את הטקסט הזה מהצד שלי, אז תמיד תמצאו אותו מעודכן.";
-
 var VENUE_Q_SEED = [
 {cat:"אולם", q:"האם יש תעודת כשרות?"},
 {cat:"אולם", q:"כמה עולה הגברה ותאורה?", tip:"תזכרו לחלק בכמות האנשים כדי לדעת מה באמת מחיר המנה"},
@@ -526,6 +523,7 @@ var ONB_STEPS = [
 
 var INSPIRATION_CATS = ["שמלות","פוזות","אולמות","מסיבת רווקות","עיצוב","אחר"];
 
+/* ---------------- FULL VENUE DATABASE RECOVERY ---------------- */
 var VENUE_DB_SEED = [
   {id:"sh1", name:"OPA, אשקלון", region:"דרום", priceEstimate:300, phone:"", verifiedCount:0, source:"sheet"},
   {id:"sh2", name:"אגדתא, צומת ראם", region:"דרום", priceEstimate:242, phone:"", verifiedCount:0, source:"sheet"},
@@ -600,8 +598,6 @@ var state = {
   tasks:[],
   budgetCats:{}, income:{ guests:"", gift:"", brideParents:"", groomParents:"", savings:"" },
   vendors:[], guests:[], equipment:{ bride:[], groom:[] },
-  matat: MATAT_DEFAULT,
-  matatPin: "",
   venue:{ dates:[], list:[] },
   venueDB: [],
   inspiration: [],
@@ -613,7 +609,6 @@ var groupOpen = {7:true};
 var calMonth = 3, calYear = 2027;
 var qOpen = {};
 var importMsg = "";
-var matatUnlocked = false;
 var inspFilter = "all";
 
 function seedTasks(){ return TASK_SEED.map(function(x){ return {id:uid(), c:x.c, t:x.t, m:x.m, n:x.n||"", done:false}; }); }
@@ -686,10 +681,14 @@ async function loadAll(){
     saveEquip();
   }
 
-  state.matat = await getOrDefault("matat", MATAT_DEFAULT, true);
-  state.matatPin = await getOrDefault("matatPin", "", true);
   state.venue = await getOrDefault("venue", {dates:[], list:[]});
-  state.venueDB = await getOrDefault("venueDB", null, true) || VENUE_DB_SEED.slice();
+  var storedVDB = await getOrDefault("venueDB", null, true);
+  if(storedVDB && storedVDB.length > 0){
+    state.venueDB = storedVDB;
+  } else {
+    state.venueDB = VENUE_DB_SEED.slice();
+    saveVenueDB();
+  }
   state.inspiration = await getOrDefault("inspiration", []);
   state.coupleInfo = await getOrDefault("coupleInfo", {bride:"", groom:"", email:"", phone:""});
   if(state.tasks.length===0) state.tasks = seedTasks();
@@ -702,8 +701,6 @@ function saveBudget(){ scheduleSave("budget", function(){ return {cats:state.bud
 function saveVendors(){ scheduleSave("vendors", function(){ return state.vendors; }); }
 function saveGuests(){ scheduleSave("guests", function(){ return state.guests; }); }
 function saveEquip(){ scheduleSave("equipment", function(){ return state.equipment; }); }
-function saveMatat(){ scheduleSave("matat", function(){ return state.matat; }, true); }
-function saveMatatPin(){ scheduleSave("matatPin", function(){ return state.matatPin; }, true); }
 function saveVenue(){ scheduleSave("venue", function(){ return state.venue; }); }
 function saveVenueDB(){ scheduleSave("venueDB", function(){ return state.venueDB; }, true); }
 function saveInspiration(){ scheduleSave("inspiration", function(){ return state.inspiration; }); }
@@ -768,26 +765,10 @@ function renderHome(){
   + navcard("sideEvents","אירועים נלווים","הפרשת חלה, רווקות, מקווה")
 
   + '<p class="sectionlabel">השראה ותוכן</p>'
-  + renderMatatCard()
   + navcard("inspiration","לוח השראה", state.inspiration.length+" שמורים")
   + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">השראה לעיצוב הזמנה בקנבה</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">המלצות להזמנות מהאינטרנט</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<p style="text-align:center;margin-top:14px"><button class="ghost plain" data-act="show-welcome" style="width:auto;padding:4px 12px">הצגת מסך הפתיחה מחדש</button></p>';
-  return html;
-}
-
-function renderMatatCard(){
-  var isMatatAdmin = currentUser && currentUser.email === MATAT_ADMIN_EMAIL;
-  var html = '<div class="card rose-accent">'
-    + '<div class="between" style="margin-bottom:6px"><span style="font-size:12.5px;font-weight:800;color:var(--rose-900)">הפינה של מתת</span><span class="tag tag-rose">משותף לכולם</span></div>';
-  if(matatUnlocked || isMatatAdmin){
-    html += '<textarea data-act="matat-text" placeholder="כתבי כאן...">'+esc(state.matat)+'</textarea>'
-      + '<button class="ghost" data-act="matat-lock" style="margin-top:4px">סיום עריכה ונעילה</button>';
-  } else {
-    html += '<p style="font-size:12px;line-height:1.5;color:var(--ink);margin:0 0 8px;white-space:pre-wrap">'+esc(state.matat)+'</p>'
-      + '<button class="ghost" data-act="matat-unlock">🔒 עריכה (מתת בלבד)</button>';
-  }
-  html += '</div>';
   return html;
 }
 
@@ -1142,7 +1123,7 @@ function renderGuests(){
   return html;
 }
 
-/* ---------------- RENDER: EQUIPMENT (SAFEGUARD LOAD & RESTORED) ---------------- */
+/* ---------------- RENDER: EQUIPMENT ---------------- */
 function renderEquipList(side){
   var items = state.equipment[side] || [];
   var html = '<div class="card '+(side==="bride"?"rose-accent":"blue")+'">';
@@ -1220,13 +1201,15 @@ function venueTruePrice(v){
 var venueDBRegionFilter = "all";
 function renderVenueDBList(){
   var html = '<p class="sectionlabel">מאגר האולמות המשותף <span class="tag tag-amber-lt" style="margin-right:4px">גלוי לכולן</span></p>';
-  html += '<p class="small muted" style="margin:0 0 6px;line-height:1.4">רשימה ראשונית ממקורות ציבוריים - ככל שתעדכנו, המאגר יתמלא במחירים אמיתיים.</p>';
+  html += '<p class="small muted" style="margin:0 0 6px;line-height:1.4">רשימה מקיפה של אולמות - לחצי על הוספה למעקב כדי לעקוב ולהוסיף מחיר מנה.</p>';
   html += '<div style="margin-bottom:8px">';
   ["all","מרכז","צפון","דרום","ירושלים"].forEach(function(r){
     html += '<span class="chip-filter'+(venueDBRegionFilter===r?" active":"")+'" data-act="venuedb-filter" data-region="'+r+'">'+(r==="all"?"הכל":r)+'</span>';
   });
   html += '</div>';
-  var list = state.venueDB.filter(function(v){ return venueDBRegionFilter==="all" || v.region===venueDBRegionFilter; });
+  
+  var list = (state.venueDB && state.venueDB.length > 0 ? state.venueDB : VENUE_DB_SEED).filter(function(v){ return venueDBRegionFilter==="all" || v.region===venueDBRegionFilter; });
+  
   if(list.length===0){ html += '<p class="small muted" style="margin:0 0 6px">אין אולמות באזור הזה עדיין</p>'; }
   list.forEach(function(v){
     html += '<div class="card plain">'
@@ -1435,10 +1418,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
     document.getElementById("authScreen").style.display = "none";
     document.getElementById("shell").style.display = "flex";
     
-    if (user.email === MATAT_ADMIN_EMAIL) {
-      matatUnlocked = true;
-    }
-
     await loadAll();
 
     if(!state.meta.seenWelcome){
@@ -1692,23 +1671,6 @@ mainEl.addEventListener("click", function(e){
     }
     return;
   }
-  if(act==="matat-unlock"){
-    if (currentUser && currentUser.email === MATAT_ADMIN_EMAIL) {
-      matatUnlocked = true;
-      renderTab();
-      return;
-    }
-    if(!state.matatPin){
-      var p1 = prompt("עדיין אין קוד הגנה לפינה שלך - בחרי קוד (מספר או מילה קצרה):");
-      if(p1){ state.matatPin = p1; saveMatatPin(); matatUnlocked = true; renderTab(); }
-    } else {
-      var p = prompt("הזיני את קוד ההגנה לעריכת הפינה של מתת:");
-      if(p===state.matatPin){ matatUnlocked = true; renderTab(); }
-      else if(p!==null){ alert("קוד שגוי"); }
-    }
-    return;
-  }
-  if(act==="matat-lock"){ matatUnlocked=false; renderTab(); return; }
   if(act==="tasks-ics"){ downloadICS(); return; }
   if(act==="insp-filter"){ inspFilter = t.dataset.cat; renderTab(); return; }
   if(act==="insp-del"){
@@ -1760,8 +1722,6 @@ mainEl.addEventListener("input", function(e){
   var act = t.dataset.act;
 
   if(act==="profile-name"){ state.profile.name = t.value; saveProfile(); return; }
-
-  if(act==="matat-text"){ state.matat = t.value; saveMatat(); return; }
 
   if(act==="income-field"){ state.income[t.dataset.field] = t.value; saveBudget(); renderBudgetSummary(); return; }
 
