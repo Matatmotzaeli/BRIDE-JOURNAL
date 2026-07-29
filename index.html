@@ -885,7 +885,7 @@ function renderSideEvents(){
       {t: "מגבת מכובסת ובלי סיבים", sub: ""},
       {t: "כפכפים", sub: ""},
       {t: "כסף מזומן", sub: "כמה שהבלנית אומרת שעולה הטבילה הראשונה במקווה"},
-      {t: "סוכריות", sub: "שיזרקו עלייך בשמחה כשאת יוצאת"},
+      {t: "סוכריות", sub: "שיזרקו עלייך שמחה כשאת יוצאת"},
       {t: "מברשת שיער", sub: ""}
     ];
     mikvehItems.forEach(function(m){
@@ -969,7 +969,7 @@ function renderBudget(){
   var catClass = {big:"card rose-accent", look:"card plain", rab:"card plain", other:"card plain"};
   Object.keys(state.budgetCats).forEach(function(catId){
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
-    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-"+catId+" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+catClass[catId]+'">';
+    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+catClass[catId]+'">';
     state.budgetCats[catId].forEach(function(item){
       html += '<div class="itemwrap"><div class="between" style="gap:6px;margin-bottom:'+(item.tip?'4px':'0')+'">'
         + '<span style="font-size:12px;font-weight:700;flex:1;color:var(--ink)">'+esc(item.name)+'</span>'
@@ -1007,11 +1007,22 @@ function renderGuests(){
   var html = '<h2 class="pagetitle">רשימת מוזמנים</h2><p class="pagesub">ניהול רשימת האורחים שלכם</p>';
   var seats=0, confirmed=0;
   state.guests.forEach(function(g){ var s=Number(g.seats)||0; seats+=s; if(g.status==="yes") confirmed+=s; });
+  
+  html += '<div class="card rose-accent" style="margin-bottom:10px;padding:10px">'
+    + '<p style="font-size:12px;font-weight:800;color:var(--rose-900);margin:0 0 6px">ייבוא / ייצוא מוזמנים באקסל</p>'
+    + '<div class="row" style="margin-bottom:6px">'
+      + '<button class="small-btn primary" data-act="guests-template" style="flex:1">הורדת תבנית אקסל</button>'
+      + '<label class="small-btn" style="flex:1;text-align:center;cursor:pointer;background:#fff">ייבוא קובץ אקסל<input type="file" id="guestExcelInput" accept=".xlsx, .xls" style="display:none"></label>'
+    + '</div>'
+    + (importMsg ? '<p class="small" style="color:var(--green);font-weight:700;margin:4px 0 0">'+esc(importMsg)+'</p>' : '')
+  + '</div>';
+
   html += '<div class="grid3" style="margin-bottom:10px">'
     + '<div class="card plain" style="text-align:center;padding:8px 4px"><p style="font-size:16px;font-weight:800;margin:0;color:var(--rose-900)">'+seats+'</p><p class="small muted" style="margin:0">מקומות</p></div>'
     + '<div class="card plain" style="text-align:center;padding:8px 4px"><p style="font-size:16px;font-weight:800;margin:0;color:var(--rose-900)">'+state.guests.length+'</p><p class="small muted" style="margin:0">שורות</p></div>'
     + '<div class="card green" style="text-align:center;padding:8px 4px"><p style="font-size:16px;font-weight:800;margin:0;color:#085041">'+confirmed+'</p><p class="small" style="margin:0;color:#085041;font-weight:700">אישרו</p></div>'
   + '</div>';
+
   state.guests.forEach(function(g){
     html += '<div class="card plain"><div class="row" style="margin-bottom:6px"><input type="text" data-act="guest-field" data-id="'+g.id+'" data-field="name" placeholder="שם (משפחת כהן)" value="'+esc(g.name)+'" style="font-weight:700"><button class="icon-del" data-act="guest-del" data-id="'+g.id+'">×</button></div>'
       + '<div class="row" style="margin-bottom:6px">'
@@ -1267,10 +1278,60 @@ mainEl.addEventListener("click", function(e){
   var t = e.target;
   var act = t.dataset.act;
 
-  // הטיפול במעבר בין הטאבים של האירועים הנלווים:
+  // מעבר בין הטאבים של האירועים הנלווים
   if(act === "side-subtab"){
     currentSideSubtab = t.dataset.sub;
     renderTab();
+    return;
+  }
+
+  // לחצני "התחלת הדרך" במסך הבית
+  if(act==="onb-goto"){
+    switchTab(t.dataset.tab);
+    return;
+  }
+  if(act==="onb-complete"){
+    var idx = Number(t.dataset.idx);
+    state.meta.onbDone[idx] = true;
+    saveMeta(); renderTab();
+    return;
+  }
+  if(act==="show-welcome"){
+    document.getElementById("welcomeScreen").style.display = "flex";
+    document.getElementById("bottomNav").style.display = "none";
+    return;
+  }
+
+  // הוספת ספק
+  if(act==="vendor-add"){
+    state.vendors.push({id:uid(), name:"", phone:"", price:"", deposit:"", contract:false});
+    saveVendors(); renderTab(); return;
+  }
+  if(act==="vendor-del"){
+    state.vendors = state.vendors.filter(function(v){ return v.id!==t.dataset.id; });
+    saveVendors(); renderTab(); return;
+  }
+  if(act==="vendor-contract"){
+    var v = state.vendors.find(function(x){return x.id===t.dataset.id;});
+    if(v){ v.contract = !v.contract; saveVendors(); renderTab(); }
+    return;
+  }
+
+  // אורחים ואקסל
+  if(act==="guest-add"){
+    state.guests.push({id:uid(), name:"", side:"", phone:"", seats:"2", status:"unknown"});
+    saveGuests(); renderTab(); return;
+  }
+  if(act==="guest-del"){
+    state.guests = state.guests.filter(function(g){ return g.id!==t.dataset.id; });
+    saveGuests(); renderTab(); return;
+  }
+  if(act==="guests-template"){
+    var wb = XLSX.utils.book_new();
+    var wsData = [["שם משפחה/אורח", "צד (כלה/חתן/משותף)", "טלפון", "כמות מקומות", "סטטוס (yes/no/unknown)"]];
+    var ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "מוזמנים");
+    XLSX.writeFile(wb, "guests_template.xlsx");
     return;
   }
 
@@ -1299,6 +1360,42 @@ mainEl.addEventListener("click", function(e){
 mainEl.addEventListener("change", function(e){
   var t = e.target;
   var act = t.dataset.act;
+
+  if(t.id === "guestExcelInput" && t.files && t.files[0]){
+    var file = t.files[0];
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var data = new Uint8Array(evt.target.result);
+        var workbook = XLSX.read(data, {type: 'array'});
+        var firstSheet = workbook.SheetNames[0];
+        var rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], {header: 1});
+        var importedCount = 0;
+        for(var i=1; i<rows.length; i++){
+          var r = rows[i];
+          if(r && r[0]){
+            state.guests.push({
+              id: uid(),
+              name: String(r[0]||""),
+              side: String(r[1]||""),
+              phone: String(r[2]||""),
+              seats: String(r[3]||"2"),
+              status: String(r[4]||"unknown")
+            });
+            importedCount++;
+          }
+        }
+        saveGuests();
+        importMsg = "יובאו בהצלחה " + importedCount + " אורחים!";
+        renderTab();
+      }catch(err){
+        alert("שגיאה בקריאת קובץ האקסל");
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    return;
+  }
+
   if(act==="alc-check"){
     state.alcohol[t.dataset.field] = t.checked;
     saveAlcohol(); renderTab(); return;
@@ -1319,10 +1416,37 @@ mainEl.addEventListener("input", function(e){
     saveAlcohol(); renderTab(); return;
   }
   
-  if(act==="venue-field"){
-    var vn = state.venue.list.find(function(x){return x.id===t.dataset.id;});
-    if(vn){ vn[t.dataset.field] = t.value; saveVenue(); }
+  if(act==="vendor-field"){
+    var vn = state.vendors.find(function(x){return x.id===t.dataset.id;});
+    if(vn){ vn[t.dataset.field] = t.value; saveVendors(); }
     return;
+  }
+
+  if(act==="guest-field"){
+    var g = state.guests.find(function(x){return x.id===t.dataset.id;});
+    if(g){ g[t.dataset.field] = t.value; saveGuests(); }
+    return;
+  }
+});
+
+document.addEventListener("click", function(e){
+  if(e.target && e.target.dataset.act === "welcome-start"){
+    var b = document.getElementById("welcomeBride").value;
+    var g = document.getElementById("welcomeGroom").value;
+    var em = document.getElementById("welcomeEmail").value;
+    var ph = document.getElementById("welcomePhone").value;
+    if(b || g){
+      state.profile.name = (b && g) ? (b + " ו" + g) : (b || g);
+      if(em) state.profile.email = em;
+      if(ph) state.profile.phone = ph;
+      saveProfile();
+    }
+    state.meta.seenWelcome = true;
+    saveMeta();
+    document.getElementById("welcomeScreen").style.display = "none";
+    document.getElementById("bottomNav").style.display = "flex";
+    switchTab("home");
+    triggerConfetti();
   }
 });
 
