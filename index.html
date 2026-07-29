@@ -152,7 +152,7 @@
       </button>
     </div>
 
-    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="tiktok-link">
+    <a href="https://www.tiktok.com/@bride_journal?_r=1&amp;_t=ZS-98Q0hTCD3Ab" target="_blank" class="tiktok-link">
       🎵 עקבו אחרי ב-TikTok לקבלת טיפים
     </a>
   </div>
@@ -187,7 +187,7 @@
       <p class="brand">BRIDE_JOURNAL</p>
       <p class="sub">by Matat</p>
     </div>
-    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="icon-btn" title="TikTok">🎵</a>
+    <a href="https://www.tiktok.com/@bride_journal?_r=1&amp;_t=ZS-98Q0hTCD3Ab" target="_blank" class="icon-btn" title="TikTok">🎵</a>
   </header>
   <main id="main"><div id="tabContent"></div></main>
   <nav class="bottom" id="bottomNav">
@@ -202,7 +202,7 @@
   </nav>
 </div>
 
-<div id="welcomeScreen" style="display:none">
+<div id="welcomeScreen" class="overlay-screen" style="display:none">
   <div class="inner">
     <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
     <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 26px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה שלכם - צעד אחד בכל פעם.</p>
@@ -218,9 +218,10 @@
       <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:8px">
       <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:8px">
       <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
+      <input type="tel" id="welcomePhone" placeholder="מספר טלפון *" required style="direction:ltr;text-align:right">
+      <p id="welcomePhoneError" class="small" style="color:var(--rose-600);margin:6px 0 0;display:none">נא להזין מספר טלפון תקין כדי להמשיך</p>
     </div>
-    <p class="small muted" style="margin:0 0 14px;line-height:1.6">הפרטים נשמרים ביומן שלכם בלבד.</p>
+    <p class="small muted" style="margin:0 0 14px;line-height:1.6">מספר הטלפון נדרש כדי שנוכל לשמור איתכם על קשר. הפרטים נשמרים ביומן שלכם בלבד.</p>
     <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
   </div>
 </div>
@@ -384,7 +385,7 @@ var BUDGET_SEED = {
 };
 
 var EQUIP_SEED = {
-  bride:["תמונות השראה","כל השמלות + הינומה","פצירה","דבק 3 שניות","אישור מקווה","סט התארגנות","כדורים","סיכות ביטחון","פלסטרים","מגבונים","נייר טישו","תחבושות/תחתוניות","תחתונים ללא תפר","מברשת שיער","מקלוני אוזניים","קרם גוף/שיזוף","דאודורנט","בושם","פודרה","אודם/ליפ גלוס","מסיר איפור","נעליים","כפכפים","תכשיטים","חוט ומחט","מטען לטלפון","אקססוריז לתמונה (הזמנה מודפסת, טבעות ועוד)"],
+  bride:["תמונות השראה","כל השמלות + הינומה","פצירה","דבק 3 שניות","אישור מקווה","סט התארגנות","כדורים","סיכות ביטחון","פלסטרים","מגבונים","נייר טישו","תחבושות/תחתוניות","תחתונים ללא תפר","מברשת שיער","מקלוני אוזניים","קרם גוף/שיזוף","דאודורנט","בושם","פודרה","אודם לחות","מסיר איפור","נעליים","כפכפים","תכשיטים","חוט ומחט","מטען לטלפון","אקססוריז לתמונה (הזמנה מודפסת, טבעות ועוד)"],
   groom:["חליפה","נעליים + נעליים להחלפה","חגורה","כיפה וסיכה","טלית","טבעות","כרית לטבעות","גרביים ותחתונים נוספים","חולצה להחלפה","משקפי שמש","דאודורנט","בושם","כתובה","מעטפות לספקים","שעון","מטען נייד לטלפון","סלסלאות נוחות (אם יש)","אלכוהול לאולם"]
 };
 
@@ -1348,6 +1349,17 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     var groom = groomEl ? groomEl.value.trim() : "";
     var email = emailEl ? emailEl.value.trim() : "";
     var phone = phoneEl ? phoneEl.value.trim() : "";
+
+    var phoneDigits = phone.replace(/[^0-9]/g,"");
+    var phoneErrorEl = document.getElementById("welcomePhoneError");
+    if(phoneDigits.length < 9){
+      if(phoneErrorEl) phoneErrorEl.style.display = "block";
+      if(phoneEl){ phoneEl.style.border = "1px solid var(--rose-600)"; phoneEl.focus(); }
+      return;
+    }
+    if(phoneErrorEl) phoneErrorEl.style.display = "none";
+    if(phoneEl) phoneEl.style.border = "";
+
     var combinedNames = [bride, groom].filter(Boolean).join(" ו");
     if(combinedNames) state.profile.name = combinedNames;
     state.coupleInfo = {bride:bride, groom:groom, email:email, phone:phone};
