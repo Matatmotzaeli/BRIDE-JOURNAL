@@ -8,128 +8,306 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<!-- Firebase SDKs (Compat version for standard script integration) -->
+<!-- Firebase SDKs (Compat version) -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
 <style>
-  :root{
-    --cream:#FFFBF6;
-    --rose-50:#FBEAF0;
-    --rose-100:#F4C0D1;
-    --rose-300:#ED93B1;
-    --rose-600:#993556;
-    --rose-900:#4B1528;
-    --ink:#2B2622;
-    --muted:#948C80;
-    --border:#E9E1D6;
-    --green:#1D9E75;
-    --green-bg:#E1F5EE;
-    --amber:#B4650B;
-    --amber-bg:#FAEEDA;
-    --blue:#185FA5;
-    --blue-bg:#E6F1FB;
-    --white:#FFFFFF;
+  :root {
+    --cream: #FAF7F5;
+    --rose-50: #FFF5F7;
+    --rose-100: #FCDCE5;
+    --rose-300: #F4A0B7;
+    --rose-600: #C24168;
+    --rose-900: #54152B;
+    --ink: #1C1917;
+    --muted: #78716C;
+    --border: #E7E5E4;
+    --surface: #FFFFFF;
+    --green: #10B981;
+    --green-bg: #ECFDF5;
+    --amber: #D97706;
+    --amber-bg: #FFFBEB;
+    --blue: #2563EB;
+    --blue-bg: #EFF6FF;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(84,21,43,0.08);
+    --radius-lg: 16px;
+    --radius-md: 12px;
   }
-  *{ box-sizing:border-box; }
-  html,body{ margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Assistant',sans-serif; direction:rtl; }
-  .serif{ font-family:'Frank Ruhl Libre', serif; }
-  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); }
 
-  header.topbar{ padding:16px 20px 12px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--white); z-index:20; display:flex; justify-content:space-between; align-items:center; }
-  header.topbar .brand-wrap{ text-align:center; flex:1; }
-  header.topbar .brand{ font-family:'Frank Ruhl Libre', serif; font-size:20px; color:var(--rose-900); margin:0; letter-spacing:0.5px; }
-  header.topbar .sub{ font-size:11px; color:var(--muted); margin:1px 0 0; font-weight:600; }
-
-  .icon-btn{ background:none; border:none; font-size:18px; cursor:pointer; color:var(--rose-600); padding:4px 8px; border-radius:8px; }
-  .icon-btn:hover{ background:var(--rose-50); }
-
-  main{ flex:1; padding:18px 18px 100px; overflow-y:auto; }
-  h2.pagetitle{ font-family:'Frank Ruhl Libre', serif; font-size:21px; margin:0 0 4px; color:var(--rose-900); }
-  p.pagesub{ font-size:12px; color:var(--muted); margin:0 0 18px; line-height:1.6; }
-
-  nav.bottom{ position:sticky; bottom:0; background:var(--white); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 2px calc(8px + env(safe-area-inset-bottom)); z-index:20; }
-  nav.bottom button{ background:none; border:none; font-family:'Assistant',sans-serif; font-size:10px; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; padding:5px 4px; border-radius:10px; flex:1; }
-  nav.bottom button .dot{ width:5px; height:5px; border-radius:50%; background:transparent; }
-  nav.bottom button.active{ color:var(--rose-600); font-weight:700; }
-  nav.bottom button.active .dot{ background:var(--rose-600); }
-
-  .card{ background:var(--rose-50); border:1px solid var(--rose-300); border-radius:14px; padding:14px 16px; margin-bottom:10px; }
-  .card.plain{ background:#FAF8F3; border:1px solid var(--border); }
-  .card.green{ background:var(--green-bg); border:1px solid #6FCBA8; }
-  .card.amber{ background:var(--amber-bg); border:1px solid #EF9F27; }
-  .card.blue{ background:var(--blue-bg); border:1px solid #85B7EB; }
-  .card.locked{ opacity:0.55; }
-
-  input[type=text], input[type=number], input[type=tel], input[type=date], input[type=email], input[type=password], select, textarea{
-    font-family:'Assistant',sans-serif; border:1px solid var(--border); border-radius:8px; padding:8px 10px;
-    font-size:13px; background:#fff; color:var(--ink); width:100%; box-sizing:border-box;
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Assistant', sans-serif;
+    direction: rtl;
+    -webkit-tap-highlight-color: transparent;
   }
-  textarea{ resize:vertical; min-height:70px; line-height:1.6; }
-  input::placeholder{ color:#B8B0A4; }
+  .serif { font-family: 'Frank Ruhl Libre', serif; }
 
-  button.primary{ background:var(--rose-600); color:#fff; border:none; border-radius:10px; padding:12px; font-size:13px; font-weight:600; cursor:pointer; width:100%; }
-  button.secondary{ background:#fff; color:var(--rose-900); border:1px solid var(--rose-300); border-radius:10px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; }
-  button.ghost{ background:none; border:1px dashed var(--rose-300); color:var(--rose-600); border-radius:9px; padding:9px; font-size:12px; cursor:pointer; width:100%; margin-top:2px; }
-  button.ghost.plain{ border-color:#CFC7B9; color:var(--muted); }
-  button.icon-del{ background:none; border:none; color:#B8ACA0; cursor:pointer; font-size:15px; padding:2px 6px; line-height:1; }
-  button.small-btn{ background:#fff; border:1px solid var(--border); color:var(--ink); border-radius:8px; padding:7px 12px; font-size:11px; cursor:pointer; }
+  #shell {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
 
-  .row{ display:flex; align-items:center; gap:8px; }
-  .between{ display:flex; justify-content:space-between; align-items:center; }
-  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-  .tag{ font-size:10px; padding:3px 9px; border-radius:8px; white-space:nowrap; }
-  .tag-rose{ background:var(--rose-600); color:#fff; }
-  .tag-muted{ background:var(--border); color:var(--muted); }
-  .tag-green{ background:var(--green); color:#fff; }
-  .tag-green-lt{ background:var(--green-bg); color:#085041; }
-  .tag-amber-lt{ background:var(--amber-bg); color:#633806; }
+  header.topbar {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    z-index: 20;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header.topbar .brand-wrap { text-align: center; flex: 1; }
+  header.topbar .brand {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--rose-900);
+    margin: 0;
+    letter-spacing: 0.5px;
+  }
+  header.topbar .sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 2px 0 0;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
 
-  .navcard{ display:flex; align-items:center; justify-content:space-between; background:var(--white); border:1px solid var(--border); border-radius:12px; padding:13px 14px; margin-bottom:8px; cursor:pointer; }
-  .navcard .lbl{ font-size:13px; font-weight:600; }
-  .navcard .arrow{ color:var(--muted); font-size:14px; }
-  .sectionlabel{ font-size:11px; color:var(--muted); margin:14px 0 8px; }
-  .sectionlabel:first-child{ margin-top:0; }
+  .icon-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--rose-600);
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    transition: background 0.2s;
+  }
+  .icon-btn:hover { background: var(--rose-50); }
 
-  .grouphead{ background:var(--rose-50); padding:11px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-radius:12px 12px 0 0; }
-  .groupwrap{ border:1px solid var(--rose-300); border-radius:12px; margin-bottom:10px; overflow:hidden; }
-  .groupwrap.done .grouphead{ background:var(--green-bg); }
-  .taskrow{ display:flex; align-items:flex-start; gap:8px; padding:9px 4px; border-bottom:1px solid var(--border); }
-  .taskrow:last-child{ border-bottom:none; }
-  .taskrow input[type=checkbox]{ margin-top:3px; flex-shrink:0; width:16px; height:16px; accent-color:var(--rose-600); }
-  .itemwrap{ background:#fff; border-radius:9px; padding:10px 11px; margin-bottom:6px; }
-  .small{ font-size:10.5px; }
-  .muted{ color:var(--muted); }
-  .tip{ color:var(--rose-600); font-size:10.5px; line-height:1.5; margin-top:3px; }
+  main { flex: 1; padding: 20px 18px 110px; overflow-y: auto; }
+  h2.pagetitle {
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: 24px;
+    margin: 0 0 6px;
+    color: var(--rose-900);
+    font-weight: 700;
+  }
+  p.pagesub { font-size: 13px; color: var(--muted); margin: 0 0 20px; line-height: 1.5; }
 
-  .calgrid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin:8px 0; }
-  .calcell{ aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:12px; cursor:pointer; }
-  .calhead{ text-align:center; font-size:10px; color:var(--muted); padding:2px 0; }
-  .chip{ display:inline-flex; align-items:center; gap:5px; background:#fff; border:1px solid var(--rose-300); color:var(--rose-900); font-size:11px; padding:4px 9px; border-radius:9px; margin:0 4px 6px 0; }
-  .chip button{ background:none; border:none; color:var(--rose-600); cursor:pointer; font-size:12px; padding:0; }
+  nav.bottom {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    z-index: 20;
+  }
+  nav.bottom button {
+    background: none;
+    border: none;
+    font-family: 'Assistant', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 6px 2px;
+    border-radius: var(--radius-md);
+    flex: 1;
+    transition: all 0.2s;
+  }
+  nav.bottom button .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: transparent;
+    transition: background 0.2s;
+  }
+  nav.bottom button.active { color: var(--rose-600); font-weight: 700; }
+  nav.bottom button.active .dot { background: var(--rose-600); }
 
-  .qcat{ font-size:11px; font-weight:700; color:var(--rose-900); margin:12px 0 6px; border-bottom:1px solid var(--rose-300); padding-bottom:4px; }
-  .qcat:first-child{ margin-top:6px; }
-  .qitem{ margin-bottom:10px; }
-  .qitem .qtext{ font-size:12px; font-weight:500; margin:0 0 4px; }
-  .qitem .qtip{ font-size:10px; color:var(--rose-600); margin:0 0 4px; font-style:italic; }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s;
+  }
+  .card.highlight { background: var(--rose-50); border-color: var(--rose-100); }
+  .card.plain { background: #FAFAFA; border: 1px solid var(--border); }
+  .card.green { background: var(--green-bg); border-color: #A7F3D0; }
+  .card.amber { background: var(--amber-bg); border-color: #FDE68A; }
+  .card.blue { background: var(--blue-bg); border-color: #BFDBFE; }
+  .card.locked { opacity: 0.6; }
+
+  input[type=text], input[type=number], input[type=tel], input[type=date], input[type=email], input[type=password], select, textarea {
+    font-family: 'Assistant', sans-serif;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px 12px;
+    font-size: 13.5px;
+    background: var(--surface);
+    color: var(--ink);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--rose-300); }
+  textarea { resize: vertical; min-height: 75px; line-height: 1.5; }
+  input::placeholder { color: #A8A29E; }
+
+  button.primary {
+    background: var(--rose-600);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 12px 16px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(194, 65, 104, 0.2);
+  }
+  button.secondary {
+    background: var(--surface);
+    color: var(--rose-900);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 11px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  button.ghost {
+    background: none;
+    border: 1px dashed var(--rose-300);
+    color: var(--rose-600);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 4px;
+  }
+  button.ghost.plain { border-color: var(--border); color: var(--muted); }
+  button.icon-del { background: none; border: none; color: #A8A29E; cursor: pointer; font-size: 16px; padding: 4px; }
+  button.small-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .row { display: flex; align-items: center; gap: 8px; }
+  .between { display: flex; justify-content: space-between; align-items: center; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .tag { font-size: 10.5px; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+  .tag-rose { background: var(--rose-600); color: #fff; }
+  .tag-muted { background: var(--border); color: var(--muted); }
+  .tag-green { background: var(--green); color: #fff; }
+  .tag-green-lt { background: var(--green-bg); color: #065F46; }
+  .tag-amber-lt { background: var(--amber-bg); color: #92400E; }
+
+  .navcard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 15px 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+  }
+  .navcard .lbl { font-size: 13.5px; font-weight: 600; }
+  .navcard .arrow { color: var(--muted); font-size: 14px; }
+  .sectionlabel { font-size: 12px; color: var(--muted); font-weight: 600; margin: 18px 0 8px; }
+  .sectionlabel:first-child { margin-top: 0; }
+
+  .grouphead { background: var(--rose-50); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-radius: var(--radius-md) var(--radius-md) 0 0; }
+  .groupwrap { border: 1px solid var(--rose-100); border-radius: var(--radius-md); margin-bottom: 12px; overflow: hidden; }
+  .groupwrap.done .grouphead { background: var(--green-bg); }
+  .taskrow { display: flex; align-items: flex-start; gap: 10px; padding: 10px 4px; border-bottom: 1px solid var(--border); }
+  .taskrow:last-child { border-bottom: none; }
+  .taskrow input[type=checkbox] { margin-top: 2px; flex-shrink: 0; width: 17px; height: 17px; accent-color: var(--rose-600); }
+  .itemwrap { background: var(--surface); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 6px; border: 1px solid var(--border); }
+  .small { font-size: 11px; }
+  .muted { color: var(--muted); }
+  .tip { color: var(--rose-600); font-size: 11px; line-height: 1.5; margin-top: 4px; }
+
+  .calgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 10px 0; }
+  .calcell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md); font-size: 12.5px; cursor: pointer; }
+  .calhead { text-align: center; font-size: 11px; color: var(--muted); padding: 4px 0; font-weight: 600; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--rose-100); color: var(--rose-900); font-size: 11.5px; padding: 5px 10px; border-radius: 20px; margin: 0 4px 6px 0; }
+  .chip button { background: none; border: none; color: var(--rose-600); cursor: pointer; font-size: 13px; padding: 0; }
+
+  .qcat { font-size: 12px; font-weight: 700; color: var(--rose-900); margin: 14px 0 6px; border-bottom: 1px solid var(--rose-100); padding-bottom: 4px; }
+  .qcat:first-child { margin-top: 6px; }
+  .qitem { margin-bottom: 10px; }
+  .qitem .qtext { font-size: 12px; font-weight: 500; margin: 0 0 4px; }
+  .qitem .qtip { font-size: 10.5px; color: var(--rose-600); margin: 0 0 4px; font-style: italic; }
 
   /* Full Screen Overlays */
-  .overlay-screen{ position:fixed; inset:0; background:var(--white); z-index:100; display:flex; align-items:center; justify-content:center; padding:24px; overflow-y:auto; }
-  .overlay-screen .inner{ max-width:400px; width:100%; text-align:center; }
+  .overlay-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--surface);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .overlay-screen .inner { max-width: 400px; width: 100%; text-align: center; }
 
-  .progress-track{ background:var(--border); border-radius:6px; height:8px; overflow:hidden; }
-  .progress-fill{ background:var(--rose-600); height:100%; border-radius:6px; transition:width .3s; }
-  .chip-filter{ display:inline-block; background:#fff; border:1px solid var(--border); color:var(--muted); font-size:11px; padding:5px 12px; border-radius:14px; margin:0 4px 6px 0; cursor:pointer; }
-  .chip-filter.active{ background:var(--rose-600); color:#fff; border-color:var(--rose-600); }
-  .calc-box{ background:#fff; border:1px dashed var(--rose-300); border-radius:10px; padding:10px 12px; margin-top:8px; }
+  .progress-track { background: var(--border); border-radius: 8px; height: 8px; overflow: hidden; }
+  .progress-fill { background: var(--rose-600); height: 100%; border-radius: 8px; transition: width .3s; }
+  .chip-filter { display: inline-block; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-size: 11.5px; padding: 6px 14px; border-radius: 20px; margin: 0 4px 6px 0; cursor: pointer; }
+  .chip-filter.active { background: var(--rose-600); color: #fff; border-color: var(--rose-600); font-weight: 600; }
+  .calc-box { background: var(--surface); border: 1px dashed var(--rose-300); border-radius: var(--radius-md); padding: 12px; margin-top: 10px; }
 
-  .tiktok-link{ display:inline-flex; align-items:center; gap:6px; color:var(--rose-900); text-decoration:none; font-size:12px; font-weight:600; margin-top:10px; padding:6px 12px; border-radius:20px; background:var(--rose-50); border:1px solid var(--rose-300); }
-
-  ::selection{ background:var(--rose-100); }
+  .tiktok-link { display: inline-flex; align-items: center; gap: 6px; color: var(--rose-900); text-decoration: none; font-size: 12px; font-weight: 600; margin-top: 12px; padding: 8px 14px; border-radius: 20px; background: var(--rose-50); border: 1px solid var(--rose-100); }
 </style>
 </head>
 <body>
@@ -137,15 +315,19 @@
 <!-- מסך התחברות חובה -->
 <div id="authScreen" class="overlay-screen">
   <div class="inner">
-    <p class="serif" style="font-size:32px;color:var(--rose-900);margin:0">BRIDE_JOURNAL</p>
-    <p style="font-size:13px;color:var(--rose-600);font-weight:700;margin:0 0 16px">by Matat</p>
-    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 20px">המקום האישי שלכם לניהול ותכנון החתונה בראש שקט. התחברו כדי לשמור את המידע שלכם באופן מאובטח.</p>
+    <p class="serif" style="font-size:34px;color:var(--rose-900);margin:0;font-weight:700">BRIDE_JOURNAL</p>
+    <p style="font-size:13px;color:var(--rose-600);font-weight:700;margin:0 0 20px">by Matat</p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 24px">המקום האישי שלכם לניהול ותכנון החתונה בראש שקט. התחברו כדי לשמור את המידע שלכם באופן מאובטח.</p>
     
     <div class="card plain" style="text-align:right;margin-bottom:16px">
-      <p style="font-size:12px;font-weight:600;margin:0 0 8px">התחברות / הרשמה למערכת</p>
-      <input type="email" id="authEmail" placeholder="אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <input type="password" id="authPassword" placeholder="סיסמה" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <button class="primary" id="btnEmailAuth" style="margin-bottom:8px">כניסה / הרשמה</button>
+      <p style="font-size:13px;font-weight:700;margin:0 0 12px;color:var(--rose-900)">התחברות / הרשמה למערכת</p>
+      
+      <!-- שדה טלפון חובה להתחברות ושמירה בבסיס הנתונים -->
+      <input type="tel" id="authPhone" placeholder="מספר טלפון חובה (למשל: 0501234567)*" style="margin-bottom:10px;direction:ltr;text-align:right">
+      <input type="email" id="authEmail" placeholder="אימייל*" style="margin-bottom:10px;direction:ltr;text-align:right">
+      <input type="password" id="authPassword" placeholder="סיסמה*" style="margin-bottom:12px;direction:ltr;text-align:right">
+      
+      <button class="primary" id="btnEmailAuth" style="margin-bottom:10px">כניסה / הרשמה</button>
       <button class="secondary" id="btnGoogleAuth">
         <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
         התחברות מהירה עם Google
@@ -180,7 +362,34 @@
   </div>
 </div>
 
-<div id="shell">
+<!-- מסך ברוכים הבאים Overlay מופרד ונקי -->
+<div id="welcomeScreen" class="overlay-screen" style="display:none">
+  <div class="inner">
+    <p class="serif" style="font-size:32px;color:var(--rose-600);margin:0 0 10px;font-weight:700">מזל טוב!</p>
+    <p style="font-size:14px;color:var(--muted);line-height:1.6;margin:0 0 24px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה שלכם - צעד אחד בכל פעה.</p>
+    
+    <div class="card plain" style="text-align:right;margin-bottom:20px">
+      <div class="row" style="margin-bottom:10px">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--rose-900);font-weight:700">מ</div>
+        <div><p style="font-size:14px;font-weight:700;margin:0">היי, אני מתת</p><p style="font-size:12px;color:var(--muted);margin:0">מלווה אתכם עד החופה</p></div>
+      </div>
+      <p style="font-size:13px;line-height:1.6;color:var(--muted);margin:0">אני כאן איתכם מהרגע הזה ועד החופה. זמינה לכם בקבוצת הוואטסאפ לכל שאלה שתעלה בדרך - אין שאלות טיפשיות.</p>
+    </div>
+
+    <div class="card plain" style="text-align:right;margin-bottom:16px">
+      <p style="font-size:12.5px;font-weight:700;margin:0 0 10px;color:var(--rose-900)">קצת עליכם (כדי שהיומן יהיה אישי)</p>
+      <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:8px">
+      <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:8px">
+      <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
+      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
+    </div>
+
+    <p class="small muted" style="margin:0 0 16px;line-height:1.5">הפרטים נשמרים ביומן שלכם בלבד.</p>
+    <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
+  </div>
+</div>
+
+<div id="shell" style="display:none">
   <header class="topbar">
     <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
     <div class="brand-wrap">
@@ -200,29 +409,6 @@
     <button data-tab="equipment"><span class="dot"></span>ציוד</button>
     <button data-tab="inspiration"><span class="dot"></span>השראה</button>
   </nav>
-</div>
-
-<div id="welcomeScreen" style="display:none">
-  <div class="inner">
-    <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
-    <p style="font-size:14px;color:var(--muted);line-height:1.7;margin:0 0 26px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה שלכם - צעד אחד בכל פעם.</p>
-    <div class="card plain" style="text-align:right;margin-bottom:22px">
-      <div class="row" style="margin-bottom:10px">
-        <div style="width:40px;height:40px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--rose-900);font-weight:500">מ</div>
-        <div><p style="font-size:14px;font-weight:600;margin:0">היי, אני מתת</p><p style="font-size:12px;color:var(--muted);margin:0">מלווה אתכם עד החופה</p></div>
-      </div>
-      <p style="font-size:13px;line-height:1.7;color:var(--muted);margin:0">אני כאן איתכם מהרגע הזה ועד החופה. זמינה לכם בקבוצת הוואטסאפ לכל שאלה שתעלה בדרך - אין שאלות טיפשיות.</p>
-    </div>
-    <div class="card plain" style="text-align:right;margin-bottom:16px">
-      <p style="font-size:12px;font-weight:600;margin:0 0 8px">קצת עליכם (כדי שהיומן יהיה אישי)</p>
-      <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:8px">
-      <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:8px">
-      <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
-    </div>
-    <p class="small muted" style="margin:0 0 14px;line-height:1.6">הפרטים נשמרים ביומן שלכם בלבד.</p>
-    <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
-  </div>
 </div>
 
 <script>
@@ -653,11 +839,11 @@ function renderHome(){
 
   var doneT = state.tasks.filter(function(t){return t.done;}).length;
 
-  var html = '<div class="card" style="text-align:center">'
-    + '<input type="text" data-act="profile-name" placeholder="השם שלכם (למשל: נועה ודני)" value="'+esc(state.profile.name)+'" style="text-align:center;font-family:\'Frank Ruhl Libre\',serif;font-size:15px;border:none;background:transparent;margin-bottom:10px">'
-    + '<p style="font-size:11px;color:var(--rose-600);margin:0 0 6px">תאריך החתונה</p>'
+  var html = '<div class="card highlight" style="text-align:center">'
+    + '<input type="text" data-act="profile-name" placeholder="השם שלכם (למשל: נועה ודני)" value="'+esc(state.profile.name)+'" style="text-align:center;font-family:\'Frank Ruhl Libre\',serif;font-size:17px;font-weight:700;border:none;background:transparent;margin-bottom:10px">'
+    + '<p style="font-size:12px;color:var(--rose-600);font-weight:600;margin:0 0 6px">תאריך החתונה</p>'
     + '<input type="date" data-act="wed-date" value="'+esc(wed)+'">'
-    + (countdown ? '<p style="font-size:12px;color:var(--muted);margin:10px 0 0">'+countdown+'</p>' : '')
+    + (countdown ? '<p style="font-size:13px;color:var(--rose-900);font-weight:700;margin:12px 0 0">'+countdown+'</p>' : '')
   + '</div>';
 
   var openIdx = -1;
@@ -666,16 +852,16 @@ function renderHome(){
     html += '<p class="sectionlabel">התחלת הדרך</p>';
     ONB_STEPS.forEach(function(step, idx){
       if(idx<openIdx){
-        html += '<div class="card green" style="padding:11px 14px;margin-bottom:8px"><span class="small" style="color:#085041">✓ '+esc(step.label)+'</span></div>';
+        html += '<div class="card green" style="padding:12px 16px;margin-bottom:8px"><span class="small" style="color:#065F46;font-weight:600">✓ '+esc(step.label)+'</span></div>';
       } else if(idx===openIdx){
         html += '<div class="card" style="margin-bottom:8px">'
-          + '<p style="font-size:13px;font-weight:600;color:var(--rose-900);margin:0 0 4px">'+(idx+1)+'. '+esc(step.label)+'</p>'
-          + '<p class="small" style="color:var(--rose-600);margin:0 0 10px">'+esc(step.sub)+'</p>'
-          + '<button class="small-btn" data-act="onb-goto" data-tab="'+step.tab+'" style="width:100%;margin-bottom:6px;background:var(--rose-600);color:#fff;border:none">מעבר עכשיו</button>'
+          + '<p style="font-size:13.5px;font-weight:700;color:var(--rose-900);margin:0 0 4px">'+(idx+1)+'. '+esc(step.label)+'</p>'
+          + '<p class="small" style="color:var(--rose-600);margin:0 0 12px">'+esc(step.sub)+'</p>'
+          + '<button class="small-btn" data-act="onb-goto" data-tab="'+step.tab+'" style="width:100%;margin-bottom:8px;background:var(--rose-600);color:#fff;border:none">מעבר עכשיו</button>'
           + '<button class="ghost" data-act="onb-complete" data-idx="'+idx+'">סימון כהושלם והמשך</button>'
         + '</div>';
       } else {
-        html += '<div class="card plain locked" style="padding:11px 14px;margin-bottom:8px"><span class="small muted">🔒 '+esc(step.label)+'</span></div>';
+        html += '<div class="card plain locked" style="padding:12px 16px;margin-bottom:8px"><span class="small muted">🔒 '+esc(step.label)+'</span></div>';
       }
     });
   }
@@ -693,19 +879,19 @@ function renderHome(){
   + navcard("inspiration","לוח השראה", state.inspiration.length+" שמורים")
   + '<div class="card plain" style="opacity:0.7"><div class="between"><span style="font-size:13px;font-weight:600">השראה לעיצוב הזמנה בקנבה</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<div class="card plain" style="opacity:0.7"><div class="between"><span style="font-size:13px;font-weight:600">המלצות להזמנות מהאינטרנט</span><span class="tag tag-muted">בקרוב</span></div></div>'
-  + '<p style="text-align:center;margin-top:20px"><button class="ghost plain" data-act="show-welcome" style="width:auto;padding:6px 14px">הצגת מסך הפתיחה מחדש</button></p>';
+  + '<p style="text-align:center;margin-top:24px"><button class="ghost plain" data-act="show-welcome" style="width:auto;padding:8px 16px">הצגת מסך הפתיחה מחדש</button></p>';
   return html;
 }
 
 function renderMatatCard(){
   var isMatatAdmin = currentUser && currentUser.email === MATAT_ADMIN_EMAIL;
-  var html = '<div class="card">'
-    + '<div class="between" style="margin-bottom:8px"><span style="font-size:13px;font-weight:700;color:var(--rose-900)">הפינה של מתת</span><span class="tag tag-rose">משותף לכולם</span></div>';
+  var html = '<div class="card highlight">'
+    + '<div class="between" style="margin-bottom:10px"><span style="font-size:13.5px;font-weight:700;color:var(--rose-900)">הפינה של מתת</span><span class="tag tag-rose">משותף לכולם</span></div>';
   if(matatUnlocked || isMatatAdmin){
     html += '<textarea data-act="matat-text" placeholder="כתבי כאן...">'+esc(state.matat)+'</textarea>'
-      + '<button class="ghost" data-act="matat-lock" style="margin-top:6px">סיום עריכה ונעילה</button>';
+      + '<button class="ghost" data-act="matat-lock" style="margin-top:8px">סיום עריכה ונעילה</button>';
   } else {
-    html += '<p style="font-size:12px;line-height:1.7;color:var(--ink);margin:0 0 10px;white-space:pre-wrap">'+esc(state.matat)+'</p>'
+    html += '<p style="font-size:12.5px;line-height:1.6;color:var(--ink);margin:0 0 10px;white-space:pre-wrap">'+esc(state.matat)+'</p>'
       + '<button class="ghost" data-act="matat-unlock">🔒 עריכה (מתת בלבד)</button>';
   }
   html += '</div>';
@@ -763,9 +949,9 @@ function renderTasks(){
   var buckets = [7,6,4,3,2,1.5,1];
   var prog = taskProgress();
   var html = '<h2 class="pagetitle">כל המשימות שלכם</h2><p class="pagesub">מסודר לפי כמה חודשים לפני החתונה. עדכנו את התאריך למטה כדי לראות דדליין מדויק.</p>';
-  html += '<div class="card"><p class="small" style="color:var(--rose-600);margin:0 0 6px">תאריך החתונה</p><input type="date" data-act="wed-date" value="'+esc(wed)+'"></div>';
-  html += '<div class="card plain"><div class="between" style="margin-bottom:6px"><span class="small" style="font-weight:600">התקדמות כללית</span><span class="small muted">'+prog.done+'/'+prog.total+' · '+prog.pct+'%</span></div><div class="progress-track"><div class="progress-fill" style="width:'+prog.pct+'%"></div></div></div>';
-  html += '<button class="ghost" data-act="tasks-ics" style="margin-bottom:14px">⬇ הורדת כל התזכורות כקובץ יומן (ICS)</button>';
+  html += '<div class="card"><p class="small" style="color:var(--rose-600);font-weight:600;margin:0 0 6px">תאריך החתונה</p><input type="date" data-act="wed-date" value="'+esc(wed)+'"></div>';
+  html += '<div class="card plain"><div class="between" style="margin-bottom:8px"><span class="small" style="font-weight:600">התקדמות כללית</span><span class="small muted">'+prog.done+'/'+prog.total+' · '+prog.pct+'%</span></div><div class="progress-track"><div class="progress-fill" style="width:'+prog.pct+'%"></div></div></div>';
+  html += '<button class="ghost" data-act="tasks-ics" style="margin-bottom:16px">⬇ הורדת כל התזכורות כקובץ יומן (ICS)</button>';
 
   buckets.forEach(function(mo){
     var group = state.tasks.filter(function(t){ return t.m===mo; });
@@ -777,21 +963,21 @@ function renderTasks(){
     var open = !!groupOpen[mo];
     html += '<div class="groupwrap'+(allDone?' done':'')+'">'
       + '<div class="grouphead" data-act="group-toggle" data-months="'+mo+'">'
-        + '<span style="font-size:13px;font-weight:600">'+mo+' חודשים לפני</span>'
+        + '<span style="font-size:13.5px;font-weight:700">'+mo+' חודשים לפני</span>'
         + '<span class="small muted">'+dateLabel+' · '+doneCount+'/'+group.length+'</span>'
       + '</div>';
     if(groupDate){
       var gurl = gcalUrl("משימות חתונה - "+mo+" חודשים לפני", groupDate, group.map(function(x){return x.t;}).join("\n"));
-      html += '<div style="padding:6px 14px 0"><a href="'+gurl+'" target="_blank" rel="noopener" style="font-size:10.5px;color:var(--rose-600);text-decoration:none">🗓️ הוספת תזכורת ליומן Google לתאריך הזה</a></div>';
+      html += '<div style="padding:8px 16px 0"><a href="'+gurl+'" target="_blank" rel="noopener" style="font-size:11px;color:var(--rose-600);text-decoration:none;font-weight:600">🗓️ הוספת תזכורת ליומן Google לתאריך הזה</a></div>';
     }
     if(open){
-      html += '<div style="padding:6px 12px">';
+      html += '<div style="padding:6px 14px">';
       group.forEach(function(item){
         html += '<label class="taskrow">'
           + '<input type="checkbox" data-act="task-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'
-          + '<span style="flex:1"><span style="font-size:12.5px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'+esc(item.t)+'</span>'
-          + '<span style="display:block;font-size:10px;color:var(--muted);margin-top:2px">'+esc(item.c)+'</span>'
-          + (item.n?('<span style="display:block;font-size:10px;color:var(--rose-600);margin-top:2px">'+esc(item.n)+'</span>'):'')
+          + '<span style="flex:1"><span style="font-size:13px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'+esc(item.t)+'</span>'
+          + '<span style="display:block;font-size:10.5px;color:var(--muted);margin-top:2px">'+esc(item.c)+'</span>'
+          + (item.n?('<span style="display:block;font-size:10.5px;color:var(--rose-600);margin-top:2px">'+esc(item.n)+'</span>'):'')
           + '</span></label>';
       });
       html += '</div>';
@@ -820,7 +1006,7 @@ function renderBudgetSummary(){
   var balEl = document.getElementById("budgetGrandBalance");
   if(costEl) costEl.textContent = ils(cost);
   if(incEl) incEl.textContent = ils(inc);
-  if(balEl){ balEl.textContent = ils(Math.abs(bal)) + (bal<0?' גירעון':' עודף'); balEl.style.color = bal<0 ? "#993556" : "#1D9E75"; }
+  if(balEl){ balEl.textContent = ils(Math.abs(bal)) + (bal<0?' גירעון':' עודף'); balEl.style.color = bal<0 ? "#C24168" : "#10B981"; }
   Object.keys(state.budgetCats).forEach(function(catId){
     var el = document.getElementById("catsub-"+catId);
     if(el) el.textContent = ils(budgetCatTotal(catId));
@@ -832,7 +1018,7 @@ function renderBudget(){
   html += '<div class="card plain">'
     + '<div class="between" style="margin-bottom:8px"><span class="small muted">סך הוצאות</span><span id="budgetGrandCost" style="font-weight:700">'+ils(cost)+'</span></div>'
     + '<div class="between" style="margin-bottom:10px"><span class="small muted">צפי הכנסות</span><span id="budgetGrandIncome" style="font-weight:700">'+ils(inc)+'</span></div>'
-    + '<div class="between" style="border-top:1px solid var(--border);padding-top:10px"><span class="small" style="font-weight:600">יתרה</span><span id="budgetGrandBalance" style="font-weight:700;font-size:15px;color:'+(bal<0?'#993556':'#1D9E75')+'">'+ils(Math.abs(bal))+(bal<0?' גירעון':' עודף')+'</span></div>'
+    + '<div class="between" style="border-top:1px solid var(--border);padding-top:10px"><span class="small" style="font-weight:600">יתרה</span><span id="budgetGrandBalance" style="font-weight:700;font-size:15px;color:'+(bal<0?'#C24168':'#10B981')+'">'+ils(Math.abs(bal))+(bal<0?' גירעון':' עודף')+'</span></div>'
   + '</div>';
 
   html += '<p class="sectionlabel">הכנסות צפויות</p><div class="card plain">'
@@ -846,7 +1032,7 @@ function renderBudget(){
     + '<input type="number" data-act="income-field" data-field="savings" placeholder="חיסכון משותף" value="'+esc(state.income.savings)+'">'
   + '</div>';
 
-  var catClass = {big:"card", look:"card plain", rab:"card plain", other:"card plain"};
+  var catClass = {big:"card highlight", look:"card plain", rab:"card plain", other:"card plain"};
   Object.keys(state.budgetCats).forEach(function(catId){
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
     html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p>';
@@ -854,9 +1040,9 @@ function renderBudget(){
     state.budgetCats[catId].forEach(function(item){
       html += '<div class="itemwrap">'
         + '<div class="between" style="gap:6px;margin-bottom:'+(item.tip?'4px':'0')+'">'
-          + '<span style="font-size:12px;font-weight:500;flex:1">'+esc(item.name)+'</span>'
-          + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="cost" placeholder="עלות" value="'+esc(item.cost)+'" style="width:66px;padding:5px 6px;font-size:11px">'
-          + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="deposit" placeholder="מקדמה" value="'+esc(item.deposit)+'" style="width:58px;padding:5px 6px;font-size:11px">'
+          + '<span style="font-size:12.5px;font-weight:600;flex:1">'+esc(item.name)+'</span>'
+          + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="cost" placeholder="עלות" value="'+esc(item.cost)+'" style="width:70px;padding:6px;font-size:11.5px">'
+          + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="deposit" placeholder="מקדמה" value="'+esc(item.deposit)+'" style="width:62px;padding:6px;font-size:11.5px">'
           + '<button class="icon-del" data-act="budget-del" data-cat="'+catId+'" data-id="'+item.id+'">×</button>'
         + '</div>'
         + (item.tip ? '<p class="tip">'+esc(item.tip)+'</p>' : '')
@@ -890,9 +1076,9 @@ function renderVendors(){
         + '<input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="price" placeholder="מחיר כולל" value="'+esc(v.price)+'">'
         + '<input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="deposit" placeholder="מקדמה ששולמה" value="'+esc(v.deposit)+'">'
       + '</div>'
-      + '<div class="between" style="border-top:1px solid var(--border);padding-top:9px">'
+      + '<div class="between" style="border-top:1px solid var(--border);padding-top:10px">'
         + '<span class="small muted">נותר: <b id="vrem-'+v.id+'">'+ils(vendorRemain(v))+'</b></span>'
-        + '<button data-act="vendor-contract" data-id="'+v.id+'" style="background:#fff;border:1px dashed '+(v.contract?'#1D9E75':'#CFC7B9')+';color:'+(v.contract?'#1D9E75':'var(--muted)')+';border-radius:8px;padding:6px 12px;font-size:11px;cursor:pointer">'+(v.contract?'✓ חוזה הועלה':'העלאת חוזה חתום')+'</button>'
+        + '<button data-act="vendor-contract" data-id="'+v.id+'" style="background:var(--surface);border:1px dashed '+(v.contract?'#10B981':'var(--border)')+';color:'+(v.contract?'#10B981':'var(--muted)')+';border-radius:8px;padding:6px 12px;font-size:11.5px;cursor:pointer;font-weight:600">'+(v.contract?'✓ חוזה הועלה':'העלאת חוזה חתום')+'</button>'
       + '</div>'
     + '</div>';
   });
@@ -958,24 +1144,24 @@ function renderGuests(){
   var html = '<h2 class="pagetitle">רשימת מוזמנים</h2><p class="pagesub">התחילו מרשימה גסה - נדייק בהמשך</p>';
 
   html += '<div class="card">'
-    + '<p style="font-size:12px;font-weight:600;color:var(--rose-900);margin:0 0 8px">מילוי מהיר באקסל</p>'
-    + '<p class="small muted" style="margin:0 0 10px;line-height:1.6">הורידו תבנית, מלאו בזמנכם, והעלו בחזרה - הכל יומר אוטומטית לרשימה למטה</p>'
+    + '<p style="font-size:12.5px;font-weight:700;color:var(--rose-900);margin:0 0 8px">מילוי מהיר באקסל</p>'
+    + '<p class="small muted" style="margin:0 0 12px;line-height:1.5">הורידו תבנית, מלאו בזמנכם, והעלו בחזרה - הכל יומר אוטומטית לרשימה למטה</p>'
     + '<div class="row">'
       + '<button class="small-btn" data-act="guest-download" style="flex:1;background:var(--rose-600);color:#fff;border:none">הורדת תבנית</button>'
       + '<label class="small-btn" style="flex:1;text-align:center;cursor:pointer">בחירת קובץ<input type="file" id="guestFileInput" accept=".xlsx,.xls,.csv" style="display:none"></label>'
     + '</div>'
-    + (importMsg ? '<p class="small" style="color:var(--green);margin:8px 0 0">'+esc(importMsg)+'</p>' : '')
+    + (importMsg ? '<p class="small" style="color:var(--green);margin:10px 0 0;font-weight:600">'+esc(importMsg)+'</p>' : '')
   + '</div>';
 
   html += '<div class="grid3" style="margin-bottom:16px">'
-    + '<div class="card plain" style="text-align:center;padding:10px"><p id="gStatSeats" style="font-size:16px;font-weight:700;margin:0;color:var(--rose-900)">'+s.seats+'</p><p class="small muted" style="margin:2px 0 0">מקומות</p></div>'
-    + '<div class="card plain" style="text-align:center;padding:10px"><p id="gStatRows" style="font-size:16px;font-weight:700;margin:0;color:var(--rose-900)">'+s.rows+'</p><p class="small muted" style="margin:2px 0 0">שורות</p></div>'
-    + '<div class="card green" style="text-align:center;padding:10px"><p id="gStatConfirmed" style="font-size:16px;font-weight:700;margin:0;color:#085041">'+s.confirmed+'</p><p class="small" style="margin:2px 0 0;color:#085041">אישרו</p></div>'
+    + '<div class="card plain" style="text-align:center;padding:12px 8px"><p id="gStatSeats" style="font-size:17px;font-weight:700;margin:0;color:var(--rose-900)">'+s.seats+'</p><p class="small muted" style="margin:2px 0 0">מקומות</p></div>'
+    + '<div class="card plain" style="text-align:center;padding:12px 8px"><p id="gStatRows" style="font-size:17px;font-weight:700;margin:0;color:var(--rose-900)">'+s.rows+'</p><p class="small muted" style="margin:2px 0 0">שורות</p></div>'
+    + '<div class="card green" style="text-align:center;padding:12px 8px"><p id="gStatConfirmed" style="font-size:17px;font-weight:700;margin:0;color:#065F46">'+s.confirmed+'</p><p class="small" style="margin:2px 0 0;color:#065F46;font-weight:600">אישרו</p></div>'
   + '</div>';
   state.guests.forEach(function(g){
     html += '<div class="card plain">'
-      + '<div class="row" style="margin-bottom:7px"><input type="text" data-act="guest-field" data-id="'+g.id+'" data-field="name" placeholder="שם (למשל: משפחת כהן)" value="'+esc(g.name)+'" style="font-weight:600"><button class="icon-del" data-act="guest-del" data-id="'+g.id+'">×</button></div>'
-      + '<div class="row" style="margin-bottom:7px">'
+      + '<div class="row" style="margin-bottom:8px"><input type="text" data-act="guest-field" data-id="'+g.id+'" data-field="name" placeholder="שם (למשל: משפחת כהן)" value="'+esc(g.name)+'" style="font-weight:600"><button class="icon-del" data-act="guest-del" data-id="'+g.id+'">×</button></div>'
+      + '<div class="row" style="margin-bottom:8px">'
         + '<select data-act="guest-field" data-id="'+g.id+'" data-field="side" style="flex:1"><option value="">צד</option>'
           + ['כלה','חתן','משותף'].map(function(o){return '<option '+(g.side===o?'selected':'')+'>'+o+'</option>';}).join('')
         + '</select>'
@@ -998,9 +1184,9 @@ function renderEquipList(side){
   var items = state.equipment[side];
   var html = '<div class="card '+(side==="bride"?"":"blue")+'">';
   items.forEach(function(it){
-    html += '<label class="row" style="padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06)">'
+    html += '<label class="row" style="padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05)">'
       + '<input type="checkbox" data-act="equip-toggle" data-side="'+side+'" data-id="'+it.id+'" '+(it.done?'checked':'')+'>'
-      + '<input type="text" data-act="equip-field" data-side="'+side+'" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
+      + '<input type="text" data-act="equip-field" data-side="'+side+'" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12.5px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
       + '<button class="icon-del" data-act="equip-del" data-side="'+side+'" data-id="'+it.id+'">×</button>'
     + '</label>';
   });
@@ -1023,9 +1209,9 @@ function constrInfo(iso){
 function renderCalendar(){
   var names=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   var days=['א','ב','ג','ד','ה','ו','ש'];
-  var html = '<div class="between" style="margin-bottom:6px">'
+  var html = '<div class="between" style="margin-bottom:8px">'
     + '<button class="small-btn" data-act="cal-prev">›</button>'
-    + '<span style="font-family:\'Frank Ruhl Libre\',serif;font-size:14px">'+names[calMonth]+' '+calYear+'</span>'
+    + '<span style="font-family:\'Frank Ruhl Libre\',serif;font-size:15px;font-weight:700">'+names[calMonth]+' '+calYear+'</span>'
     + '<button class="small-btn" data-act="cal-next">‹</button>'
   + '</div><div class="calgrid">';
   days.forEach(function(d){ html += '<div class="calhead">'+d+'</div>'; });
@@ -1043,7 +1229,7 @@ function renderCalendar(){
   }
   html += '</div>';
   if(state.venue.dates.length){
-    html += '<div style="margin-top:6px">';
+    html += '<div style="margin-top:8px">';
     state.venue.dates.slice().sort().forEach(function(iso){
       var meta = constrInfo(iso);
       html += '<span class="chip">'+iso.split('-').reverse().join('.')+(meta?(' · '+esc(meta.l)):'')+' <button data-act="date-remove" data-date="'+iso+'">×</button></span>';
@@ -1067,8 +1253,8 @@ function venueTruePrice(v){
 var venueDBRegionFilter = "all";
 function renderVenueDBList(){
   var html = '<p class="sectionlabel">מאגר האולמות המשותף <span class="tag tag-amber-lt" style="margin-right:6px">גלוי לכל המשתמשות</span></p>';
-  html += '<p class="small muted" style="margin:0 0 8px">רשימה ראשונית שנאספה ממקורות ציבוריים (Google) - בלי מחירים מאומתים. ככל שיותר זוגות ישתמשו ויעדכנו, המאגר יתמלא במחירים אמיתיים.</p>';
-  html += '<div style="margin-bottom:10px">';
+  html += '<p class="small muted" style="margin:0 0 10px;line-height:1.5">רשימה ראשונית שנאספה ממקורות ציבוריים (Google) - בלי מחירים מאומתים. ככל שיותר זוגות ישתמשו ויעדכנו, המאגר יתמלא במחירים אמיתיים.</p>';
+  html += '<div style="margin-bottom:12px">';
   ["all","מרכז","צפון","דרום","ירושלים"].forEach(function(r){
     html += '<span class="chip-filter'+(venueDBRegionFilter===r?" active":"")+'" data-act="venuedb-filter" data-region="'+r+'">'+(r==="all"?"הכל":r)+'</span>';
   });
@@ -1077,14 +1263,14 @@ function renderVenueDBList(){
   if(list.length===0){ html += '<p class="small muted" style="margin:0 0 10px">אין אולמות באזור הזה עדיין</p>'; }
   list.forEach(function(v){
     html += '<div class="card plain">'
-      + '<div class="between" style="margin-bottom:4px"><span style="font-size:13px;font-weight:600">'+esc(v.name)+'</span>'
+      + '<div class="between" style="margin-bottom:4px"><span style="font-size:13.5px;font-weight:700">'+esc(v.name)+'</span>'
         + (v.verifiedCount>0 ? '<span class="tag tag-green-lt">מאומת ע"י '+v.verifiedCount+'</span>' : '<span class="tag tag-muted">'+(v.source==="google"?"מקור: Google":"הערכה ראשונית")+'</span>')
       + '</div>'
-      + '<p class="small muted" style="margin:0 0 8px">'+esc(v.region||'—')+(v.priceEstimate?(' · כ-'+ils(v.priceEstimate)+' למנה'):' · מחיר עדיין לא ידוע')+(v.phone?(' · '+v.phone):'')+'</p>'
+      + '<p class="small muted" style="margin:0 0 10px">'+esc(v.region||'—')+(v.priceEstimate?(' · כ-'+ils(v.priceEstimate)+' למנה'):' · מחיר עדיין לא ידוע')+(v.phone?(' · '+v.phone):'')+'</p>'
       + '<button class="small-btn" data-act="venuedb-track" data-id="'+v.id+'" style="width:100%">הוספה למעקב האישי שלי</button>'
     + '</div>';
   });
-  html += '<div class="row" style="margin-top:6px">'
+  html += '<div class="row" style="margin-top:8px">'
     + '<button class="ghost" data-act="venuedb-add" style="flex:1">+ אולם בודד</button>'
     + '<button class="ghost" data-act="venuedb-bulk" style="flex:1">ייבוא קבוצתי</button>'
   + '</div>';
@@ -1092,8 +1278,8 @@ function renderVenueDBList(){
 }
 function renderVenueCard(v){
   var html = '<div class="card plain">'
-    + '<div class="row" style="margin-bottom:7px"><input type="text" data-act="venue-field" data-id="'+v.id+'" data-field="name" placeholder="שם האולם" value="'+esc(v.name)+'" style="font-weight:600"><button class="icon-del" data-act="venue-del" data-id="'+v.id+'">×</button></div>'
-    + '<div class="row" style="margin-bottom:7px">'
+    + '<div class="row" style="margin-bottom:8px"><input type="text" data-act="venue-field" data-id="'+v.id+'" data-field="name" placeholder="שם האולם" value="'+esc(v.name)+'" style="font-weight:600"><button class="icon-del" data-act="venue-del" data-id="'+v.id+'">×</button></div>'
+    + '<div class="row" style="margin-bottom:8px">'
       + '<select data-act="venue-field" data-id="'+v.id+'" data-field="region" style="flex:1"><option value="">אזור</option>'
         + ['מרכז','צפון','דרום','ירושלים'].map(function(o){return '<option '+(v.region===o?'selected':'')+'>'+o+'</option>';}).join('')
       + '</select>'
@@ -1107,8 +1293,8 @@ function renderVenueCard(v){
         + '<option value="rejected" '+(v.status==='rejected'?'selected':'')+'>נפסל</option>'
       + '</select>'
     + '</div>'
-    + '<p class="small" style="font-weight:600;margin:6px 0 4px">התאריך שנבחר לאולם הזה</p>'
-    + '<input type="date" data-act="venue-field" data-id="'+v.id+'" data-field="chosenDate" value="'+esc(v.chosenDate)+'" style="margin-bottom:6px">';
+    + '<p class="small" style="font-weight:600;margin:8px 0 4px">התאריך שנבחר לאולם הזה</p>'
+    + '<input type="date" data-act="venue-field" data-id="'+v.id+'" data-field="chosenDate" value="'+esc(v.chosenDate)+'" style="margin-bottom:8px">';
   if(state.venue.dates.length){
     html += '<div style="margin-bottom:8px">';
     state.venue.dates.slice().sort().forEach(function(d){
@@ -1119,8 +1305,8 @@ function renderVenueCard(v){
   html += '<textarea data-act="venue-field" data-id="'+v.id+'" data-field="personalNotes" placeholder="הערות אישיות שלכם על האולם..." style="margin-bottom:8px">'+esc(v.personalNotes)+'</textarea>';
 
   html += '<div class="calc-box">'
-    + '<p class="small" style="font-weight:600;margin:0 0 6px">מחשבון מחיר מנה אמיתי</p>'
-    + '<div class="grid2" style="margin-bottom:6px">'
+    + '<p class="small" style="font-weight:700;margin:0 0 6px">מחשבון מחיר מנה אמיתי</p>'
+    + '<div class="grid2" style="margin-bottom:8px">'
       + '<input type="number" data-act="venue-field" data-id="'+v.id+'" data-field="soundLighting" placeholder="הגברה ותאורה (סה\"כ)" value="'+esc(v.soundLighting)+'">'
       + '<input type="number" data-act="venue-field" data-id="'+v.id+'" data-field="guestEstimate" placeholder="כמות אורחים משוערת" value="'+esc(v.guestEstimate)+'">'
     + '</div>';
@@ -1150,7 +1336,7 @@ function renderVenueCard(v){
       html += '<div class="qitem">'
         + '<p class="qtext">'+esc(item.q)+'</p>'
         + (item.tip ? '<p class="qtip">טיפ ממתת: '+esc(item.tip)+'</p>' : '')
-        + '<textarea data-act="venue-answer" data-id="'+v.id+'" data-qi="'+qi+'" placeholder="כתבו כאן את מה שהאולם ענה... (אופציונלי)" style="min-height:44px">'+esc(ans)+'</textarea>'
+        + '<textarea data-act="venue-answer" data-id="'+v.id+'" data-qi="'+qi+'" placeholder="כתבו כאן את מה שהאולם ענה... (אופציונלי)" style="min-height:48px">'+esc(ans)+'</textarea>'
       + '</div>';
     });
   }
@@ -1227,7 +1413,7 @@ function renderInspiration(){
     + '<label class="small-btn" style="display:block;text-align:center;cursor:pointer">📷 העלאת תמונה מהמכשיר<input type="file" id="inspFileInput" accept="image/*" style="display:none"></label>'
   + '</div>';
 
-  html += '<div style="margin-bottom:10px">';
+  html += '<div style="margin-bottom:12px">';
   html += '<span class="chip-filter'+(inspFilter==="all"?" active":"")+'" data-act="insp-filter" data-cat="all">הכל</span>';
   INSPIRATION_CATS.forEach(function(c){
     html += '<span class="chip-filter'+(inspFilter===c?" active":"")+'" data-act="insp-filter" data-cat="'+c+'">'+c+'</span>';
@@ -1241,7 +1427,7 @@ function renderInspiration(){
     if(it.type==="image"){
       html += '<img src="'+it.dataUrl+'" style="width:100%;border-radius:8px;margin-bottom:8px;display:block">';
     }
-    html += '<div class="between" style="margin-bottom:6px"><span style="font-size:12px;font-weight:600">'+esc(it.title||it.url||"")+'</span><span class="tag tag-rose">'+esc(it.category)+'</span></div>'
+    html += '<div class="between" style="margin-bottom:6px"><span style="font-size:12.5px;font-weight:600">'+esc(it.title||it.url||"")+'</span><span class="tag tag-rose">'+esc(it.category)+'</span></div>'
       + (it.note ? '<p class="small muted" style="margin:0 0 6px">'+esc(it.note)+'</p>' : '');
     if(it.url){
       html += '<div class="row">'
@@ -1274,7 +1460,7 @@ function wireFileInput(){
   if(ifi) ifi.addEventListener("change", function(e){ if(e.target.files[0]) handleInspFile(e.target.files[0]); });
 }
 
-/* ---------------- AUTHENTICATION LISTENERS ---------------- */
+/* ---------------- AUTHENTICATION LISTENERS & LOGIC ---------------- */
 
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
@@ -1288,6 +1474,14 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
     await loadAll();
 
+    // שמירת טלפון במאגר הנתונים אם קיים
+    var localPhone = localStorage.getItem("bj_auth_phone");
+    if(localPhone){
+      state.profile.phone = localPhone;
+      saveProfile();
+      localStorage.removeItem("bj_auth_phone");
+    }
+
     if(!state.meta.seenWelcome){
       document.getElementById("welcomeScreen").style.display = "flex";
       document.getElementById("bottomNav").style.display = "none";
@@ -1295,16 +1489,24 @@ firebase.auth().onAuthStateChanged(async function(user) {
       document.getElementById("welcomeScreen").style.display = "none";
       document.getElementById("bottomNav").style.display = "flex";
     }
-    renderTab();
+    switchTab("home");
   } else {
     currentUser = null;
     document.getElementById("authScreen").style.display = "flex";
     document.getElementById("shell").style.display = "none";
+    document.getElementById("welcomeScreen").style.display = "none";
   }
 });
 
-// התחברות גוגל יציבה באמצעות Popup עם Fallback ל-Redirect
+// התחברות גוגל יציבה
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
+  var phone = document.getElementById("authPhone").value.trim();
+  if(!phone){
+    alert("נא להזין מספר טלפון לפני התחברות עם Google");
+    return;
+  }
+  localStorage.setItem("bj_auth_phone", phone);
+
   var provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider).catch(function(error) {
     if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
@@ -1316,12 +1518,21 @@ document.getElementById("btnGoogleAuth").addEventListener("click", function(){
 });
 
 document.getElementById("btnEmailAuth").addEventListener("click", function(){
+  var phone = document.getElementById("authPhone").value.trim();
   var email = document.getElementById("authEmail").value.trim();
   var password = document.getElementById("authPassword").value.trim();
+  
+  if(!phone){
+    alert("נא להזין מספר טלפון חובה");
+    return;
+  }
   if(!email || !password){
     alert("נא להזין אימייל וסיסמה");
     return;
   }
+
+  localStorage.setItem("bj_auth_phone", phone);
+
   firebase.auth().signInWithEmailAndPassword(email, password)
     .catch(function(error){
       if(error.code === 'auth/user-not-found'){
