@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-<!-- Firebase SDKs (Compat version for standard script integration) -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -36,7 +36,7 @@
   *{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Assistant',sans-serif; direction:rtl; }
   .serif{ font-family:'Frank Ruhl Libre', serif; }
-  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); }
+  #shell{ max-width:480px; margin:0 auto; min-height:100vh; background:var(--white); display:flex; flex-direction:column; box-shadow:0 0 50px rgba(75,21,40,0.07); position:relative; }
 
   header.topbar{ padding:16px 20px 12px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--white); z-index:20; display:flex; justify-content:space-between; align-items:center; }
   header.topbar .brand-wrap{ text-align:center; flex:1; }
@@ -134,7 +134,7 @@
 </head>
 <body>
 
-<!-- מסך התחברות חובה -->
+<!-- מסך התחברות -->
 <div id="authScreen" class="overlay-screen">
   <div class="inner">
     <p class="serif" style="font-size:32px;color:var(--rose-900);margin:0">BRIDE_JOURNAL</p>
@@ -152,7 +152,7 @@
       </button>
     </div>
 
-    <a href="https://www.tiktok.com/@bride_journal?_r=1&amp;_t=ZS-98Q0hTCD3Ab" target="_blank" class="tiktok-link">
+    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="tiktok-link">
       🎵 עקבו אחרי ב-TikTok לקבלת טיפים
     </a>
   </div>
@@ -180,28 +180,7 @@
   </div>
 </div>
 
-<div id="shell">
-  <header class="topbar">
-    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
-    <div class="brand-wrap">
-      <p class="brand">BRIDE_JOURNAL</p>
-      <p class="sub">by Matat</p>
-    </div>
-    <a href="https://www.tiktok.com/@bride_journal?_r=1&amp;_t=ZS-98Q0hTCD3Ab" target="_blank" class="icon-btn" title="TikTok">🎵</a>
-  </header>
-  <main id="main"><div id="tabContent"></div></main>
-  <nav class="bottom" id="bottomNav">
-    <button data-tab="home"><span class="dot"></span>בית</button>
-    <button data-tab="tasks"><span class="dot"></span>משימות</button>
-    <button data-tab="venue"><span class="dot"></span>אולם</button>
-    <button data-tab="budget"><span class="dot"></span>תקציב</button>
-    <button data-tab="vendors"><span class="dot"></span>ספקים</button>
-    <button data-tab="guests"><span class="dot"></span>אורחים</button>
-    <button data-tab="equipment"><span class="dot"></span>ציוד</button>
-    <button data-tab="inspiration"><span class="dot"></span>השראה</button>
-  </nav>
-</div>
-
+<!-- מסך ברוכים הבאים -->
 <div id="welcomeScreen" class="overlay-screen" style="display:none">
   <div class="inner">
     <p class="serif" style="font-size:30px;color:var(--rose-600);margin:0 0 10px">מזל טוב!</p>
@@ -218,12 +197,33 @@
       <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:8px">
       <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:8px">
       <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:8px;direction:ltr;text-align:right">
-      <input type="tel" id="welcomePhone" placeholder="מספר טלפון *" required style="direction:ltr;text-align:right">
-      <p id="welcomePhoneError" class="small" style="color:var(--rose-600);margin:6px 0 0;display:none">נא להזין מספר טלפון תקין כדי להמשיך</p>
+      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
     </div>
-    <p class="small muted" style="margin:0 0 14px;line-height:1.6">מספר הטלפון נדרש כדי שנוכל לשמור איתכם על קשר. הפרטים נשמרים ביומן שלכם בלבד.</p>
+    <p class="small muted" style="margin:0 0 14px;line-height:1.6">הפרטים נשמרים ביומן שלכם בלבד.</p>
     <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
   </div>
+</div>
+
+<div id="shell">
+  <header class="topbar">
+    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
+    <div class="brand-wrap">
+      <p class="brand">BRIDE_JOURNAL</p>
+      <p class="sub">by Matat</p>
+    </div>
+    <a href="https://www.tiktok.com/@YOUR_TIKTOK_HANDLE" target="_blank" class="icon-btn" title="TikTok">🎵</a>
+  </header>
+  <main id="main"><div id="tabContent"></div></main>
+  <nav class="bottom" id="bottomNav">
+    <button data-tab="home"><span class="dot"></span>בית</button>
+    <button data-tab="tasks"><span class="dot"></span>משימות</button>
+    <button data-tab="venue"><span class="dot"></span>אולם</button>
+    <button data-tab="budget"><span class="dot"></span>תקציב</button>
+    <button data-tab="vendors"><span class="dot"></span>ספקים</button>
+    <button data-tab="guests"><span class="dot"></span>אורחים</button>
+    <button data-tab="equipment"><span class="dot"></span>ציוד</button>
+    <button data-tab="inspiration"><span class="dot"></span>השראה</button>
+  </nav>
 </div>
 
 <script>
@@ -385,8 +385,55 @@ var BUDGET_SEED = {
 };
 
 var EQUIP_SEED = {
-  bride:["תמונות השראה","כל השמלות + הינומה","פצירה","דבק 3 שניות","אישור מקווה","סט התארגנות","כדורים","סיכות ביטחון","פלסטרים","מגבונים","נייר טישו","תחבושות/תחתוניות","תחתונים ללא תפר","מברשת שיער","מקלוני אוזניים","קרם גוף/שיזוף","דאודורנט","בושם","פודרה","אודם לחות","מסיר איפור","נעליים","כפכפים","תכשיטים","חוט ומחט","מטען לטלפון","אקססוריז לתמונה (הזמנה מודפסת, טבעות ועוד)"],
-  groom:["חליפה","נעליים + נעליים להחלפה","חגורה","כיפה וסיכה","טלית","טבעות","כרית לטבעות","גרביים ותחתונים נוספים","חולצה להחלפה","משקפי שמש","דאודורנט","בושם","כתובה","מעטפות לספקים","שעון","מטען נייד לטלפון","סלסלאות נוחות (אם יש)","אלכוהול לאולם"]
+  bride: [
+    "תמונות השראה",
+    "כל השמלות + הינומה",
+    "פצירה",
+    "דבק 3 שניות",
+    "אישור מקווה",
+    "סט התארגנות",
+    "כדורים",
+    "סיכות ביטחון",
+    "פלסטרים",
+    "מגבונים",
+    "נייר טישו",
+    "תחבושות/תחתוניות",
+    "תחתונים ללא תפר",
+    "מברשת שיער",
+    "מקלוני אוזניים",
+    "קרם גוף/שיזוף",
+    "דאודורנט",
+    "בושם",
+    "פודרה",
+    "אודם לחות",
+    "מסיר איפור",
+    "נעליים",
+    "כפכפים",
+    "תכשיטים",
+    "חוט ומחט",
+    "מטען לטלפון",
+    "הזמנה מודפסת + טבעות + אקססוריז לצילום"
+  ],
+  groom: [
+    "חליפה",
+    "נעליים + נעליים להחלפה",
+    "חגורה",
+    "כיפה וסיכה",
+    "טלית",
+    "טבעות",
+    "כרית לטבעות",
+    "גרביים ותחתונים נוספים",
+    "חולצה להחלפה",
+    "משקפי שמש",
+    "דאודורנט",
+    "בושם",
+    "כתובה",
+    "מעטפות לספקים",
+    "שעון",
+    "מטען נייד לטלפון",
+    "סלסלאות נוחות אם יש",
+    "אלכוהול לאולם"
+  ]
 };
 
 var MATAT_DEFAULT = "כאן אני אכתוב לכם על האירועים הנלווים לחתונה - הפרשת חלה, מסיבת רווקות/רווקים, ומה שעוד עולה בדרך. אני עורכת את הטקסט הזה מהצד שלי, אז תמיד תמצאו אותו מעודכן.";
@@ -608,7 +655,14 @@ async function loadAll(){
   else { state.budgetCats = seedBudget(); }
   state.vendors = await getOrDefault("vendors", []);
   state.guests = await getOrDefault("guests", []);
-  state.equipment = await getOrDefault("equipment", null) || seedEquip();
+  
+  var eqData = await getOrDefault("equipment", null);
+  if(eqData && eqData.bride && eqData.groom && (eqData.bride.length > 0 || eqData.groom.length > 0)){
+    state.equipment = eqData;
+  } else {
+    state.equipment = seedEquip();
+  }
+
   state.matat = await getOrDefault("matat", MATAT_DEFAULT, true);
   state.matatPin = await getOrDefault("matatPin", "", true);
   state.venue = await getOrDefault("venue", {dates:[], list:[]});
@@ -996,7 +1050,7 @@ function renderGuests(){
 
 /* ---------------- RENDER: EQUIPMENT ---------------- */
 function renderEquipList(side){
-  var items = state.equipment[side];
+  var items = state.equipment[side] || [];
   var html = '<div class="card '+(side==="bride"?"":"blue")+'">';
   items.forEach(function(it){
     html += '<label class="row" style="padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.06)">'
@@ -1012,6 +1066,7 @@ function renderEquipment(){
   var html = '<h2 class="pagetitle">ציוד ליום החתונה</h2><p class="pagesub">אפשר לערוך, למחוק או להוסיף כל פריט</p>';
   html += '<p class="sectionlabel">כלה</p>' + renderEquipList("bride");
   html += '<p class="sectionlabel">חתן</p>' + renderEquipList("groom");
+  html += '<button class="ghost plain" data-act="equip-reset" style="margin-top:16px">🔄 איפוס לרשימת המקור מהטבלה</button>';
   return html;
 }
 
@@ -1304,7 +1359,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
   }
 });
 
-// התחברות גוגל יציבה באמצעות Popup עם Fallback ל-Redirect
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider).catch(function(error) {
@@ -1349,17 +1403,6 @@ document.getElementById("welcomeScreen").addEventListener("click", function(e){
     var groom = groomEl ? groomEl.value.trim() : "";
     var email = emailEl ? emailEl.value.trim() : "";
     var phone = phoneEl ? phoneEl.value.trim() : "";
-
-    var phoneDigits = phone.replace(/[^0-9]/g,"");
-    var phoneErrorEl = document.getElementById("welcomePhoneError");
-    if(phoneDigits.length < 9){
-      if(phoneErrorEl) phoneErrorEl.style.display = "block";
-      if(phoneEl){ phoneEl.style.border = "1px solid var(--rose-600)"; phoneEl.focus(); }
-      return;
-    }
-    if(phoneErrorEl) phoneErrorEl.style.display = "none";
-    if(phoneEl) phoneEl.style.border = "";
-
     var combinedNames = [bride, groom].filter(Boolean).join(" ו");
     if(combinedNames) state.profile.name = combinedNames;
     state.coupleInfo = {bride:bride, groom:groom, email:email, phone:phone};
@@ -1449,6 +1492,14 @@ mainEl.addEventListener("click", function(e){
     state.equipment[side2] = state.equipment[side2].filter(function(i){return i.id!==t.dataset.id;});
     saveEquip(); renderTab(); return;
   }
+  if(act==="equip-reset"){
+    if(confirm("איפוס יחזיר את כל רשימות הציוד לרשימת הבסיס המקורית מהטבלה. להמשיך?")){
+      state.equipment = seedEquip();
+      saveEquip();
+      renderTab();
+    }
+    return;
+  }
   if(act==="cal-prev"){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderTab(); return; }
   if(act==="cal-next"){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderTab(); return; }
   if(act==="cal-day"){
@@ -1474,14 +1525,6 @@ mainEl.addEventListener("click", function(e){
     renderTab(); return;
   }
   if(act==="venuedb-filter"){ venueDBRegionFilter = t.dataset.region; renderTab(); return; }
-  if(act==="venuedb-reset"){
-    if(confirm("לאפס את מאגר האולמות המשותף לרשימה המקורית שהעליתם (מהטבלה)? כל תוספת/עדכון קהילתי שנעשה מאז יימחק.")){
-      state.venueDB = VENUE_DB_SEED.slice();
-      saveVenueDB();
-      renderTab();
-    }
-    return;
-  }
   if(act==="show-welcome"){
     document.getElementById("welcomeScreen").style.display = "flex";
     document.getElementById("bottomNav").style.display = "none";
