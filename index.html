@@ -568,6 +568,7 @@ var currentSideSubtab = "challah";
 var groupOpen = {7:true};
 var calMonth = 3, calYear = 2027;
 var qOpen = {};
+var globalVenueQOpen = false;
 var importMsg = "";
 var inspFilter = "all";
 
@@ -586,12 +587,9 @@ function seedEquip(){
   };
 }
 
-async function getOrDefault(key, def, shared){
+async function getOrDefault(key, def){
   try{
-    if(shared){
-      var doc = await db.collection("shared").doc(key).get();
-      return doc.exists ? doc.data().value : def;
-    } else if(currentUser){
+    if(currentUser){
       var userDoc = await db.collection("users").doc(currentUser.uid).collection("data").doc(key).get();
       if(userDoc.exists){
         return userDoc.data().value;
@@ -609,11 +607,9 @@ async function getOrDefault(key, def, shared){
   }
 }
 
-async function save(key, value, shared){
+async function save(key, value){
   try{
-    if(shared){
-      await db.collection("shared").doc(key).set({value: value});
-    } else if(currentUser){
+    if(currentUser){
       localStorage.setItem("bj_"+currentUser.uid+"_"+key, JSON.stringify(value));
       await db.collection("users").doc(currentUser.uid).collection("data").doc(key).set({
         value: value, 
@@ -628,9 +624,9 @@ async function save(key, value, shared){
 }
 
 var timers = {};
-function scheduleSave(key, getter, shared, delay){
+function scheduleSave(key, getter, delay){
   clearTimeout(timers[key]);
-  timers[key] = setTimeout(function(){ save(key, getter(), shared); }, delay||300);
+  timers[key] = setTimeout(function(){ save(key, getter()); }, delay||300);
 }
 
 async function loadAll(){
@@ -656,13 +652,15 @@ async function loadAll(){
   }
 
   state.venue = await getOrDefault("venue", {dates:[], list:[]});
-  var storedVDB = await getOrDefault("venueDB", null, true);
+  
+  var storedVDB = await getOrDefault("venueDB", null);
   if(storedVDB && storedVDB.length > 0){
     state.venueDB = storedVDB;
   } else {
     state.venueDB = VENUE_DB_SEED.slice();
     saveVenueDB();
   }
+
   state.inspiration = await getOrDefault("inspiration", []);
   state.coupleInfo = await getOrDefault("coupleInfo", {bride:"", groom:"", email:"", phone:""});
   
@@ -680,7 +678,7 @@ function saveVendors(){ scheduleSave("vendors", function(){ return state.vendors
 function saveGuests(){ scheduleSave("guests", function(){ return state.guests; }); }
 function saveEquip(){ scheduleSave("equipment", function(){ return state.equipment; }); }
 function saveVenue(){ scheduleSave("venue", function(){ return state.venue; }); }
-function saveVenueDB(){ scheduleSave("venueDB", function(){ return state.venueDB; }, true); }
+function saveVenueDB(){ scheduleSave("venueDB", function(){ return state.venueDB; }); }
 function saveInspiration(){ scheduleSave("inspiration", function(){ return state.inspiration; }); }
 function saveAlcohol(){ scheduleSave("alcohol", function(){ return state.alcohol; }); }
 function saveVenueCalc(){ scheduleSave("venueCalc", function(){ return state.venueCalc; }); }
@@ -930,7 +928,7 @@ function renderTasks(){
       group.forEach(function(item){
         html += '<label class="taskrow">'
           + '<input type="checkbox" data-act="task-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'
-          + '<span style="flex:1"><span style="font-size:12px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'+esc(item.t)+'</span>'
+          + '<span style="flex:1"><span style="font-size:12.5px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'+esc(item.t)+'</span>'
           + '<span style="display:block;font-size:9.5px;color:var(--muted);margin-top:1px">'+esc(item.c)+'</span>'
           + (item.n?('<span style="display:block;font-size:9.5px;color:var(--rose-600);margin-top:1px">'+esc(item.n)+'</span>'):'')
           + '</span></label>';
@@ -1154,7 +1152,7 @@ function renderVenueCalculatorBox(){
         + '<span style="font-size:12.5px;font-weight:800;color:var(--rose-900)">המחיר האמיתי למנה:</span>'
         + '<span style="font-size:16px;font-weight:800;color:var(--rose-600)">'+(truePrice!==null ? ils(truePrice) : 'הזינו אורחים')+'</span>'
       + '</div>'
-    + '</div>';
+      + '</div>';
   return html;
 }
 
@@ -1202,11 +1200,21 @@ function renderVenue(){
   
   html += renderVenueCalculatorBox();
 
-  // הועלה לכאן מעל מאגר האולמות הארצי לפי בקשתך
+  // שאלון אולמות ממוקם למעלה לפני מאגר האולמות הארצי, וסגור כברירת מחדל
   html += '<p class="sectionlabel">שאלון ותחקור אולם</p>';
   html += '<div class="card rose-accent" style="margin-bottom:10px">';
   html += '<p style="font-size:12px;font-weight:700;color:var(--rose-900);margin:0 0 6px">רשימת השאלות החשובות לכל אולם שאתם מבקרים בו:</p>';
-  html += '<button class="small-btn primary" data-act="global-q-open" style="width:100%">צפייה בשאלון המלא לבדיקת אולמות</button>';
+  html += '<button class="small-btn primary" data-act="global-q-main-toggle" style="width:100%">'+(globalVenueQOpen ? 'סגירת השאלון המלא' : 'פתיחת השאלון המלא לבדיקת אולמות')+'</button>';
+  
+  if(globalVenueQOpen){
+    html += '<div style="margin-top:10px;border-top:1px dashed var(--rose-300);padding-top:8px">';
+    var lastCat = "";
+    VENUE_Q_SEED.forEach(function(item, qi){
+      if(item.cat!==lastCat){ html += '<p class="qcat">'+esc(item.cat)+'</p>'; lastCat=item.cat; }
+      html += '<div class="qitem"><p class="qtext">'+esc(item.q)+'</p>'+(item.tip ? '<p class="qtip">💡 טיפ ממתת: '+esc(item.tip)+'</p>' : '')+'</div>';
+    });
+    html += '</div>';
+  }
   html += '</div>';
 
   html += renderVenueDBList();
@@ -1280,7 +1288,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
 
 document.getElementById("btnLogout").addEventListener("click", function(){ if(confirm("האם להתנתק מהחשבון?")) firebase.auth().signOut(); });
 
-// חזרה לשימוש ב-popup שמאפשר גם התחברות מהירה עם גוגל וגם התחברות קיימת
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithPopup(provider).catch(function(error){
@@ -1327,8 +1334,29 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
-  if(act==="global-q-open"){
-    alert("שאלון האולמות המלא זמין תחת כרטיסיות המעקב האישיות של האולמות למטה בהמשך המסך.");
+  if(act==="global-q-main-toggle"){
+    globalVenueQOpen = !globalVenueQOpen;
+    renderTab();
+    return;
+  }
+
+  if(act==="group-toggle"){
+    var mo = Number(t.dataset.months);
+    groupOpen[mo] = !groupOpen[mo];
+    renderTab();
+    return;
+  }
+
+  if(act==="task-toggle"){
+    var taskItem = state.tasks.find(function(x){ return x.id === t.dataset.id; });
+    if(taskItem){
+      taskItem.done = t.checked;
+      saveTasks();
+      if(taskItem.done && typeof confetti === "function"){
+        confetti({particleCount: 40, spread: 60, origin: { y: 0.8 }});
+      }
+      renderTab();
+    }
     return;
   }
 
