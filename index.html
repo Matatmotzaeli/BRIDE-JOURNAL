@@ -174,6 +174,7 @@
       <p><b>🤝 ספקים:</b> ריכוז כל הספקים שנסגרו, חוזים ותשלומים שנותרו.</p>
       <p><b>👥 אורחים:</b> ניהול מוזמנים, ייבוא מאקסל ומעקב אישורי הגעה.</p>
       <p><b>🎒 ציוד:</b> רשימת ציוד מומלצת ליום החתונה עבור הכלה והחתן.</p>
+      <p><b>✨ אירועים נלווים:</b> הפרשת חלה, מקווה ומסיבת רווקות עם הטיפים של מתת.</p>
       <p><b>💡 השראה:</b> שמירת קישורים ותמונות מסודרות לפי קטגוריות.</p>
     </div>
     <button class="primary" onclick="document.getElementById('guideModal').style.display='none'">הבנתי, תודה!</button>
@@ -587,6 +588,7 @@ var state = {
   coupleInfo: {bride:"", groom:"", email:"", phone:""}
 };
 var currentTab = "home";
+var currentSideSubtab = "challah"; // challah, bachelorette, mikveh
 var groupOpen = {7:true};
 var calMonth = 3, calYear = 2027;
 var qOpen = {};
@@ -743,6 +745,7 @@ function renderHome(){
   + navcard("vendors","מעקב ספקים", state.vendors.length+" ספקים")
   + navcard("guests","רשימת מוזמנים", state.guests.length+" רשומות")
   + navcard("equipment","ציוד ליום החתונה","")
+  + navcard("sideEvents","אירועים נלווים","הפרשת חלה, רווקות, מקווה")
 
   + '<p class="sectionlabel">השראה ותוכן</p>'
   + renderMatatCard()
@@ -770,6 +773,76 @@ function renderMatatCard(){
 
 function navcard(tab,label,meta){
   return '<div class="navcard" data-tab="'+tab+'"><span class="lbl">'+label+(meta?(' <span class="muted small">· '+meta+'</span>'):'')+'</span><span class="arrow">‹</span></div>';
+}
+
+/* ---------------- RENDER: SIDE EVENTS ---------------- */
+function renderSideEvents(){
+  var html = '<h2 class="pagetitle">אירועים נלווים</h2><p class="pagesub">ריכוז המידע, הלו"ז והדגשים לאירועים שמסביב לחתונה</p>';
+  
+  html += '<div style="margin-bottom:14px;display:flex;gap:6px">';
+  html += '<button class="small-btn '+(currentSideSubtab==='challah'?'primary':'')+'" data-act="side-subtab" data-sub="challah" style="flex:1">🌾 הפרשת חלה</button>';
+  html += '<button class="small-btn '+(currentSideSubtab==='bachelorette'?'primary':'')+'" data-act="side-subtab" data-sub="bachelorette" style="flex:1">🎉 מסיבת רווקות</button>';
+  html += '<button class="small-btn '+(currentSideSubtab==='mikveh'?'primary':'')+'" data-act="side-subtab" data-sub="mikveh" style="flex:1">💧 מקווה</button>';
+  html += '</div>';
+
+  if(currentSideSubtab === 'challah'){
+    html += '<div class="card">'
+      + '<h3 class="serif" style="margin:0 0 6px;color:var(--rose-900)">סדר הפרשת חלה טיפוסי והמלצות לשדרוג!!</h3>'
+      + '<p class="small muted" style="margin:0 0 12px">טיפים מנצחים ממתת מניסיון אישי</p>'
+      + '<div style="display:flex;flex-direction:column;gap:10px">';
+      
+    var steps = [
+      {t: "התכנסות ואוכל", tip: "תוודאי שאת מספיקה להצטלם לפני כן עם העיצוב כי אחר כך לא תספיקי!"},
+      {t: "כניסת הכלה מתחת לקשתות", tip: "ממליצה מאוד ללכת הלוך חזור פעמיים-שלוש עם אמא/אחות/סבתא, התמונות מעלפות!"},
+      {t: "ריקודים (לא תמיד)", tip: "ממש ממש ממליצה שכן, ועם החצאית הגדולה זה מרגש ומהמם!"},
+      {t: "תחילת ההפרשה - הכנת הבצק", tip: "ממליצה מאוד שאמא/אחות/סבתא יעמדו איתכן בחלק מההכנה, זה מרגש מאוד."},
+      {t: "זמן תפיחת הבצק", tip: "בזמן הזה בדרך כלל הרבנית מספרת סיפורים / מברכת."},
+      {t: "סעודת 7 ברכות", tip: "ממליצה מאוד להכין לכל אורחת מראש קופסא עם הברכות במקום לחלק אחר כך - זה גוזל זמן מיותר!"},
+      {t: "ברכה על הבצק שיוצא", tip: ""},
+      {t: "הדלקת נרות", tip: ""},
+      {t: "סיום", tip: ""}
+    ];
+
+    steps.forEach(function(s, i){
+      html += '<div class="itemwrap">'
+        + '<p style="font-size:13px;font-weight:600;margin:0 0 3px;color:var(--rose-900)">'+(i+1)+'. '+esc(s.t)+'</p>'
+        + (s.tip ? '<p class="tip" style="margin:0">💡 '+esc(s.tip)+'</p>' : '')
+      + '</div>';
+    });
+
+    html += '</div></div>';
+  } else if(currentSideSubtab === 'bachelorette'){
+    html += '<div class="card plain" style="text-align:center;padding:24px 14px">'
+      + '<p style="font-size:24px;margin:0 0 8px">🎉</p>'
+      + '<h3 class="serif" style="margin:0 0 6px;color:var(--rose-900)">רשימת השראה למסיבת רווקות</h3>'
+      + '<p class="small muted" style="margin:0">כאן תופיע רשימת ההשראה, הרעיונות והדגשים שלנו למסיבת הרווקות!</p>'
+    + '</div>';
+  } else if(currentSideSubtab === 'mikveh'){
+    html += '<div class="card">'
+      + '<h3 class="serif" style="margin:0 0 6px;color:var(--rose-900)">ציוד ודגשים למקווה</h3>'
+      + '<p class="small muted" style="margin:0 0 12px">מה חובה להביא ומה כדאי לדעת מראש</p>'
+      + '<div style="display:flex;flex-direction:column;gap:8px">';
+
+    var mikvehItems = [
+      {t: "אישור הדרכת כלה", sub: "חובה להביא איתך לבלנית!"},
+      {t: "מגבת מכובסת ובלי סיבים", sub: ""},
+      {t: "כפכפים", sub: ""},
+      {t: "כסף מזומן", sub: "כמה שהבלנית אומרת שעולה הטבילה הראשונה במקווה (אגב, אחריה מגיעה לך שנה ראשונה של מקווה בחינם כי את כלה!)"},
+      {t: "סוכריות", sub: "שיזרקו עלייך בשמחה כשאת יוצאת"},
+      {t: "מברשת שיער", sub: ""}
+    ];
+
+    mikvehItems.forEach(function(m){
+      html += '<div class="itemwrap">'
+        + '<p style="font-size:13px;font-weight:600;margin:0;color:var(--rose-900)">✓ '+esc(m.t)+'</p>'
+        + (m.sub ? '<p class="small muted" style="margin:3px 0 0;line-height:1.5">'+esc(m.sub)+'</p>' : '')
+      + '</div>';
+    });
+
+    html += '</div></div>';
+  }
+
+  return html;
 }
 
 /* ---------------- RENDER: TASKS ---------------- */
@@ -1064,10 +1137,9 @@ function renderEquipList(side){
   return html;
 }
 function renderEquipment(){
-  var html = '<h2 class="pagetitle">ציוד ליום החתונה</h2><p class="pagesub">אפשר לערוך, למחוק או להוסיף כל פריט</p>';
+  var html = '<h2 class="pagetitle">ציוד ליום החתונה</h2><p class="pagesub">אפשר לערוך, למחוק או להוסיף כל פריט ברשימה האישית שלכם</p>';
   html += '<p class="sectionlabel">כלה</p>' + renderEquipList("bride");
   html += '<p class="sectionlabel">חתן</p>' + renderEquipList("groom");
-  html += '<button class="ghost plain" data-act="equip-reset" style="margin-top:16px">🗑️ מחיקת הרשימה והתחלה מחדש</button>';
   return html;
 }
 
@@ -1314,7 +1386,7 @@ function renderInspiration(){
 }
 
 /* ---------------- TAB SWITCHING ---------------- */
-var RENDERERS = { home:renderHome, tasks:renderTasks, budget:renderBudget, vendors:renderVendors, guests:renderGuests, equipment:renderEquipment, venue:renderVenue, inspiration:renderInspiration };
+var RENDERERS = { home:renderHome, tasks:renderTasks, budget:renderBudget, vendors:renderVendors, guests:renderGuests, equipment:renderEquipment, sideEvents:renderSideEvents, venue:renderVenue, inspiration:renderInspiration };
 
 function renderTab(){
   document.getElementById("tabContent").innerHTML = RENDERERS[currentTab]();
@@ -1429,6 +1501,12 @@ mainEl.addEventListener("click", function(e){
   var t = e.target;
   var act = t.dataset.act;
 
+  if(act==="side-subtab"){
+    currentSideSubtab = t.dataset.sub;
+    renderTab();
+    return;
+  }
+
   if(act==="onb-goto"){ switchTab(t.dataset.tab); return; }
   if(act==="onb-complete"){
     var idx = Number(t.dataset.idx);
@@ -1492,14 +1570,6 @@ mainEl.addEventListener("click", function(e){
     var side2 = t.dataset.side;
     state.equipment[side2] = state.equipment[side2].filter(function(i){return i.id!==t.dataset.id;});
     saveEquip(); renderTab(); return;
-  }
-  if(act==="equip-reset"){
-    if(confirm("פעולה זו תנקה את כל פריטי הציוד מהמסך. להמשיך?")){
-      state.equipment = { bride: [], groom: [] };
-      saveEquip();
-      renderTab();
-    }
-    return;
   }
   if(act==="cal-prev"){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderTab(); return; }
   if(act==="cal-next"){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderTab(); return; }
