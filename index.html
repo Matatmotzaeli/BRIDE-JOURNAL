@@ -533,31 +533,75 @@ var ONB_STEPS = [
 var INSPIRATION_CATS = ["שמלות","פוזות","אולמות","מסיבת רווקות","עיצוב","אחר"];
 
 var VENUE_DB_SEED = [
-  {id:"v1", name:"אבניו, שדה התעופה", region:"מרכז", priceEstimate:420},
-  {id:"v2", name:"אווניו גן השרון, חדרה", region:"מרכז", priceEstimate:380},
-  {id:"v3", name:"אירועים על המים, קיסריה", region:"מרכז", priceEstimate:450},
-  {id:"v4", name:"בלאקסטון, חיפה", region:"צפון", priceEstimate:350},
-  {id:"v5", name:"גבריאל, נס ציונה", region:"מרכז", priceEstimate:390},
-  {id:"v6", name:"גני כנען, ראש פינה", region:"צפון", priceEstimate:320},
-  {id:"v7", name:"הויה, רחובות", region:"מרכז", priceEstimate:370},
-  {id:"v8", name:"טراسا (טראסה), בת ים", region:"מרכז", priceEstimate:410},
-  {id:"v9", name:"ירוק על הים, שדות דב", region:"מרכז", priceEstimate:440},
-  {id:"v10", name:"כנען בגולן, ראש פינה", region:"צפון", priceEstimate:330},
-  {id:"v11", name:"לביא, ירושלים", region:"ירושלים", priceEstimate:340},
-  {id:"v12", name:"מי האוקיינוס, אשקלון", region:"דרום", priceEstimate:300},
-  {id:"v13", name:"ניואה, פתח תקווה", region:"מרכז", priceEstimate:380},
-  {id:"v14", name:"סנדרין, צומת כברי", region:"צפון", priceEstimate:310},
-  {id:"v15", name:"עايا (עאיה), דרום", region:"דרום", priceEstimate:290},
-  {id:"v16", name:"פวיליון, ירושלים", region:"ירושלים", priceEstimate:360},
-  {id:"v17", name:"צואה, חדרה", region:"מרכז", priceEstimate:350},
-  {id:"v18", name:"קסאנדו, פתח תקווה", region:"מרכז", priceEstimate:390},
-  {id:"v19", name:"רויאל גארדן, פתח תקווה", region:"מרכז", priceEstimate:370},
-  {id:"v20", name:"שטים, תל אביב", region:"מרכז", priceEstimate:480},
-  {id:"v21", name:"תשבי, זכרון יעקב", region:"צפון", priceEstimate:360},
-  {id:"sh1", name:"OPA, אשקלון", region:"דרום", priceEstimate:300},
-  {id:"sh2", name:"אגדתא, צומת ראם", region:"דרום", priceEstimate:242},
-  {id:"sh22", name:"5.91, נתניה", region:"מרכז", priceEstimate:360},
-  {id:"sh23", name:"58, פתח תקווה", region:"מרכז", priceEstimate:300}
+  {id:"db_1", name:"לארה, צומת כנות", region:"דרום", priceEstimate:350},
+  {id:"db_2", name:"עדיה, יבנה", region:"דרום", priceEstimate:255},
+  {id:"db_3", name:"טירה על הים, אשדוד", region:"דרום", priceEstimate:240},
+  {id:"db_4", name:"הנחלה, בית עובד", region:"דרום", priceEstimate:500},
+  {id:"db_5", name:"טאו, צומת כנות", region:"דרום", priceEstimate:320},
+  {id:"db_6", name:"אדאו, צומת כנות", region:"דרום", priceEstimate:345},
+  {id:"db_7", name:"טרוסא, צומת כנות (גדרה)", region:"דרום", priceEstimate:295},
+  {id:"db_8", name:"הרמוניה בגן, צומת כנות", region:"דרום", priceEstimate:280},
+  {id:"db_9", name:"דוריה, שדה יואב", region:"דרום", priceEstimate:272},
+  {id:"db_10", name:"אדמה, אשדוד", region:"דרום", priceEstimate:240},
+  {id:"db_11", name:"ממילא, אשדוד", region:"דרום", priceEstimate:250},
+  {id:"db_12", name:"אודיסאה, באר שבע", region:"דרום", priceEstimate:260},
+  {id:"db_13", name:"גני הצבי, ברכיה", region:"דרום", priceEstimate:250},
+  {id:"db_14", name:"OPA, אשקלון", region:"דרום", priceEstimate:300},
+  {id:"db_15", name:"אגדתא, צומת ראם", region:"דרום", priceEstimate:242},
+  {id:"db_16", name:"שירה, נתיבות", region:"דרום", priceEstimate:270},
+  {id:"db_17", name:"שמיים ירוקים, חפץ חיים", region:"דרום", priceEstimate:240},
+  {id:"db_18", name:"בית האופרה, אשדוד", region:"דרום", priceEstimate:260},
+  {id:"db_19", name:"ליימן, אשדוד", region:"דרום", priceEstimate:280},
+  {id:"db_20", name:"נרניה, באר שבע", region:"דרום", priceEstimate:250},
+  {id:"db_21", name:"מתחם לבן, באר שבע", region:"דרום", priceEstimate:270},
+  {id:"db_22", name:"שבע, אשדוד", region:"דרום", priceEstimate:290},
+  {id:"db_23", name:"שירת הים, אשקלון", region:"דרום", priceEstimate:260},
+  {id:"db_24", name:"גבריאל, נס ציונה", region:"מרכז", priceEstimate:390},
+  {id:"db_25", name:"הויה, רחובות", region:"מרכז", priceEstimate:370},
+  {id:"db_26", name:"טראסה, בת ים", region:"מרכז", priceEstimate:410},
+  {id:"db_27", name:"ירוק על הים, שדות דב", region:"מרכז", priceEstimate:440},
+  {id:"db_28", name:"ניואה, פתח תקווה", region:"מרכז", priceEstimate:380},
+  {id:"db_29", name:"קסאנדו, פתח תקווה", region:"מרכז", priceEstimate:390},
+  {id:"db_30", name:"רויאל גארדן, פתח תקווה", region:"מרכז", priceEstimate:370},
+  {id:"db_31", name:"שטים, תל אביב", region:"מרכז", priceEstimate:480},
+  {id:"db_32", name:"אבניו, שדה התעופה", region:"מרכז", priceEstimate:420},
+  {id:"db_33", name:"אווניו גן השרון, חדרה", region:"מרכז", priceEstimate:380},
+  {id:"db_34", name:"אירועים על המים, קיסריה", region:"מרכז", priceEstimate:450},
+  {id:"db_35", name:"5.91, נתניה", region:"מרכז", priceEstimate:360},
+  {id:"db_36", name:"58, פתח תקווה", region:"מרכז", priceEstimate:300},
+  {id:"db_37", name:"עלמה, אבן יהודה", region:"מרכז", priceEstimate:420},
+  {id:"db_38", name:"קסיופאה, הרצליה", region:"מרכז", priceEstimate:460},
+  {id:"db_39", name:"שוני, בנימינה", region:"מרכז", priceEstimate:380},
+  {id:"db_40", name:"מערבה, שדות דב", region:"מרכז", priceEstimate:450},
+  {id:"db_41", name:"גני כנען, ראש פינה", region:"צפון", priceEstimate:320},
+  {id:"db_42", name:"כנען בגולן, ראש פינה", region:"צפון", priceEstimate:330},
+  {id:"db_43", name:"סנדרין, צומת כברי", region:"צפון", priceEstimate:310},
+  {id:"db_44", name:"תשבי, זכרון יעקב", region:"צפון", priceEstimate:360},
+  {id:"db_45", name:"בלאקסטון, חיפה", region:"צפון", priceEstimate:350},
+  {id:"db_46", name:"קאלה, קרית חיים", region:"צפון", priceEstimate:330},
+  {id:"db_47", name:"גני איילון, טבריה", region:"צפון", priceEstimate:270},
+  {id:"db_48", name:"שמורתה, אפק", region:"צפון", priceEstimate:265},
+  {id:"db_49", name:"White, פרדס חנה", region:"צפון", priceEstimate:320},
+  {id:"db_50", name:"סנדרין, רגבה", region:"צפון", priceEstimate:280},
+  {id:"db_51", name:"גלריה 279, קריית חיים", region:"צפון", priceEstimate:240},
+  {id:"db_52", name:"כינורות (ciel), חיפה", region:"צפון", priceEstimate:260},
+  {id:"db_53", name:"אדם וחווה, חיפה", region:"צפון", priceEstimate:290},
+  {id:"db_54", name:"הסיינדה, בית שאן", region:"צפון", priceEstimate:270},
+  {id:"db_55", name:"סקיי גארדן, יקנעם", region:"צפון", priceEstimate:275},
+  {id:"db_56", name:"מטעמים, זכרון יעקב", region:"צפון", priceEstimate:420},
+  {id:"db_57", name:"מטעים, זכרון יעקב", region:"צפון", priceEstimate:420},
+  {id:"db_58", name:"בורג׳, בינימינה", region:"צפון", priceEstimate:480},
+  {id:"db_59", name:"כרמלה, יגור", region:"צפון", priceEstimate:377},
+  {id:"db_60", name:"אולם הינומה, נשר", region:"צפון", priceEstimate:290},
+  {id:"db_61", name:"לביא, ירושלים", region:"ירושלים", priceEstimate:340},
+  {id:"db_62", name:"פביליון, ירושלים", region:"ירושלים", priceEstimate:360},
+  {id:"db_63", name:"יער עין חמד, עין חמד (מבשרת)", region:"ירושלים", priceEstimate:395},
+  {id:"db_64", name:"גאמוס, מישור אדומים", region:"ירושלים", priceEstimate:360},
+  {id:"db_65", name:"קדמא, נווה אילן", region:"ירושלים", priceEstimate:310},
+  {id:"db_66", name:"הבוסתן, הרי יהודה", region:"ירושלים", priceEstimate:430},
+  {id:"db_67", name:"ארץ, מושב עגור", region:"ירושלים", priceEstimate:415},
+  {id:"db_68", name:"חוות עמק איילון, מבוא חורון", region:"ירושלים", priceEstimate:430},
+  {id:"db_69", name:"חוות דרך ארץ, מחסיה", region:"ירושלים", priceEstimate:572}
 ];
 
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
@@ -780,9 +824,41 @@ function navcard(tab,label,meta){
   return '<div class="navcard" data-tab="'+tab+'"><span class="lbl">'+label+(meta?(' <span class="muted small" style="font-weight:400">· '+meta+'</span>'):'')+'</span><span class="arrow">‹</span></div>';
 }
 
-function renderAlcohol(){
+function calcAlcoholTotals(){
   var a = state.alcohol;
   var drinkers = Math.round((Number(a.guests)||0) * ((Number(a.drinkersPct)||75)/100));
+  var drinksInfo = [
+    {k:"vodka", canVenue:false},
+    {k:"whiskey", canVenue:false},
+    {k:"arak", canVenue:false},
+    {k:"wine", canVenue:true},
+    {k:"cava", canVenue:true},
+    {k:"beer", canVenue:true}
+  ];
+  var totalCost = 0;
+  var resultsHtml = '';
+  drinksInfo.forEach(function(d){
+    var isVenueProvides = d.canVenue && a["venue_"+d.k];
+    var ratio = Number(a[d.k]) || 1;
+    var price = Number(a[d.k+"Price"]) || 0;
+    var amount = Math.ceil(drinkers / ratio);
+    var cost = amount * price;
+    if(isVenueProvides){
+      var titles = {vodka:"וודקה", whiskey:"וויסקי", arak:"עראק", wine:"יין", cava:"קאווה / שמפניה", beer:"בירה"};
+      resultsHtml += '<p class="small" style="margin:2px 0">'+titles[d.k]+': <b>באחריות האולם</b></p>';
+    } else {
+      totalCost += cost;
+      var titles = {vodka:"וודקה", whiskey:"וויסקי", arak:"עראק", wine:"יין", cava:"קאווה / שמפניה", beer:"בירה"};
+      resultsHtml += '<p class="small" style="margin:2px 0">'+titles[d.k]+': <b>'+amount+'</b> בקבוקים/יחידות</p>';
+    }
+  });
+  totalCost += (Number(a.extrasCost)||0);
+  return { drinkers: drinkers, totalCost: totalCost, resultsHtml: resultsHtml };
+}
+
+function renderAlcohol(){
+  var a = state.alcohol;
+  var calc = calcAlcoholTotals();
 
   var drinksInfo = [
     {k:"vodka", n:"וודקה", canVenue:false},
@@ -801,23 +877,15 @@ function renderAlcohol(){
       + '<div><label class="small muted">כמות מוזמנים</label><input type="number" data-act="alc-field" data-field="guests" value="'+esc(a.guests)+'"></div>'
       + '<div><label class="small muted">אחוז שותים (%)</label><input type="number" data-act="alc-field" data-field="drinkersPct" value="'+esc(a.drinkersPct)+'"></div>'
     + '</div>'
-    + '<p class="small" style="color:var(--rose-600);font-weight:700;margin:4px 0 0">מוערך ששותים בפועל: '+drinkers+' אורחים</p>'
+    + '<p class="small" style="color:var(--rose-600);font-weight:700;margin:4px 0 0" id="alcDrinkersLabel">מוערך ששותים בפועל: '+calc.drinkers+' אורחים</p>'
   + '</div>';
 
   html += '<div class="card rose-accent" style="padding:12px 10px">'
     + '<p class="small" style="margin:0;color:var(--rose-900);font-weight:700">💡 טיפ ממתת: אל תשכחו - צריך לתכנן אלכוהול גם לרחבה (הבר) וגם להגשה לשולחנות עצמם!</p>'
   + '</div>';
 
-  var totalCost = 0;
-  var resultsHtml = '';
-
   drinksInfo.forEach(function(d){
     var isVenueProvides = d.canVenue && a["venue_"+d.k];
-    var ratio = Number(a[d.k]) || 1;
-    var price = Number(a[d.k+"Price"]) || 0;
-    var amount = Math.ceil(drinkers / ratio);
-    var cost = amount * price;
-
     html += '<div class="card plain">'
       + '<div class="between" style="margin-bottom:6px">'
         + '<span style="font-size:13px;font-weight:800;color:var(--rose-900)">🍸 '+d.n+'</span>'
@@ -834,13 +902,6 @@ function renderAlcohol(){
       + '</label>';
     }
     html += '</div>';
-
-    if(isVenueProvides){
-      resultsHtml += '<p class="small" style="margin:2px 0">'+d.n+': <b>באחריות האולם</b></p>';
-    } else {
-      totalCost += cost;
-      resultsHtml += '<p class="small" style="margin:2px 0">'+d.n+': <b>'+amount+'</b> בקבוקים/יחידות</p>';
-    }
   });
 
   html += '<div class="card plain">'
@@ -848,14 +909,12 @@ function renderAlcohol(){
     + '<div><label class="small muted">עלות תוספות משוערת</label><input type="number" data-act="alc-field" data-field="extrasCost" value="'+esc(a.extrasCost)+'"></div>'
   + '</div>';
 
-  totalCost += (Number(a.extrasCost)||0);
-
   html += '<div class="card green" style="text-align:right">'
     + '<p style="font-size:13px;font-weight:800;color:#085041;margin:0 0 6px">תוצאות והמלצת כמויות:</p>'
-    + resultsHtml
+    + '<div id="alcResultsContainer">'+calc.resultsHtml+'</div>'
     + '<div style="border-top:1px dashed #BBE8D7;margin-top:8px;padding-top:6px" class="between">'
       + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ עלות אלכוהול לרכישה:</span>'
-      + '<span style="font-size:14px;font-weight:800;color:#085041">'+ils(totalCost)+'</span>'
+      + '<span style="font-size:14px;font-weight:800;color:#085041" id="alcTotalCostSpan">'+ils(calc.totalCost)+'</span>'
     + '</div>'
   + '</div>';
 
@@ -1082,12 +1141,21 @@ function renderEquipment(){
   var html = '<h2 class="pagetitle">ציוד ליום החתונה</h2><p class="pagesub">רשימת הציוד ליום הגדול</p>';
   html += '<p class="sectionlabel">כלה</p><div class="card rose-accent">';
   state.equipment.bride.forEach(function(it){
-    html += '<label class="row" style="padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)"><input type="checkbox" data-act="equip-toggle" data-side="bride" data-id="'+it.id+'" '+(it.done?'checked':'')+'><input type="text" data-act="equip-field" data-side="bride" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'"><button class="icon-del" data-act="equip-del" data-side="bride" data-id="'+it.id+'">×</button></label>';
+    html += '<label class="row" style="padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)">'
+      + '<input type="checkbox" data-act="equip-toggle" data-side="bride" data-id="'+it.id+'" '+(it.done?'checked':'')+'>'
+      + '<input type="text" data-act="equip-field" data-side="bride" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
+      + '<button class="icon-del" data-act="equip-del" data-side="bride" data-id="'+it.id+'">×</button>'
+      + '</label>';
   });
   html += '</div><button class="ghost" data-act="equip-add" data-side="bride">+ הוספת פריט</button>';
+  
   html += '<p class="sectionlabel">חתן</p><div class="card blue">';
   state.equipment.groom.forEach(function(it){
-    html += '<label class="row" style="padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)"><input type="checkbox" data-act="equip-toggle" data-side="groom" data-id="'+it.id+'" '+(it.done?'checked':'')+'><input type="text" data-act="equip-field" data-side="groom" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'"><button class="icon-del" data-act="equip-del" data-side="groom" data-id="'+it.id+'">×</button></label>';
+    html += '<label class="row" style="padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)">'
+      + '<input type="checkbox" data-act="equip-toggle" data-side="groom" data-id="'+it.id+'" '+(it.done?'checked':'')+'>'
+      + '<input type="text" data-act="equip-field" data-side="groom" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
+      + '<button class="icon-del" data-act="equip-del" data-side="groom" data-id="'+it.id+'">×</button>'
+      + '</label>';
   });
   html += '</div><button class="ghost" data-act="equip-add" data-side="groom">+ הוספת פריט</button>';
   return html;
@@ -1442,6 +1510,37 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
+  // Equipment actions
+  if(act==="equip-toggle"){
+    var side = t.dataset.side;
+    var item = state.equipment[side].find(function(x){ return x.id === t.dataset.id; });
+    if(item){
+      item.done = t.checked;
+      saveEquip();
+      renderTab();
+    }
+    return;
+  }
+
+  if(act==="equip-del"){
+    var side = t.dataset.side;
+    state.equipment[side] = state.equipment[side].filter(function(x){ return x.id !== t.dataset.id; });
+    saveEquip();
+    renderTab();
+    return;
+  }
+
+  if(act==="equip-add"){
+    var side = t.dataset.side;
+    var txt = prompt("הכנס את שם פריט הציוד החדש:");
+    if(txt){
+      state.equipment[side].push({id: uid(), text: txt, done: false});
+      saveEquip();
+      renderTab();
+    }
+    return;
+  }
+
   if(act==="onb-goto"){
     switchTab(t.dataset.tab);
     return;
@@ -1651,6 +1750,16 @@ mainEl.addEventListener("input", function(e){
     }
     return;
   }
+
+  if(act==="equip-field"){
+    var side = t.dataset.side;
+    var item = state.equipment[side].find(function(x){ return x.id === t.dataset.id; });
+    if(item){
+      item.text = t.value;
+      saveEquip();
+    }
+    return;
+  }
   
   if(act==="vcalc-field"){
     state.venueCalc[t.dataset.field] = t.value;
@@ -1675,7 +1784,19 @@ mainEl.addEventListener("input", function(e){
   
   if(act==="alc-field"){
     state.alcohol[t.dataset.field] = t.value;
-    saveAlcohol(); return;
+    saveAlcohol();
+    
+    // Live update alcohol calculator UI
+    var calc = calcAlcoholTotals();
+    var drinkersLabel = document.getElementById("alcDrinkersLabel");
+    if(drinkersLabel) drinkersLabel.textContent = "מוערך ששותים בפועל: " + calc.drinkers + " אורחים";
+    
+    var resultsContainer = document.getElementById("alcResultsContainer");
+    if(resultsContainer) resultsContainer.innerHTML = calc.resultsHtml;
+    
+    var totalCostSpan = document.getElementById("alcTotalCostSpan");
+    if(totalCostSpan) totalCostSpan.textContent = ils(calc.totalCost);
+    return;
   }
   
   if(act==="vendor-field"){
