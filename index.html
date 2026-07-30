@@ -1087,9 +1087,13 @@ function renderBudget(){
   + '</div>';
 
   var catClass = {big:"card rose-accent", look:"card plain", rab:"card plain", other:"card plain"};
-  Object.keys(state.budgetCats).forEach(function(catId){
+  var orderedCatIds = ["big"];
+  Object.keys(state.budgetCats).forEach(function(k){ if(!orderedCatIds.includes(k)) orderedCatIds.push(k); });
+  
+  orderedCatIds.forEach(function(catId){
+    if(!state.budgetCats[catId]) return;
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
-    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+catClass[catId]+'">';
+    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+(catClass[catId]||"card plain")+'">';
     state.budgetCats[catId].forEach(function(item){
       html += '<div class="itemwrap"><div class="between" style="gap:6px;margin-bottom:'+(item.tip?'4px':'0')+'">'
         + '<span style="font-size:12px;font-weight:700;flex:1;color:var(--ink)">'+esc(item.name)+'</span>'
@@ -1106,7 +1110,7 @@ function renderBudget(){
 function vendorRemain(v){ return (Number(v.price)||0)-(Number(v.deposit)||0); }
 function renderVendors(){
   var grand = state.vendors.reduce(function(s,v){ return s+vendorRemain(v); },0);
-  var html = '<h2 class="pagetitle">מעקב ספקים</h2><p class="pagesub">כל הספקים שסגרתם, במקום אחד</p>';
+  var html = '<h2 class="pagetitle">מעקב ספקים</h2><p class="pagesub">כל הספקים שנסגרו, במקום אחד</p>';
   html += '<div class="card plain between" style="margin-bottom:10px"><span class="small muted">סה"כ שנותר לשלם</span><span id="vendorGrandTotal" style="font-weight:800;color:var(--rose-600);font-size:14px">'+ils(grand)+'</span></div>';
   state.vendors.forEach(function(v){
     html += '<div class="card plain">'
