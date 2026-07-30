@@ -977,10 +977,10 @@ function renderSideEvents(){
       {t: "סיום", tip: ""}
     ];
     steps.forEach(function(s, i){
-      html += '<div class="itemwrap">'
+      html += '<itemwrap class="itemwrap">'
         + '<p style="font-size:12.5px;font-weight:700;margin:0;color:var(--rose-900)">'+(i+1)+'. '+esc(s.t)+'</p>'
         + (s.tip ? '<p class="tip">💡 '+esc(s.tip)+'</p>' : '')
-      + '</div>';
+      + '</itemwrap>';
     });
     html += '</div></div>';
   } else if(currentSideSubtab === 'bachelorette'){
@@ -2050,6 +2050,20 @@ document.addEventListener("click", function(e){
 
     state.coupleInfo = {bride: b, groom: g, email: em, phone: ph};
     save("coupleInfo", state.coupleInfo);
+
+    // Save lead to central 'leads' collection in Firestore
+    try {
+      db.collection("leads").add({
+        brideName: b,
+        groomName: g,
+        email: em,
+        phone: ph,
+        userId: currentUser ? currentUser.uid : null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    } catch(err) {
+      console.error("Error writing lead:", err);
+    }
 
     state.meta.seenWelcome = true;
     saveMeta();
