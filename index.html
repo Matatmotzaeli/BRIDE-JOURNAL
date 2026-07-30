@@ -147,10 +147,20 @@
 
   .tiktok-link{ display:inline-flex; align-items:center; gap:4px; color:var(--rose-900); text-decoration:none; font-size:11.5px; font-weight:700; margin-top:8px; padding:6px 12px; border-radius:16px; background:var(--rose-50); border:1px solid var(--rose-300); }
 
+  /* Undo Toast */
+  #undoToast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%); background: var(--rose-900); color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 700; z-index: 1000; display: flex; align-items: center; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+  #undoToast button { background: var(--white); color: var(--rose-900); border: none; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+
   ::selection{ background:var(--rose-100); }
 </style>
 </head>
 <body>
+
+<!-- Undo Toast Container -->
+<div id="undoToast" style="display:none">
+  <span id="undoText">פריט נמחק</span>
+  <button id="undoBtn">לחזור אחורה (שחזור)</button>
+</div>
 
 <!-- Auth Screen -->
 <div id="authScreen" class="overlay-screen">
@@ -220,10 +230,10 @@
 
     <div class="card plain" style="text-align:right;margin-bottom:14px">
       <p style="font-size:12px;font-weight:700;margin:0 0 8px;color:var(--rose-900)">קצת עליכם (כדי שהיומן יהיה אישי)</p>
-      <input type="text" id="welcomeBride" placeholder="שם הכלה" style="margin-bottom:6px">
-      <input type="text" id="welcomeGroom" placeholder="שם החתן" style="margin-bottom:6px">
+      <input type="text" id="welcomeBride" placeholder="שם הכלה (שדה חובה)" style="margin-bottom:6px">
+      <input type="text" id="welcomeGroom" placeholder="שם החתן (שדה חובה)" style="margin-bottom:6px">
       <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:6px;direction:ltr;text-align:right">
-      <input type="tel" id="welcomePhone" placeholder="מספר טלפון" style="direction:ltr;text-align:right">
+      <input type="tel" id="welcomePhone" placeholder="מספר טלפון (שדה חובה)" style="direction:ltr;text-align:right">
     </div>
 
     <p class="small muted" style="margin:0 0 10px;line-height:1.4">הפרטים נשמרים ביומן שלכם בלבד.</p>
@@ -607,7 +617,7 @@ var VENUE_DB_SEED = [
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
 
 var state = {
-  profile:{ name:"", weddingDate:"", email:"", phone:"" },
+  profile:{ name:"", weddingDate:"", email:"", phone:"", brideName:"", groomName:"" },
   meta:{ seenWelcome:false, onbDone:[false,false,false,false] },
   tasks:[],
   budgetCats:{}, income:{ guests:"", gift:"", brideParents:"", groomParents:"", savings:"" },
@@ -628,6 +638,7 @@ var state = {
   },
   venueCalc: { basePrice:"", guests:"", sound:"", design:"", extrasPerPerson:"", tipsPerPerson:"" }
 };
+
 var currentTab = "home";
 var currentSideSubtab = "challah";
 var groupOpen = {7:true, 6:true, 4:true, 3:true, 2:true, 1.5:true, 1:true};
@@ -636,6 +647,25 @@ var qOpen = {};
 var globalVenueQOpen = false;
 var importMsg = "";
 var inspFilter = "all";
+
+// Undo support for lists/deletions
+var lastDeletedAction = null; // { type, data, restoreFn }
+var undoTimer = null;
+
+function showUndoToast(msg, restoreFn){
+  lastDeletedAction = { restoreFn: restoreFn };
+  var toast = document.getElementById("undoToast");
+  var textEl = document.getElementById("undoText");
+  if(toast && textEl){
+    textEl.textContent = msg;
+    toast.style.display = "flex";
+    clearTimeout(undoTimer);
+    undoTimer = setTimeout(function(){
+      toast.style.display = "none";
+      lastDeletedAction = null;
+    }, 6000);
+  }
+}
 
 function seedTasks(){ return TASK_SEED.map(function(x){ return {id:uid(), c:x.c, t:x.t, m:x.m, n:x.n||"", done:false}; }); }
 function seedBudget(){
@@ -695,7 +725,7 @@ function scheduleSave(key, getter, delay){
 }
 
 async function loadAll(){
-  state.profile = await getOrDefault("profile", {name:"", weddingDate:"", email:"", phone:""});
+  state.profile = await getOrDefault("profile", {name:"", weddingDate:"", email:"", phone:"", brideName:"", groomName:""});
   state.meta = await getOrDefault("meta", {seenWelcome:false, onbDone:[false,false,false,false]});
   
   var tData = await getOrDefault("tasks", null);
@@ -1420,7 +1450,6 @@ document.getElementById("btnLogout").addEventListener("click", function(){ if(co
 
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
-  // Use signInWithRedirect for iOS Safari compatibility where popups are blocked
   var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   if(isIOS || window.innerWidth < 768){
     firebase.auth().signInWithRedirect(provider).catch(function(error){
@@ -1459,6 +1488,16 @@ var navEl = document.getElementById("bottomNav");
 navEl.addEventListener("click", function(e){
   var b = e.target.closest("button[data-tab]");
   if(b) switchTab(b.dataset.tab);
+});
+
+// Undo button handler
+document.getElementById("undoBtn").addEventListener("click", function(){
+  if(lastDeletedAction && typeof lastDeletedAction.restoreFn === "function"){
+    lastDeletedAction.restoreFn();
+    document.getElementById("undoToast").style.display = "none";
+    lastDeletedAction = null;
+    renderTab();
+  }
 });
 
 mainEl.addEventListener("click", function(e){
@@ -1501,9 +1540,17 @@ mainEl.addEventListener("click", function(e){
   }
 
   if(act==="task-del"){
-    state.tasks = state.tasks.filter(function(x){ return x.id !== t.dataset.id; });
-    saveTasks();
-    renderTab();
+    var delId = t.dataset.id;
+    var idx = state.tasks.findIndex(function(x){ return x.id === delId; });
+    if(idx !== -1){
+      var removed = state.tasks.splice(idx, 1)[0];
+      saveTasks();
+      showUndoToast("משימה נמחקה", function(){
+        state.tasks.splice(idx, 0, removed);
+        saveTasks();
+      });
+      renderTab();
+    }
     return;
   }
 
@@ -1545,9 +1592,16 @@ mainEl.addEventListener("click", function(e){
     var catId = t.dataset.cat;
     var itemId = t.dataset.id;
     if(state.budgetCats[catId]){
-      state.budgetCats[catId] = state.budgetCats[catId].filter(function(item){ return item.id !== itemId; });
-      saveBudget();
-      renderTab();
+      var idx = state.budgetCats[catId].findIndex(function(item){ return item.id === itemId; });
+      if(idx !== -1){
+        var removed = state.budgetCats[catId].splice(idx, 1)[0];
+        saveBudget();
+        showUndoToast("הוצאה תקציבית נמחקה", function(){
+          state.budgetCats[catId].splice(idx, 0, removed);
+          saveBudget();
+        });
+        renderTab();
+      }
     }
     return;
   }
@@ -1566,9 +1620,17 @@ mainEl.addEventListener("click", function(e){
 
   if(act==="equip-del"){
     var side = t.dataset.side;
-    state.equipment[side] = state.equipment[side].filter(function(x){ return x.id !== t.dataset.id; });
-    saveEquip();
-    renderTab();
+    var delId = t.dataset.id;
+    var idx = state.equipment[side].findIndex(function(x){ return x.id === delId; });
+    if(idx !== -1){
+      var removed = state.equipment[side].splice(idx, 1)[0];
+      saveEquip();
+      showUndoToast("פריט ציוד נמחק", function(){
+        state.equipment[side].splice(idx, 0, removed);
+        saveEquip();
+      });
+      renderTab();
+    }
     return;
   }
 
@@ -1604,8 +1666,18 @@ mainEl.addEventListener("click", function(e){
     saveVendors(); renderTab(); return;
   }
   if(act==="vendor-del"){
-    state.vendors = state.vendors.filter(function(v){ return v.id!==t.dataset.id; });
-    saveVendors(); renderTab(); return;
+    var delId = t.dataset.id;
+    var idx = state.vendors.findIndex(function(v){ return v.id===delId; });
+    if(idx !== -1){
+      var removed = state.vendors.splice(idx, 1)[0];
+      saveVendors();
+      showUndoToast("ספק נמחק", function(){
+        state.vendors.splice(idx, 0, removed);
+        saveVendors();
+      });
+      renderTab();
+    }
+    return;
   }
   if(act==="vendor-contract"){
     var v = state.vendors.find(function(x){return x.id===t.dataset.id;});
@@ -1618,8 +1690,18 @@ mainEl.addEventListener("click", function(e){
     saveGuests(); renderTab(); return;
   }
   if(act==="guest-del"){
-    state.guests = state.guests.filter(function(g){ return g.id!==t.dataset.id; });
-    saveGuests(); renderTab(); return;
+    var delId = t.dataset.id;
+    var idx = state.guests.findIndex(function(g){ return g.id===delId; });
+    if(idx !== -1){
+      var removed = state.guests.splice(idx, 1)[0];
+      saveGuests();
+      showUndoToast("מוזמן נמחק", function(){
+        state.guests.splice(idx, 0, removed);
+        saveGuests();
+      });
+      renderTab();
+    }
+    return;
   }
   if(act==="guests-template"){
     var wb = XLSX.utils.book_new();
@@ -1658,6 +1740,20 @@ mainEl.addEventListener("click", function(e){
   if(act==="venue-add"){
     state.venue.list.push({id:uid(), name:"", region:"", price:"", capacity:"", status:"checking", answers:{}, chosenDate:""});
     saveVenue(); renderTab(); return;
+  }
+  if(act==="venue-del"){
+    var delId = t.dataset.id;
+    var idx = state.venue.list.findIndex(function(v){ return v.id===delId; });
+    if(idx !== -1){
+      var removed = state.venue.list.splice(idx, 1)[0];
+      saveVenue();
+      showUndoToast("אולם נמחק", function(){
+        state.venue.list.splice(idx, 0, removed);
+        saveVenue();
+      });
+      renderTab();
+    }
+    return;
   }
   if(act==="venuedb-track"){
     var dbv = state.venueDB.find(function(x){return x.id===t.dataset.id;});
@@ -1701,9 +1797,17 @@ mainEl.addEventListener("click", function(e){
   }
 
   if(act==="insp-del"){
-    state.inspiration = state.inspiration.filter(function(it){ return it.id !== t.dataset.id; });
-    saveInspiration();
-    renderTab();
+    var delId = t.dataset.id;
+    var idx = state.inspiration.findIndex(function(it){ return it.id===delId; });
+    if(idx !== -1){
+      var removed = state.inspiration.splice(idx, 1)[0];
+      saveInspiration();
+      showUndoToast("פריט השראה נמחק", function(){
+        state.inspiration.splice(idx, 0, removed);
+        saveInspiration();
+      });
+      renderTab();
+    }
     return;
   }
 
@@ -1784,6 +1888,19 @@ mainEl.addEventListener("input", function(e){
   var t = e.target;
   var act = t.dataset.act;
   
+  if(act==="profile-name"){
+    state.profile.name = t.value;
+    saveProfile();
+    return;
+  }
+
+  if(act==="wed-date"){
+    state.profile.weddingDate = t.value;
+    saveProfile();
+    renderTab();
+    return;
+  }
+
   if(act==="task-text-edit"){
     var taskItem = state.tasks.find(function(x){ return x.id === t.dataset.id; });
     if(taskItem){
@@ -1906,7 +2023,7 @@ mainEl.addEventListener("input", function(e){
   }
 
   if(act==="guest-field"){
-    var g = state.guests.valueind ? state.guests.find(function(x){return x.id===t.dataset.id;}) : state.guests.find(function(x){return x.id===t.dataset.id;});
+    var g = state.guests.find(function(x){return x.id===t.dataset.id;});
     if(g){ g[t.dataset.field] = t.value; saveGuests(); }
     return;
   }
@@ -1914,16 +2031,26 @@ mainEl.addEventListener("input", function(e){
 
 document.addEventListener("click", function(e){
   if(e.target && e.target.dataset.act === "welcome-start"){
-    var b = document.getElementById("welcomeBride").value;
-    var g = document.getElementById("welcomeGroom").value;
-    var em = document.getElementById("welcomeEmail").value;
-    var ph = document.getElementById("welcomePhone").value;
-    if(b || g){
-      state.profile.name = (b && g) ? (b + " ו" + g) : (b || g);
-      if(em) state.profile.email = em;
-      if(ph) state.profile.phone = ph;
-      saveProfile();
+    var b = document.getElementById("welcomeBride").value.trim();
+    var g = document.getElementById("welcomeGroom").value.trim();
+    var em = document.getElementById("welcomeEmail").value.trim();
+    var ph = document.getElementById("welcomePhone").value.trim();
+
+    if(!b || !g || !ph){
+      alert("נא למלא את כל שדות החובה: שם הכלה, שם החתן ומספר טלפון.");
+      return;
     }
+
+    state.profile.brideName = b;
+    state.profile.groomName = g;
+    state.profile.name = b + " ו" + g;
+    state.profile.email = em;
+    state.profile.phone = ph;
+    saveProfile();
+
+    state.coupleInfo = {bride: b, groom: g, email: em, phone: ph};
+    save("coupleInfo", state.coupleInfo);
+
     state.meta.seenWelcome = true;
     saveMeta();
     document.getElementById("welcomeScreen").style.display = "none";
