@@ -881,7 +881,7 @@ function renderAlcohol(){
   + '</div>';
 
   html += '<div class="card rose-accent" style="padding:12px 10px">'
-    + '<p class="small" style="margin:0;color:var(--rose-900);font-weight:700">💡 טיפ ממתת: אל תשכחו - צריך לתכנן אלכוהול גם לרחבה (הבר) וגם להגשה לשולחנות עצמם!</p>'
+    + '<p class="small" style="margin:0;color:var(--rose-900);font-weight:700">💡 טיפ ממתת: אל תשכחו - צריך לתכנן אלכוהול גם לרחבה (הבר) וגם להגשה לשולחנות עצם!</p>'
   + '</div>';
 
   drinksInfo.forEach(function(d){
@@ -1031,16 +1031,19 @@ function renderTasks(){
 }
 
 function budgetCatTotal(catId){ return state.budgetCats[catId].reduce(function(s,it){ return s+(Number(it.cost)||0); },0); }
+function budgetCatRemaining(catId){ return state.budgetCats[catId].reduce(function(s,it){ return s+((Number(it.cost)||0)-(Number(it.deposit)||0)); },0); }
 function budgetGrandCost(){ var t=0; Object.keys(state.budgetCats).forEach(function(c){ t+=budgetCatTotal(c); }); return t; }
+function budgetGrandRemaining(){ var t=0; Object.keys(state.budgetCats).forEach(function(c){ t+=budgetCatRemaining(c); }); return t; }
 function budgetGrandIncome(){
   var inc = state.income;
   return (Number(inc.guests)||0)*(Number(inc.gift)||0) + (Number(inc.brideParents)||0) + (Number(inc.groomParents)||0) + (Number(inc.savings)||0);
 }
 function renderBudget(){
-  var cost = budgetGrandCost(), inc = budgetGrandIncome(), bal = inc-cost;
+  var cost = budgetGrandCost(), remain = budgetGrandRemaining(), inc = budgetGrandIncome(), bal = inc-cost;
   var html = '<h2 class="pagetitle">תקציב החתונה</h2><p class="pagesub">מלאו את המחירים האמיתיים שלכם.</p>';
   html += '<div class="card plain">'
     + '<div class="between" style="margin-bottom:6px"><span class="small muted">סך הוצאות</span><span id="budgetGrandCost" style="font-weight:800">'+ils(cost)+'</span></div>'
+    + '<div class="between" style="margin-bottom:6px"><span class="small muted">נותר לשלם (אחרי מקדמות)</span><span id="budgetGrandRemaining" style="font-weight:800;color:var(--rose-600)">'+ils(remain)+'</span></div>'
     + '<div class="between" style="margin-bottom:8px"><span class="small muted">צפי הכנסות</span><span id="budgetGrandIncome" style="font-weight:800">'+ils(inc)+'</span></div>'
     + '<div class="between" style="border-top:1px solid var(--border);padding-top:8px"><span class="small" style="font-weight:800">יתרה</span><span id="budgetGrandBalance" style="font-weight:800;font-size:14px;color:'+(bal<0?'#993556':'#1D9E75')+'">'+ils(Math.abs(bal))+(bal<0?' גירעון':' עודף')+'</span></div>'
   + '</div>';
@@ -1510,6 +1513,30 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
+  // Budget actions (Add / Delete item)
+  if(act==="budget-add"){
+    var catId = t.dataset.cat;
+    var itemName = prompt("הכנס שם להוצאה חדשה:");
+    if(itemName){
+      if(!state.budgetCats[catId]) state.budgetCats[catId] = [];
+      state.budgetCats[catId].push({id: uid(), name: itemName, tip: "", cost: "", deposit: ""});
+      saveBudget();
+      renderTab();
+    }
+    return;
+  }
+
+  if(act==="budget-del"){
+    var catId = t.dataset.cat;
+    var itemId = t.dataset.id;
+    if(state.budgetCats[catId]){
+      state.budgetCats[catId] = state.budgetCats[catId].filter(function(item){ return item.id !== itemId; });
+      saveBudget();
+      renderTab();
+    }
+    return;
+  }
+
   // Equipment actions
   if(act==="equip-toggle"){
     var side = t.dataset.side;
@@ -1751,6 +1778,65 @@ mainEl.addEventListener("input", function(e){
     return;
   }
 
+  // Live update budget fields (Cost / Deposit)
+  if(act==="budget-field"){
+    var catId = t.dataset.cat;
+    var itemId = t.dataset.id;
+    var field = t.dataset.field;
+    var item = state.budgetCats[catId] ? state.budgetCats[catId].find(function(x){ return x.id === itemId; }) : null;
+    if(item){
+      item[field] = t.value;
+      saveBudget();
+
+      // Update category subtotal
+      var catSubEl = document.getElementById("catsub-" + catId);
+      if(catSubEl) catSubEl.textContent = ils(budgetCatTotal(catId));
+
+      // Update grand totals
+      var cost = budgetGrandCost();
+      var remain = budgetGrandRemaining();
+      var inc = budgetGrandIncome();
+      var bal = inc - cost;
+
+      var gcEl = document.getElementById("budgetGrandCost");
+      if(gcEl) gcEl.textContent = ils(cost);
+
+      var grEl = document.getElementById("budgetGrandRemaining");
+      if(grEl) grEl.textContent = ils(remain);
+
+      var giEl = document.getElementById("budgetGrandIncome");
+      if(giEl) giEl.textContent = ils(inc);
+
+      var gbEl = document.getElementById("budgetGrandBalance");
+      if(gbEl){
+        gbEl.textContent = ils(Math.abs(bal)) + (bal < 0 ? " גירעון" : " עודף");
+        gbEl.style.color = bal < 0 ? "#993556" : "#1D9E75";
+      }
+    }
+    return;
+  }
+
+  // Live update expected income fields
+  if(act==="income-field"){
+    var field = t.dataset.field;
+    state.income[field] = t.value;
+    saveBudget();
+
+    var cost = budgetGrandCost();
+    var inc = budgetGrandIncome();
+    var bal = inc - cost;
+
+    var giEl = document.getElementById("budgetGrandIncome");
+    if(giEl) giEl.textContent = ils(inc);
+
+    var gbEl = document.getElementById("budgetGrandBalance");
+    if(gbEl){
+      gbEl.textContent = ils(Math.abs(bal)) + (bal < 0 ? " גירעון" : " עודף");
+      gbEl.style.color = bal < 0 ? "#993556" : "#1D9E75";
+    }
+    return;
+  }
+
   if(act==="equip-field"){
     var side = t.dataset.side;
     var item = state.equipment[side].find(function(x){ return x.id === t.dataset.id; });
@@ -1786,7 +1872,6 @@ mainEl.addEventListener("input", function(e){
     state.alcohol[t.dataset.field] = t.value;
     saveAlcohol();
     
-    // Live update alcohol calculator UI
     var calc = calcAlcoholTotals();
     var drinkersLabel = document.getElementById("alcDrinkersLabel");
     if(drinkersLabel) drinkersLabel.textContent = "מוערך ששותים בפועל: " + calc.drinkers + " אורחים";
