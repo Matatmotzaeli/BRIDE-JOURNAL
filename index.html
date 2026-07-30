@@ -954,7 +954,11 @@ function renderTasks(){
       group.forEach(function(item){
         html += '<div class="taskrow" style="align-items:center">'
           + '<input type="checkbox" data-act="task-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'
-          + '<input type="text" data-act="task-text-edit" data-id="'+item.id+'" value="'+esc(item.t)+'" style="flex:1;border:none;background:transparent;font-size:12.5px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
+          + '<div style="flex:1">'
+            + '<input type="text" data-act="task-text-edit" data-id="'+item.id+'" value="'+esc(item.t)+'" style="border:none;background:transparent;font-size:12.5px;width:100%;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
+            + '<span style="display:block;font-size:9.5px;color:var(--muted);margin-top:1px">'+esc(item.c)+'</span>'
+            + (item.n?('<span style="display:block;font-size:9.5px;color:var(--rose-600);margin-top:1px">'+esc(item.n)+'</span>'):'')
+          + '</div>'
           + '<button class="icon-del" data-act="task-del" data-id="'+item.id+'">×</button>'
           + '</div>';
       });
@@ -1485,12 +1489,30 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
+  if(act==="cal-prev"){
+    calMonth--;
+    if(calMonth < 0){ calMonth = 11; calYear--; }
+    renderTab();
+    return;
+  }
+  if(act==="cal-next"){
+    calMonth++;
+    if(calMonth > 11){ calMonth = 0; calYear++; }
+    renderTab();
+    return;
+  }
   if(act==="cal-day"){
     var iso = t.dataset.date;
     var idxD = state.venue.dates.indexOf(iso);
     if(idxD===-1) state.venue.dates.push(iso); else state.venue.dates.splice(idxD,1);
     saveVenue(); renderTab(); return;
   }
+  if(act==="date-remove"){
+    var iso = t.dataset.date;
+    state.venue.dates = state.venue.dates.filter(function(d){ return d !== iso; });
+    saveVenue(); renderTab(); return;
+  }
+
   if(act==="venuedb-filter"){ window.venueDBRegionFilter = t.dataset.region; renderTab(); return; }
   if(act==="venue-add"){
     state.venue.list.push({id:uid(), name:"", region:"", price:"", capacity:"", status:"checking", answers:{}, chosenDate:""});
@@ -1591,7 +1613,6 @@ mainEl.addEventListener("change", function(e){
     return;
   }
 
-  // Handle Image Upload for Inspiration
   if(t.id === "inspFileInput" && t.files && t.files[0]){
     var file = t.files[0];
     var reader = new FileReader();
