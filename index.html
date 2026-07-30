@@ -1411,13 +1411,28 @@ firebase.auth().onAuthStateChanged(async function(user) {
   }
 });
 
+// Handle redirect results for mobile / iOS Safari compatibility
+firebase.auth().getRedirectResult().catch(function(error) {
+  alert("שגיאה בהתחברות: " + error.message);
+});
+
 document.getElementById("btnLogout").addEventListener("click", function(){ if(confirm("האם להתנתק מהחשבון?")) firebase.auth().signOut(); });
 
 document.getElementById("btnGoogleAuth").addEventListener("click", function(){
   var provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithPopup(provider).catch(function(error){
-    alert("שגיאה בהתחברות עם Google: " + error.message);
-  });
+  // Use signInWithRedirect for iOS Safari compatibility where popups are blocked
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if(isIOS || window.innerWidth < 768){
+    firebase.auth().signInWithRedirect(provider).catch(function(error){
+      alert("שגיאה בהתחברות עם Google: " + error.message);
+    });
+  } else {
+    firebase.auth().signInWithPopup(provider).catch(function(error){
+      firebase.auth().signInWithRedirect(provider).catch(function(redirectErr){
+        alert("שגיאה בהתחברות עם Google: " + error.message);
+      });
+    });
+  }
 });
 
 document.getElementById("btnEmailLogin").addEventListener("click", function(){
@@ -1891,7 +1906,7 @@ mainEl.addEventListener("input", function(e){
   }
 
   if(act==="guest-field"){
-    var g = state.guests.find(function(x){return x.id===t.dataset.id;});
+    var g = state.guests.valueind ? state.guests.find(function(x){return x.id===t.dataset.id;}) : state.guests.find(function(x){return x.id===t.dataset.id;});
     if(g){ g[t.dataset.field] = t.value; saveGuests(); }
     return;
   }
