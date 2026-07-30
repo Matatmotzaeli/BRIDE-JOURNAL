@@ -586,7 +586,7 @@ var state = {
 };
 var currentTab = "home";
 var currentSideSubtab = "challah";
-var groupOpen = {7:true};
+var groupOpen = {7:true, 6:true, 4:true, 3:true, 2:true, 1.5:true, 1:true};
 var calMonth = 3, calYear = 2027;
 var qOpen = {};
 var globalVenueQOpen = false;
@@ -939,12 +939,11 @@ function renderTasks(){
   
   buckets.forEach(function(mo){
     var group = state.tasks.filter(function(t){ return t.m===mo; });
-    if(group.length===0) return;
     var doneCount = group.filter(function(t){return t.done;}).length;
-    var allDone = doneCount===group.length;
+    var allDone = group.length > 0 && doneCount===group.length;
     var groupDate = wed ? subMonths(wed, mo) : null;
     var dateLabel = groupDate ? fmtDate(groupDate) : (group.length+" משימות");
-    var open = !!groupOpen[mo];
+    var open = groupOpen[mo] !== false;
     html += '<div class="groupwrap'+(allDone?' done':'')+'">'
       + '<div class="grouphead" data-act="group-toggle" data-months="'+mo+'">'
         + '<span style="font-size:12.5px;font-weight:800;color:var(--rose-900)">'+mo+' חודשים לפני</span>'
@@ -953,18 +952,18 @@ function renderTasks(){
     if(open){
       html += '<div style="padding:4px 10px 8px">';
       group.forEach(function(item){
-        html += '<label class="taskrow">'
+        html += '<div class="taskrow" style="align-items:center">'
           + '<input type="checkbox" data-act="task-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'
-          + '<span style="flex:1"><span style="font-size:12.5px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'+esc(item.t)+'</span>'
-          + '<span style="display:block;font-size:9.5px;color:var(--muted);margin-top:1px">'+esc(item.c)+'</span>'
-          + (item.n?('<span style="display:block;font-size:9.5px;color:var(--rose-600);margin-top:1px">'+esc(item.n)+'</span>'):'')
-          + '</span></label>';
+          + '<input type="text" data-act="task-text-edit" data-id="'+item.id+'" value="'+esc(item.t)+'" style="flex:1;border:none;background:transparent;font-size:12.5px;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
+          + '<button class="icon-del" data-act="task-del" data-id="'+item.id+'">×</button>'
+          + '</div>';
       });
+      html += '<button class="ghost" data-act="task-add-to-month" data-months="'+mo+'" style="margin-top:6px">+ הוספת משימה לחודש זה</button>';
       html += '</div>';
     }
     html += '</div>';
   });
-  html += '<button class="ghost" data-act="task-add">+ הוספת משימה</button>';
+  html += '<button class="primary" data-act="task-add" style="margin-top:10px">+ הוספת משימה חדשה</button>';
   return html;
 }
 
@@ -1393,7 +1392,7 @@ mainEl.addEventListener("click", function(e){
 
   if(act==="group-toggle"){
     var mo = Number(t.dataset.months);
-    groupOpen[mo] = !groupOpen[mo];
+    groupOpen[mo] = groupOpen[mo] === false ? true : false;
     renderTab();
     return;
   }
@@ -1406,6 +1405,34 @@ mainEl.addEventListener("click", function(e){
       if(taskItem.done && typeof confetti === "function"){
         confetti({particleCount: 40, spread: 60, origin: { y: 0.8 }});
       }
+      renderTab();
+    }
+    return;
+  }
+
+  if(act==="task-del"){
+    state.tasks = state.tasks.filter(function(x){ return x.id !== t.dataset.id; });
+    saveTasks();
+    renderTab();
+    return;
+  }
+
+  if(act==="task-add"){
+    var taskText = prompt("הכנס את תוכן המשימה החדשה:");
+    if(taskText){
+      state.tasks.push({id: uid(), c: "כללי", t: taskText, m: 7, n: "", done: false});
+      saveTasks();
+      renderTab();
+    }
+    return;
+  }
+
+  if(act==="task-add-to-month"){
+    var mo = Number(t.dataset.months);
+    var taskText = prompt("הכנס את תוכן המשימה החדשה:");
+    if(taskText){
+      state.tasks.push({id: uid(), c: "כללי", t: taskText, m: mo, n: "", done: false});
+      saveTasks();
       renderTab();
     }
     return;
@@ -1574,7 +1601,7 @@ mainEl.addEventListener("change", function(e){
         id: uid(),
         type: "image",
         dataUrl: dataUrl,
-        category: "עיצוב", // ברירת מחדל לתמונות מהגלריה
+        category: "עיצוב",
         title: "תמונה מהגלריה",
         note: file.name || ""
       });
@@ -1594,6 +1621,15 @@ mainEl.addEventListener("change", function(e){
 mainEl.addEventListener("input", function(e){
   var t = e.target;
   var act = t.dataset.act;
+  
+  if(act==="task-text-edit"){
+    var taskItem = state.tasks.find(function(x){ return x.id === t.dataset.id; });
+    if(taskItem){
+      taskItem.t = t.value;
+      saveTasks();
+    }
+    return;
+  }
   
   if(act==="vcalc-field"){
     state.venueCalc[t.dataset.field] = t.value;
