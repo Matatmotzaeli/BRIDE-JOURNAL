@@ -1416,7 +1416,11 @@ function renderInspiration(){
     if(it.type==="image") {
       html += '<img src="'+it.dataUrl+'" style="width:100%;max-height:250px;object-fit:cover;border-radius:6px;margin-bottom:6px;display:block">';
     }
-    html += '<div class="between" style="margin-bottom:4px"><span style="font-size:12px;font-weight:800;color:var(--rose-900)">'+esc(it.title||it.url||"תמונה מעולה")+'</span><span class="tag tag-rose">'+esc(it.category)+'</span></div>';
+    html += '<div class="between" style="margin-bottom:4px"><span style="font-size:12px;font-weight:800;color:var(--rose-900)">'+esc(it.title||it.url||"תמונה מעולה")+'</span>'
+      + '<select data-act="insp-cat-change" data-id="'+it.id+'" style="width:110px;padding:2px 4px;font-size:10px;font-weight:700">'
+      + INSPIRATION_CATS.map(function(c){ return '<option value="'+c+'" '+(it.category===c?'selected':'')+'>'+c+'</option>'; }).join('')
+      + '</select>'
+      + '</div>';
     if(it.note) html += '<p class="small muted" style="margin:0 0 6px">'+esc(it.note)+'</p>';
     
     if(it.url) {
@@ -1849,6 +1853,16 @@ mainEl.addEventListener("change", function(e){
   var t = e.target;
   var act = t.dataset.act;
 
+  if(act === "insp-cat-change"){
+    var inspId = t.dataset.id;
+    var inspItem = state.inspiration.find(function(x){ return x.id === inspId; });
+    if(inspItem){
+      inspItem.category = t.value;
+      saveInspiration();
+    }
+    return;
+  }
+
   if(t.id === "guestExcelInput" && t.files && t.files[0]){
     var file = t.files[0];
     var reader = new FileReader();
@@ -1890,11 +1904,13 @@ mainEl.addEventListener("change", function(e){
     var reader = new FileReader();
     reader.onload = function(evt){
       var dataUrl = evt.target.result;
+      var catSelect = document.getElementById("inspCategorySelect");
+      var manualCat = catSelect ? catSelect.value : "";
       state.inspiration.push({
         id: uid(),
         type: "image",
         dataUrl: dataUrl,
-        category: "עיצוב",
+        category: manualCat || "עיצוב",
         title: "תמונה מהגלריה",
         note: file.name || ""
       });
