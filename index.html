@@ -556,12 +556,48 @@ var ONB_STEPS = [
 var INSPIRATION_CATS = ["שמלות","פוזות","אולמות","מסיבת רווקות","עיצוב","אחר"];
 
 var VENDOR_GUIDES_DATA = [
-  {id:"venue", title:"אולם", desc:"כל מה שצריך לדעת על סגירת אולם, תמחור מנות, התחייבויות ושאלות קריטיות.", videoUrl:"https://www.tiktok.com/@bride_journal"},
-  {id:"photographer", title:"צלם", desc:"איך לבחור צלם סטילס ווידאו, שילוב סושיאל ולוחות זמנים ליום האירוע.", videoUrl:"https://www.tiktok.com/@bride_journal"},
-  {id:"dj", title:"דיג'יי", desc:"בניית פלייליסט, תיאום ציפיות ותשלום אקו\"ם.", videoUrl:"https://www.tiktok.com/@bride_journal"},
-  {id:"producer", title:"מפיק/מנהל אירוע", desc:"למה חובה מפיק חיצוני או מנהל מטעם האולם, ואיך סוגרים לו\"ז מדויק.", videoUrl:"https://www.tiktok.com/@bride_journal"},
-  {id:"designer", title:"מעצבת", desc:"עיצוב חופה, שולחנות, תאורה והתאמה לתקציב שלכם.", videoUrl:"https://www.tiktok.com/@bride_journal"},
-  {id:"alcohol", title:"אלכוהול ובר", desc:"חישוב כמויות נכון, סוגי משקאות ומניעת גניבות ברחבה.", videoUrl:"https://www.tiktok.com/@bride_journal"}
+  {
+    id: "venue", 
+    title: "אולם", 
+    desc: "כל מה שצריך לדעת על סגירת אולם, תמחור מנות, התחייבויות ושאלות קריטיות.", 
+    videoUrl: "https://www.tiktok.com/@bride_journal",
+    checklist: ["בדיקת תעודת כשרות", "תמחור מדויק כולל מע\"מ וטיפים", "מדיניות ביטולים וכוח עליון", "בדיקת התחייבות מינימום ורזרבות"]
+  },
+  {
+    id: "photographer", 
+    title: "צלם", 
+    desc: "איך לבחור צלם סטילס ווידאו, שילוב סושיאל ולוחות זמנים ליום האירוע.", 
+    videoUrl: "https://www.tiktok.com/@bride_journal/photo/7661186469695966484?is_from_webapp=1&sender_device=pc&web_id=7646044684820809232",
+    checklist: ["צילומי זוגיות והתארגנות", "כמות צלמים באירוע (סטילס + וידאו + רחפן)", "אספקת חומרי גלם ועריכה סופית", "שילוב צילום סושיאל ברחבה"]
+  },
+  {
+    id: "dj", 
+    title: "דיג'יי", 
+    desc: "בניית פלייליסט, תיאום ציפיות ותשלום אקו\"ם.", 
+    videoUrl: "https://www.tiktok.com/@bride_journal/photo/7661682115150368020?is_from_webapp=1&sender_device=pc&web_id=7646044684820809232",
+    checklist: ["שירים לחופה, סלואו ושבירת כוס", "פגישת מוזיקה ותיאום טעמים לרחבה", "תשלום אקו\"ם ושליחת אישור לאולם/דיג'יי", "עבודה מול מנהל האירוע בזמן אמת"]
+  },
+  {
+    id: "producer", 
+    title: "מפיק/מנהל אירוע", 
+    desc: "למה חובה מפיק חיצוני או מנהל מטעם האולם, ואיך סוגרים לו\"ז מדויק.", 
+    videoUrl: "https://www.tiktok.com/@bride_journal",
+    checklist: ["בניית לו\"ז מדויק ליום החתונה", "ניהול ספקים בשטח ותשלומים", "פיקוח על אלכוהול ומתנות", "תיאום הושבה ואישורי הגעה"]
+  },
+  {
+    id: "designer", 
+    title: "מעצבת", 
+    desc: "עיצוב חופה, שולחנות, תאורה והתאמה לתקציב שלכם.", 
+    videoUrl: "https://www.tiktok.com/@bride_journal",
+    checklist: ["עיצוב חופה ואזור קבלת פנים", "סידורי פרחים ושולחנות", "תאורת אווירה ושילוט בכניסה", "התאמה לתקציב האישי שלכם"]
+  },
+  {
+    id: "alcohol", 
+    title: "אלכוהול ובר", 
+    desc: "חישוב כמויות נכון, סוגי משקאות ומניעת גניבות ברחבה.", 
+    videoUrl: "https://www.tiktok.com/@bride_journal",
+    checklist: ["חישוב כמויות מדויק לפי מספר שותים", "ניהול בר ואחריות על בקבוקים", "שילוב משקאות אנרגיה ותוספות", "בדיקת דמי חליצה מול האולם"]
+  }
 ];
 
 var VENUE_DB_SEED = [
@@ -663,6 +699,7 @@ var state = {
 
 var currentTab = "home";
 var currentSideSubtab = "challah";
+var activeVendorGuideId = null;
 var groupOpen = {7:true, 6:true, 4:true, 3:true, 2:true, 1.5:true, 1:true};
 var calMonth = 3, calYear = 2027;
 var qOpen = {};
@@ -670,8 +707,7 @@ var globalVenueQOpen = false;
 var importMsg = "";
 var inspFilter = "all";
 
-// Undo support for lists/deletions
-var lastDeletedAction = null; // { type, data, restoreFn }
+var lastDeletedAction = null;
 var undoTimer = null;
 
 function showUndoToast(msg, restoreFn){
@@ -865,7 +901,7 @@ function renderHome(){
   + navcard("sideEvents","אירועים נלווים","הפרשת חלה, רווקות, מקווה")
 
   + '<p class="sectionlabel">השראה ותוכן</p>'
-  + navcard("vendorGuides","מדריכים לספקים","אולם, צלם, דיג'יי ועוד")
+  + navcard("vendorGuides","מדריכים לבחירת ספקים","אולם, צלם, דיג'יי ועוד")
   + navcard("inspiration","לוח השראה", state.inspiration.length+" שמורים")
   + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">השראה לעיצוב הזמנה בקנבה</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">המלצות להזמנות מהאינטרנט</span><span class="tag tag-muted">בקרוב</span></div></div>'
@@ -878,12 +914,39 @@ function navcard(tab,label,meta){
 }
 
 function renderVendorGuides(){
-  var html = '<h2 class="pagetitle">מדריכים לספקים</h2><p class="pagesub">כל הטיפים, הדגשים וקישורים לסרטונים מהטיקטוק לכל ספק בחתונה</p>';
+  if(activeVendorGuideId) {
+    var g = VENDOR_GUIDES_DATA.find(function(x){ return x.id === activeVendorGuideId; });
+    if(g){
+      var html = '<button class="small-btn" data-act="vendor-guide-back" style="margin-bottom:10px">‹ חזרה לכל המדריכים</button>';
+      html += '<h2 class="pagetitle">'+esc(g.title)+'</h2>';
+      html += '<p class="pagesub">'+esc(g.desc)+'</p>';
+      
+      html += '<div class="card rose-accent" style="text-align:center;padding:14px;margin-bottom:10px">';
+      html += '<p style="font-size:13px;font-weight:800;color:var(--rose-900);margin:0 0 6px">🎬 מסך מקדים לסרטון הטיקטוק</p>';
+      html += '<a href="'+esc(g.videoUrl)+'" target="_blank" class="tiktok-link" style="font-size:12.5px;padding:8px 16px">🎵 צפו בסרטון המלא ב-TikTok</a>';
+      html += '</div>';
+
+      if(g.checklist && g.checklist.length > 0){
+        html += '<p class="sectionlabel">רשימות ודגשים לבחירת '+esc(g.title)+'</p>';
+        html += '<div class="card plain">';
+        g.checklist.forEach(function(item, idx){
+          html += '<div class="itemwrap" style="display:flex;align-items:center;gap:8px;">';
+          html += '<span style="font-weight:800;color:var(--rose-600);">'+(idx+1)+'.</span>';
+          html += '<span style="font-size:12.5px;font-weight:700;color:var(--ink);">'+esc(item)+'</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+      return html;
+    }
+  }
+
+  var html = '<h2 class="pagetitle">מדריכים לבחירת ספקים</h2><p class="pagesub">כל הטיפים, הדגשים וקישורים לסרטונים מהטיקטוק לכל ספק בחתונה</p>';
   VENDOR_GUIDES_DATA.forEach(function(g){
     html += '<div class="card plain">'
       + '<h3 style="font-size:14px;font-weight:800;color:var(--rose-900);margin:0 0 4px">'+esc(g.title)+'</h3>'
       + '<p style="font-size:12px;color:var(--ink);margin:0 0 8px;line-height:1.4">'+esc(g.desc)+'</p>'
-      + '<a href="'+esc(g.videoUrl)+'" target="_blank" class="tiktok-link" style="margin-top:0">🎵 צפו בסרטון ההסבר ב-TikTok</a>'
+      + '<button class="small-btn primary" data-act="open-vendor-guide" data-id="'+g.id+'" style="width:100%">כניסה לרשימות ולסרטון הטיקטוק ↗</button>'
     + '</div>';
   });
   return html;
@@ -893,14 +956,15 @@ function calcAlcoholTotals(){
   var a = state.alcohol;
   var drinkers = Math.round((Number(a.guests)||0) * ((Number(a.drinkersPct)||75)/100));
   var drinksInfo = [
-    {k:"vodka", canVenue:false},
-    {k:"whiskey", canVenue:false},
-    {k:"arak", canVenue:false},
+    {k:"vodka", canVenue:true},
+    {k:"whiskey", canVenue:true},
+    {k:"arak", canVenue:true},
     {k:"wine", canVenue:true},
     {k:"cava", canVenue:true},
     {k:"beer", canVenue:true}
   ];
   var totalCost = 0;
+  var totalBottles = 0;
   var resultsHtml = '';
   drinksInfo.forEach(function(d){
     var isVenueProvides = d.canVenue && a["venue_"+d.k];
@@ -908,17 +972,17 @@ function calcAlcoholTotals(){
     var price = Number(a[d.k+"Price"]) || 0;
     var amount = Math.ceil(drinkers / ratio);
     var cost = amount * price;
+    var titles = {vodka:"וודקה", whiskey:"וויסקי", arak:"עראק", wine:"יין", cava:"קאווה / שמפניה", beer:"בירה"};
     if(isVenueProvides){
-      var titles = {vodka:"וודקה", whiskey:"וויסקי", arak:"עראק", wine:"יין", cava:"קאווה / שמפניה", beer:"בירה"};
       resultsHtml += '<p class="small" style="margin:2px 0">'+titles[d.k]+': <b>באחריות האולם</b></p>';
     } else {
       totalCost += cost;
-      var titles = {vodka:"וודקה", whiskey:"וויסקי", arak:"עראק", wine:"יין", cava:"קאווה / שמפניה", beer:"בירה"};
+      totalBottles += amount;
       resultsHtml += '<p class="small" style="margin:2px 0">'+titles[d.k]+': <b>'+amount+'</b> בקבוקים/יחידות</p>';
     }
   });
   totalCost += (Number(a.extrasCost)||0);
-  return { drinkers: drinkers, totalCost: totalCost, resultsHtml: resultsHtml };
+  return { drinkers: drinkers, totalCost: totalCost, totalBottles: totalBottles, resultsHtml: resultsHtml };
 }
 
 function renderAlcohol(){
@@ -926,9 +990,9 @@ function renderAlcohol(){
   var calc = calcAlcoholTotals();
 
   var drinksInfo = [
-    {k:"vodka", n:"וודקה", canVenue:false},
-    {k:"whiskey", n:"וויסקי", canVenue:false},
-    {k:"arak", n:"עראק", canVenue:false},
+    {k:"vodka", n:"וודקה", canVenue:true},
+    {k:"whiskey", n:"וויסקי", canVenue:true},
+    {k:"arak", n:"עראק", canVenue:true},
     {k:"wine", n:"יין", canVenue:true},
     {k:"cava", n:"קאווה / שמפניה", canVenue:true},
     {k:"beer", n:"בירה (מומלץ 1 או 2 לשותה)", canVenue:true}
@@ -978,6 +1042,10 @@ function renderAlcohol(){
     + '<p style="font-size:13px;font-weight:800;color:#085041;margin:0 0 6px">תוצאות והמלצת כמויות:</p>'
     + '<div id="alcResultsContainer">'+calc.resultsHtml+'</div>'
     + '<div style="border-top:1px dashed #BBE8D7;margin-top:8px;padding-top:6px" class="between">'
+      + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ בקבוקים לרכישה:</span>'
+      + '<span style="font-size:13px;font-weight:800;color:#085041" id="alcTotalBottlesSpan">'+calc.totalBottles+' יחידות</span>'
+    + '</div>'
+    + '<div style="margin-top:4px" class="between">'
       + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ עלות אלכוהול לרכישה:</span>'
       + '<span style="font-size:14px;font-weight:800;color:#085041" id="alcTotalCostSpan">'+ils(calc.totalCost)+'</span>'
     + '</div>'
@@ -1467,7 +1535,7 @@ function renderTab(){
   document.getElementById("tabContent").innerHTML = RENDERERS[currentTab]();
   document.querySelectorAll("#bottomNav button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===currentTab); });
 }
-function switchTab(tab){ currentTab = tab; importMsg=""; renderTab(); window.scrollTo(0,0); }
+function switchTab(tab){ currentTab = tab; importMsg=""; activeVendorGuideId=null; renderTab(); window.scrollTo(0,0); }
 
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
@@ -1490,7 +1558,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
   }
 });
 
-// Handle redirect results for mobile / iOS Safari compatibility
 firebase.auth().getRedirectResult().catch(function(error) {
   alert("שגיאה בהתחברות: " + error.message);
 });
@@ -1549,7 +1616,6 @@ navEl.addEventListener("click", function(e){
   if(b) switchTab(b.dataset.tab);
 });
 
-// Undo button handler
 document.getElementById("undoBtn").addEventListener("click", function(){
   if(lastDeletedAction && typeof lastDeletedAction.restoreFn === "function"){
     lastDeletedAction.restoreFn();
@@ -1565,6 +1631,17 @@ mainEl.addEventListener("click", function(e){
 
   var t = e.target;
   var act = t.dataset.act;
+
+  if(act === "open-vendor-guide"){
+    activeVendorGuideId = t.dataset.id;
+    renderTab();
+    return;
+  }
+  if(act === "vendor-guide-back"){
+    activeVendorGuideId = null;
+    renderTab();
+    return;
+  }
 
   if(act === "side-subtab"){
     currentSideSubtab = t.dataset.sub;
@@ -1634,7 +1711,6 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
-  // Budget actions (Add / Delete item)
   if(act==="budget-add"){
     var catId = t.dataset.cat;
     var itemName = prompt("הכנס שם להוצאה חדשה:");
@@ -1665,7 +1741,6 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
-  // Equipment actions
   if(act==="equip-toggle"){
     var side = t.dataset.side;
     var item = state.equipment[side].find(function(x){ return x.id === t.dataset.id; });
@@ -1819,7 +1894,6 @@ mainEl.addEventListener("click", function(e){
   }
   if(act==="q-toggle"){ qOpen[t.dataset.id] = !qOpen[t.dataset.id]; renderTab(); return; }
 
-  // Inspiration actions
   if(act==="insp-add"){
     var urlInput = document.getElementById("inspUrlInput");
     var noteInput = document.getElementById("inspNoteInput");
@@ -1963,7 +2037,17 @@ mainEl.addEventListener("change", function(e){
 
   if(act==="alc-check"){
     state.alcohol[t.dataset.field] = t.checked;
-    saveAlcohol(); renderTab(); return;
+    saveAlcohol(); 
+    var calc = calcAlcoholTotals();
+    var drinkersLabel = document.getElementById("alcDrinkersLabel");
+    if(drinkersLabel) drinkersLabel.textContent = "מוערך ששותים בפועל: " + calc.drinkers + " אורחים";
+    var resultsContainer = document.getElementById("alcResultsContainer");
+    if(resultsContainer) resultsContainer.innerHTML = calc.resultsHtml;
+    var totalBottlesSpan = document.getElementById("alcTotalBottlesSpan");
+    if(totalBottlesSpan) totalBottlesSpan.textContent = calc.totalBottles + " יחידות";
+    var totalCostSpan = document.getElementById("alcTotalCostSpan");
+    if(totalCostSpan) totalCostSpan.textContent = ils(calc.totalCost);
+    return;
   }
 });
 
@@ -1993,7 +2077,6 @@ mainEl.addEventListener("input", function(e){
     return;
   }
 
-  // Live update budget fields (Cost / Deposit)
   if(act==="budget-field"){
     var catId = t.dataset.cat;
     var itemId = t.dataset.id;
@@ -2003,11 +2086,9 @@ mainEl.addEventListener("input", function(e){
       item[field] = t.value;
       saveBudget();
 
-      // Update category subtotal
       var catSubEl = document.getElementById("catsub-" + catId);
       if(catSubEl) catSubEl.textContent = ils(budgetCatTotal(catId));
 
-      // Update grand totals
       var cost = budgetGrandCost();
       var remain = budgetGrandRemaining();
       var inc = budgetGrandIncome();
@@ -2031,7 +2112,6 @@ mainEl.addEventListener("input", function(e){
     return;
   }
 
-  // Live update expected income fields
   if(act==="income-field"){
     var field = t.dataset.field;
     state.income[field] = t.value;
@@ -2094,6 +2174,9 @@ mainEl.addEventListener("input", function(e){
     var resultsContainer = document.getElementById("alcResultsContainer");
     if(resultsContainer) resultsContainer.innerHTML = calc.resultsHtml;
     
+    var totalBottlesSpan = document.getElementById("alcTotalBottlesSpan");
+    if(totalBottlesSpan) totalBottlesSpan.textContent = calc.totalBottles + " יחידות";
+
     var totalCostSpan = document.getElementById("alcTotalCostSpan");
     if(totalCostSpan) totalCostSpan.textContent = ils(calc.totalCost);
     return;
@@ -2134,7 +2217,6 @@ document.addEventListener("click", function(e){
     state.coupleInfo = {bride: b, groom: g, email: em, phone: ph};
     save("coupleInfo", state.coupleInfo);
 
-    // Save lead to central 'leads' collection in Firestore
     try {
       db.collection("leads").add({
         brideName: b,
