@@ -555,6 +555,15 @@ var ONB_STEPS = [
 
 var INSPIRATION_CATS = ["שמלות","פוזות","אולמות","מסיבת רווקות","עיצוב","אחר"];
 
+var VENDOR_GUIDES_DATA = [
+  {id:"venue", title:"אולם", desc:"כל מה שצריך לדעת על סגירת אולם, תמחור מנות, התחייבויות ושאלות קריטיות.", videoUrl:"https://www.tiktok.com/@bride_journal"},
+  {id:"photographer", title:"צלם", desc:"איך לבחור צלם סטילס ווידאו, שילוב סושיאל ולוחות זמנים ליום האירוע.", videoUrl:"https://www.tiktok.com/@bride_journal"},
+  {id:"dj", title:"דיג'יי", desc:"בניית פלייליסט, תיאום ציפיות ותשלום אקו\"ם.", videoUrl:"https://www.tiktok.com/@bride_journal"},
+  {id:"producer", title:"מפיק/מנהל אירוע", desc:"למה חובה מפיק חיצוני או מנהל מטעם האולם, ואיך סוגרים לו\"ז מדויק.", videoUrl:"https://www.tiktok.com/@bride_journal"},
+  {id:"designer", title:"מעצבת", desc:"עיצוב חופה, שולחנות, תאורה והתאמה לתקציב שלכם.", videoUrl:"https://www.tiktok.com/@bride_journal"},
+  {id:"alcohol", title:"אלכוהול ובר", desc:"חישוב כמויות נכון, סוגי משקאות ומניעת גניבות ברחבה.", videoUrl:"https://www.tiktok.com/@bride_journal"}
+];
+
 var VENUE_DB_SEED = [
   {id:"db_1", name:"לארה, צומת כנות", region:"דרום", priceEstimate:350},
   {id:"db_2", name:"עדיה, יבנה", region:"דרום", priceEstimate:255},
@@ -856,6 +865,7 @@ function renderHome(){
   + navcard("sideEvents","אירועים נלווים","הפרשת חלה, רווקות, מקווה")
 
   + '<p class="sectionlabel">השראה ותוכן</p>'
+  + navcard("vendorGuides","מדריכים לספקים","אולם, צלם, דיג'יי ועוד")
   + navcard("inspiration","לוח השראה", state.inspiration.length+" שמורים")
   + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">השראה לעיצוב הזמנה בקנבה</span><span class="tag tag-muted">בקרוב</span></div></div>'
   + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">המלצות להזמנות מהאינטרנט</span><span class="tag tag-muted">בקרוב</span></div></div>'
@@ -865,6 +875,18 @@ function renderHome(){
 
 function navcard(tab,label,meta){
   return '<div class="navcard" data-tab="'+tab+'"><span class="lbl">'+label+(meta?(' <span class="muted small" style="font-weight:400">· '+meta+'</span>'):'')+'</span><span class="arrow">‹</span></div>';
+}
+
+function renderVendorGuides(){
+  var html = '<h2 class="pagetitle">מדריכים לספקים</h2><p class="pagesub">כל הטיפים, הדגשים וקישורים לסרטונים מהטיקטוק לכל ספק בחתונה</p>';
+  VENDOR_GUIDES_DATA.forEach(function(g){
+    html += '<div class="card plain">'
+      + '<h3 style="font-size:14px;font-weight:800;color:var(--rose-900);margin:0 0 4px">'+esc(g.title)+'</h3>'
+      + '<p style="font-size:12px;color:var(--ink);margin:0 0 8px;line-height:1.4">'+esc(g.desc)+'</p>'
+      + '<a href="'+esc(g.videoUrl)+'" target="_blank" class="tiktok-link" style="margin-top:0">🎵 צפו בסרטון ההסבר ב-TikTok</a>'
+    + '</div>';
+  });
+  return html;
 }
 
 function calcAlcoholTotals(){
@@ -1132,7 +1154,13 @@ function renderVendors(){
       + '<div class="row" style="margin-bottom:8px"><input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="price" placeholder="מחיר" value="'+esc(v.price)+'"><input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="deposit" placeholder="מקדמה" value="'+esc(v.deposit)+'"></div>'
       + '<div class="between" style="border-top:1px solid var(--border);padding-top:6px">'
         + '<span class="small muted">נותר: <b id="vrem-'+v.id+'" style="color:var(--rose-900)">'+ils(vendorRemain(v))+'</b></span>'
-        + '<button data-act="vendor-contract" data-id="'+v.id+'" style="background:#fff;border:1px dashed '+(v.contract?'#1D9E75':'#CFC7B9')+';color:'+(v.contract?'#1D9E75':'var(--muted)')+';border-radius:6px;padding:4px 10px;font-size:10.5px;font-weight:700;cursor:pointer">'+(v.contract?'✓ חוזה הועלה':'העלאת חוזה חתום')+'</button>'
+        + '<div class="row" style="gap:4px;">'
+          + (v.contractName ? '<a href="'+(v.contractUrl||'#')+'" target="_blank" class="small-btn" style="color:#1D9E75;text-decoration:none;">📄 '+esc(v.contractName)+'</a>' : '')
+          + '<label class="small-btn" style="cursor:pointer;background:#fff;border:1px dashed '+(v.contractName?'#1D9E75':'#CFC7B9')+';color:'+(v.contractName?'#1D9E75':'var(--muted)')+'">'
+            + (v.contractName ? 'החלפת חוזה' : 'העלאת חוזה חתום')
+            + '<input type="file" data-act="vendor-contract-file" data-id="'+v.id+'" style="display:none" accept=".pdf,image/*">'
+          + '</label>'
+        + '</div>'
       + '</div>'
     + '</div>';
   });
@@ -1433,7 +1461,7 @@ function renderInspiration(){
   return html;
 }
 
-var RENDERERS = { home:renderHome, tasks:renderTasks, budget:renderBudget, vendors:renderVendors, guests:renderGuests, equipment:renderEquipment, sideEvents:renderSideEvents, venue:renderVenue, alcohol:renderAlcohol, inspiration:renderInspiration };
+var RENDERERS = { home:renderHome, tasks:renderTasks, budget:renderBudget, vendors:renderVendors, guests:renderGuests, equipment:renderEquipment, sideEvents:renderSideEvents, venue:renderVenue, alcohol:renderAlcohol, inspiration:renderInspiration, vendorGuides:renderVendorGuides };
 function renderTab(){
   if(!RENDERERS[currentTab]) currentTab = "home";
   document.getElementById("tabContent").innerHTML = RENDERERS[currentTab]();
@@ -1693,7 +1721,7 @@ mainEl.addEventListener("click", function(e){
   }
 
   if(act==="vendor-add"){
-    state.vendors.push({id:uid(), name:"", phone:"", price:"", deposit:"", contract:false});
+    state.vendors.push({id:uid(), name:"", phone:"", price:"", deposit:"", contractName:"", contractUrl:""});
     saveVendors(); renderTab(); return;
   }
   if(act==="vendor-del"){
@@ -1708,11 +1736,6 @@ mainEl.addEventListener("click", function(e){
       });
       renderTab();
     }
-    return;
-  }
-  if(act==="vendor-contract"){
-    var v = state.vendors.find(function(x){return x.id===t.dataset.id;});
-    if(v){ v.contract = !v.contract; saveVendors(); renderTab(); }
     return;
   }
 
@@ -1852,6 +1875,23 @@ mainEl.addEventListener("click", function(e){
 mainEl.addEventListener("change", function(e){
   var t = e.target;
   var act = t.dataset.act;
+
+  if(act === "vendor-contract-file"){
+    var vId = t.dataset.id;
+    var v = state.vendors.find(function(x){ return x.id === vId; });
+    if(v && t.files && t.files[0]){
+      var file = t.files[0];
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        v.contractName = file.name;
+        v.contractUrl = evt.target.result;
+        saveVendors();
+        renderTab();
+      };
+      reader.readAsDataURL(file);
+    }
+    return;
+  }
 
   if(act === "insp-cat-change"){
     var inspId = t.dataset.id;
