@@ -133,7 +133,14 @@
   .qcat:first-child{ margin-top:4px; }
   .qitem{ margin-bottom:8px; }
   .qitem .qtext{ font-size:11.5px; font-weight:600; margin:0 0 2px; }
+  .qitem .qtext.critical{ font-weight:800; }
   .qitem .qtip{ font-size:10px; color:var(--rose-600); margin:0 0 3px; font-style:italic; }
+
+  .venue-db-wrap{margin:12px 0 16px;padding:10px;background:var(--white);border:1px solid var(--rose-300);border-radius:10px;}
+  .venue-db-toggle{font-family:'Assistant',sans-serif;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 10px;border:0;border-radius:8px;background:var(--rose-50);color:var(--rose-900);font-size:12px;font-weight:800;text-align:right;cursor:pointer;}
+  .venue-db-toggle span:last-child{font-size:10.5px;color:var(--rose-600);white-space:nowrap;}
+  .venue-db-toggle span{pointer-events:none;}
+  .venue-db-content{margin-top:9px;padding-top:8px;border-top:1px solid var(--rose-100);}
 
   /* Overlays */
   .overlay-screen{ position:fixed; inset:0; background:var(--white); z-index:100; display:flex; align-items:center; justify-content:center; padding:16px; overflow-y:auto; }
@@ -490,40 +497,40 @@ var EQUIP_SEED = {
 
 var VENUE_Q_SEED = [
 {cat:"אולם", q:"האם יש תעודת כשרות?"},
-{cat:"אולם", q:"כמה עולה הגברה ותאורה?", tip:"תזכרו לחלק בכמות האנשים כדי לדעת מה באמת מחיר המנה"},
-{cat:"אולם", q:"כמה עמדות בופה יש בקבלת פנים?", tip:"מומלץ לכל הפחות 1 על כל 50 איש"},
-{cat:"אולם", q:"מה המנות בופה בקבלת פנים? יש אופציות לבחירה? מתי בוחרים?"},
-{cat:"אולם", q:"כמה מלצרים ביחס לכל אורח? מתחייבים על זה?", tip:"אידיאלי - מלצר אחד ל-2 שולחנות של 12"},
-{cat:"אולם", q:"מה רמת האבטחה באירוע?"},
-{cat:"אולם", q:"האם יש אטרקציות אסורות (זיקוקים, בועות סבון)?", tip:"חשוב לפני שסוגרים חלומות גדולים"},
-{cat:"אלכוהול", q:"האם יש דמי חליצה?", tip:"עקיצה רצינית - תתמקחו על זה"},
-{cat:"אלכוהול", q:"מה סוג האלכוהול שמגיע באולם?", tip:"חשוב לדעת כולל ערבובים"},
-{cat:"אלכוהול", q:"איך מנהלים את השימוש באלכוהול?", tip:"קריטי כדי שלא יגנבו בקבוקים"},
-{cat:"ביטול / דחייה", q:"מה קורה בביטול/דחייה בעקבות מלחמה?"},
-{cat:"ביטול / דחייה", q:"מה קורה בביטול/דחייה בעקבות מוות של בן משפחה? איזו דרגת קרבה?"},
-{cat:"ביטול / דחייה", q:"מה קורה בביטול/דחייה בעקבות צו 8?"},
-{cat:"ביטול / דחייה", q:"מה נחשב כוח עליון בנוגע לביטול?"},
-{cat:"ביטול / דחייה", q:"יש דמי ביטול? כמה?"},
-{cat:"התחייבות", q:"אפשר להתחייב על 300 ולהעלות ל-350 בהמשך?", tip:"אידיאלית - להתחייב מינימום ולשנות אחרי הושבה"},
-{cat:"התחייבות", q:"כמה רזרבות ניתן להכניס? עלות מנת רזרבה? מתי אסור לשנות?"},
-{cat:"התחייבות", q:"יש מקדמה? על איזה סכום? פריסת שאר התשלומים?"},
-{cat:"חנייה", q:"כמה אורחים החניה מכילה? אם בתשלום, כמה?"},
-{cat:"טיפים למלצרים וצוות", q:"מה הציפייה לטיפים למנהל אירוע, ברמנים ומלצרים?", tip:"חשוב להבין אם יש התחייבות בחוזה"},
-{cat:"לינה", q:"מגיע מקום לינה קרוב/באולם בערב האירוע?"},
-{cat:"מחיר מנה", q:"מה המחיר למנה בחמישי?", tip:"כדאי להבין סדרי גודל גם אם לא רוצים חמישי"},
-{cat:"מחיר מנה", q:"מה נכלל במחיר - הגשה, בופה, מרכז שולחן?"},
-{cat:"מחיר מנה", q:"עלות מנת ילדים? כמה ניתן להוסיף? מאיזה גיל נחשב ילד?"},
-{cat:"מחיר מנה", q:"עלות מנת גלאט כשר? כמה ניתן להזמין?"},
-{cat:"סיכונים", q:"יש גנרטור חירום במקרה הפסקת חשמל?"},
-{cat:"סיכונים", q:"מה קורה בגשם? עד כמה מוזמנים באזור המקורה?"},
-{cat:"ספקים חיצוניים", q:"מותר להביא עיצוב חיצוני בלי עלות נוספת?"},
-{cat:"ספקים חיצוניים", q:"עוגה/קינוח חיצוני - מה התנאים?", tip:"חשוב למי שרוצה אטרקציות חיצוניות"},
-{cat:"ספקים חיצוניים", q:"אפשר להביא כל ספק, או מחויבים לספקי האולם? יש קנסות?", tip:"בדגש: מעצבת, מפיק, הגברה ותאורה"},
-{cat:"עיצוב האולם", q:"מה מגיע בעיצוב הבסיסי?", tip:"כדאי מאוד להבין מראש"},
-{cat:"עיצוב האולם", q:"מפות ומפיות כלולות במחיר?", tip:"נשמע תמים אבל ממש לא"},
-{cat:"עיצוב האולם", q:"שמים תפריטים על השולחן?"},
-{cat:"שעת האירוע", q:"עד איזו שעה אפשר להיות באולם?"},
-{cat:"שעת האירוע", q:"עלות כל שעה נוספת? עד מתי אפשר למשוך?"}
+{cat:"אולם", q:"כמה עולה הגברה ותאורה?", tip:"תזכרו לחלק בכמות האנשים כדי לדעת מה באמת מחיר המנה, תתעקשו להוריד מזה כמה שאפשר !!", critical:true},
+{cat:"אולם", q:"כמה עמדות בופה יש בקבלת פנים? (מומלץ לכל הפחות 1 על כל 50 איש)"},
+{cat:"אולם", q:"מה המנות בופה בקבלת פנים? והאם יש אופציות לבחירה? מתי בוחרים?"},
+{cat:"אולם", q:"כמה מלצרים האירוע כולל ביחס לכל אורח? האם אתם מתחייבים על זה?", tip:"אידיאלי - מלצר אחד ל2 שולחנות (של 12 בכל אחד)", critical:true},
+{cat:"אולם", q:"מה רמת האבטחה בארוע?"},
+{cat:"אולם", q:"האם יש אטרקציות אסורות (זיקוקים, בועות סבון)?", tip:"חשוב לפני שאתה סוגרים חלומות גדולים!!"},
+{cat:"אלכוהול", q:"האם יש דמי חליצה?", tip:"עקיצה רצינית!!! תתמקחו על זה", critical:true},
+{cat:"אלכוהול", q:"מה סוג האלכוהול שמגיע לי באולם", tip:"חשוב לדעת כולל ערבובים", critical:true},
+{cat:"אלכוהול", q:"איך מנהלים לי את השימוש באלכוהול (אפשר לדרוש שיחזירו בקבוקים ריקים לחדר כדי לוודא שלא גנבו)", tip:"קריטי כדי שלא יגנבו לכם בקבוקים או יוציאו בקבוקים לשולחנות שיש בהם בקבוקים פתוחים", critical:true},
+{cat:"ביטול/דחייה", q:"מה קורה במקרה של ביטול/דחיה בעקבות מלחמה?"},
+{cat:"ביטול/דחייה", q:"מה קורה במקרה של ביטול/דחיה בעקבות מוות של בן משפחה? מאיזו דרגה הבן משפחה יכול להיות?"},
+{cat:"ביטול/דחייה", q:"מה קורה במקרה של ביטול/דחיה בעקבות צו 8?"},
+{cat:"ביטול/דחייה", q:"מה נחשב כוח עליון, מגפה, מלחמה - בנוגע לביטול?"},
+{cat:"ביטול/דחייה", q:"יש דמי ביטול? כמה הם?"},
+{cat:"התחייבות", q:"האם אפשר להתחייב על 300 אורחים ולהעלות ל-350 בהמשך?", tip:"אידיאלית - להתחייב עקרונית לפי ההנחיות למעלה ולשנות אחרי הושבה", critical:true},
+{cat:"התחייבות", q:"כמה רזרבות ניתן להכניס? מה העלות של מנת רזרבה? מאיזה שלב ניתן או אסור לשנות התחייבות בקשר לרזרבות?", critical:true},
+{cat:"התחייבות", q:"האם יש תשלום מקדמה? על איזה סכום? ומה פריסת שאר התשלומים?"},
+{cat:"חנייה", q:"כמה אורחים החניה מכילה? אם היא בתשלום כמה עולה?"},
+{cat:"טיפים", q:"מה הציפייה לגבי טיפים למנהל אירוע/ברמנים/מלצרים?", tip:"חשוב חשוב להבין אם יש התחייבות כזאת מראש בחוזה"},
+{cat:"לינה", q:"האם מגיע לי מקום לינה קרוב/באולם בערב האירוע"},
+{cat:"מחיר מנה", q:"מה המחיר למנה בחמישי?", tip:"גם אם לא תרצו לקיים אירוע בחמישי תבינו את סדרי הגודל"},
+{cat:"מחיר מנה", q:"מה נכלל במחיר - הגשה/בופה/הגשה למרכז שולחן?"},
+{cat:"מחיר מנה", q:"מה העלות של מנת ילדים? כמה כאלו ניתן להוסיף? מאיזה גיל זה נחשב ילד? (חמישי או שישי)"},
+{cat:"מחיר מנה", q:"מה העלות של מנת גלאט כשר? כמה כאלו ניתן להזמין? (חמישי או שישי)"},
+{cat:"סיכונים", q:"האם יש גנרטור חירום במקרה של הפסקת חשמל?"},
+{cat:"סיכונים", q:"מה עושים במקרה של גשם? עד כמה מוזמנים ניתן להכיל באזור המקורה?"},
+{cat:"ספקים חיצוניים", q:"האם מותר לי להביא עיצוב חיצוני ללא עלות נוספת", tip:"טיפה של גשם", critical:true},
+{cat:"ספקים חיצוניים", q:"במידה ותרצו עוגה/קינוח חיצוני - מה התנאים לזה, האם בכלל אפשר להכניס?", tip:"חשוב למי שרוצה להביא אטרקציות חיצוניות!!"},
+{cat:"ספקים חיצוניים", q:"האם ניתן להביא אילו ספקים שנרצה או שאנחנו מחוייבים לספקים שלכם? האם משלמים קנסות על ספקים חיצוניים?", tip:"בדגש מעצבת, מפיק אירוע והגברה ותאורה", critical:true},
+{cat:"עיצוב אולם", q:"מה מגיע לי בעיצוב הבסיסי של האולם?", tip:"כדאי מאוד להבין מראש כדי לא להתאכזב..."},
+{cat:"עיצוב אולם", q:"האם מפות ומפיות כלולות במחיר - והאולם יכול לספק לי את זה?", tip:"נשמע תמים אבל ממש לא"},
+{cat:"עיצוב אולם", q:"האם שמים תפריטים (אישיים או גדולים) על השולחן?", tip:"שתדעו להערך"},
+{cat:"שעת האירוע", q:"עד איזו שעה אפשר להיות באולם", tip:"חשוב חשוב !!!!", critical:true},
+{cat:"שעת האירוע", q:"מה העלות של כל שעה נוספת? עד איזו שעה אפשר למשוך את האירוע? (חמישי או שישי)", tip:"חשוב חשוב !!!", critical:true}
 ];
 
 var CONSTR_RANGES=[
@@ -704,6 +711,7 @@ var groupOpen = {7:true, 6:true, 4:true, 3:true, 2:true, 1.5:true, 1:true};
 var calMonth = 3, calYear = 2027;
 var qOpen = {};
 var globalVenueQOpen = false;
+var venueDBOpen = false;
 var importMsg = "";
 var inspFilter = "all";
 
@@ -743,11 +751,17 @@ function seedEquip(){
 async function getOrDefault(key, def){
   try{
     if(currentUser){
+      var localKey = "bj_"+currentUser.uid+"_"+key;
+      var local = localStorage.getItem(localKey);
+      if(key==="venue" && localStorage.getItem(localKey+"_pending") && local){
+        var pendingVenue = JSON.parse(local);
+        save("venue", pendingVenue);
+        return pendingVenue;
+      }
       var userDoc = await db.collection("users").doc(currentUser.uid).collection("data").doc(key).get();
       if(userDoc.exists){
         return userDoc.data().value;
       } else {
-        var local = localStorage.getItem("bj_"+currentUser.uid+"_"+key);
         return local ? JSON.parse(local) : def;
       }
     } else {
@@ -756,6 +770,14 @@ async function getOrDefault(key, def){
     }
   }catch(e){
     console.error("Error reading key: ", key, e);
+    if(key==="venue" && currentUser){
+      try{
+        var fallback = localStorage.getItem("bj_"+currentUser.uid+"_venue");
+        if(fallback) return JSON.parse(fallback);
+      }catch(localError){
+        console.error("Local venue recovery failed:", localError);
+      }
+    }
     return def;
   }
 }
@@ -768,6 +790,7 @@ async function save(key, value){
         value: value, 
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      if(key==="venue") localStorage.removeItem("bj_"+currentUser.uid+"_venue_pending");
     } else {
       localStorage.setItem("bj_guest_"+key, JSON.stringify(value));
     }
@@ -836,7 +859,16 @@ function saveBudget(){ scheduleSave("budget", function(){ return {cats:state.bud
 function saveVendors(){ scheduleSave("vendors", function(){ return state.vendors; }); }
 function saveGuests(){ scheduleSave("guests", function(){ return state.guests; }); }
 function saveEquip(){ scheduleSave("equipment", function(){ return state.equipment; }); }
-function saveVenue(){ scheduleSave("venue", function(){ return state.venue; }); }
+function saveVenue(){
+  try{
+    var localKey = currentUser ? "bj_"+currentUser.uid+"_venue" : "bj_guest_venue";
+    localStorage.setItem(localKey, JSON.stringify(state.venue));
+    if(currentUser) localStorage.setItem(localKey+"_pending", String(Date.now()));
+  }catch(e){
+    console.error("Local venue save failed:", e);
+  }
+  scheduleSave("venue", function(){ return state.venue; });
+}
 function saveVenueDB(){ scheduleSave("venueDB", function(){ return state.venueDB; }); }
 function saveInspiration(){ scheduleSave("inspiration", function(){ return state.inspiration; }); }
 function saveAlcohol(){ scheduleSave("alcohol", function(){ return state.alcohol; }); }
@@ -1346,7 +1378,7 @@ function renderCalendar(){
 
 function venueDBRegionFilterGlobal(){ return window.venueDBRegionFilter || "all"; }
 function renderVenueDBList(){
-  var html = '<p class="sectionlabel">מאגר האולמות הארצי</p>';
+  var html = '';
   html += '<div style="margin-bottom:8px">';
   ["all","מרכז","צפון","דרום","ירושלים"].forEach(function(r){
     html += '<span class="chip-filter'+(venueDBRegionFilterGlobal()===r?" active":"")+'" data-act="venuedb-filter" data-region="'+r+'">'+(r==="all"?"הכל":r)+'</span>';
@@ -1406,6 +1438,15 @@ function renderVenueCalculatorBox(){
   return html;
 }
 
+function renderVenueGeneralTips(){
+  return '<div style="margin:8px 0 12px;padding:9px 10px;background:var(--rose-50);border-radius:10px">'+
+    '<p style="font-size:11.5px;font-weight:700;margin:0 0 5px">הערכת מגיעים</p>'+
+    '<p class="small" style="margin:0 0 9px">מוזמנים פחות 30% = יאשרו הגעה. מאשרים הגעה פחות 10% = מגיעים בפועל</p>'+
+    '<p style="font-size:11.5px;font-weight:700;margin:0 0 5px">התחייבות לאולם</p>'+
+    '<p class="small" style="margin:0">תגידו לאולם 100 אנשים פחות ממה שאתם מתכוונים להזמין בפועל. תתחייבו על המינימום שחייבים, תתעקשו על מדרגות תשלום (התחייבות ל350 - בפועל אם מגיעים 400 יירדו 10 שקלים למנה לדוגמא). מתחייבים לכמות האנשים שאתם מחשבים שמגיעים בפועל פחות 10%.</p>'+
+    '</div>';
+}
+
 function renderVenueCard(v){
   var html = '<div class="card plain">'
     + '<div class="row" style="margin-bottom:6px"><input type="text" data-act="venue-field" data-id="'+v.id+'" data-field="name" placeholder="שם האולם" value="'+esc(v.name)+'" style="font-weight:700"><button class="icon-del" data-act="venue-del" data-id="'+v.id+'">×</button></div>'
@@ -1432,12 +1473,13 @@ function renderVenueCard(v){
 
   html += '<button class="ghost" data-act="q-toggle" data-id="'+v.id+'" style="margin-top:6px">'+(qOpen[v.id]?'סגירת השאלון':'פתיחת השאלון לביקור')+'</button>';
   if(qOpen[v.id]){
+    html += renderVenueGeneralTips();
     html += '<p class="small muted" style="margin:6px 0">אפשר למלא רק מה שרוצים</p>';
     var lastCat = "";
     VENUE_Q_SEED.forEach(function(item, qi){
       if(item.cat!==lastCat){ html += '<p class="qcat">'+esc(item.cat)+'</p>'; lastCat=item.cat; }
       var ans = (v.answers && v.answers[qi]) || "";
-      html += '<div class="qitem"><p class="qtext">'+esc(item.q)+'</p>'+(item.tip ? '<p class="qtip">💡 טיפ ממתת: '+esc(item.tip)+'</p>' : '')+'<textarea data-act="venue-answer" data-id="'+v.id+'" data-qi="'+qi+'" placeholder="תשובת האולם..." style="min-height:40px">'+esc(ans)+'</textarea></div>';
+      html += '<div class="qitem"><p class="qtext'+(item.critical?' critical':'')+'">'+esc(item.q)+'</p>'+(item.tip ? '<p class="qtip">💡 טיפ ממתת: '+esc(item.tip)+'</p>' : '')+'<textarea data-act="venue-answer" data-id="'+v.id+'" data-qi="'+qi+'" placeholder="תשובת האולם..." style="min-height:40px">'+esc(ans)+'</textarea></div>';
     });
   }
   html += '</div>';
@@ -1456,18 +1498,24 @@ function renderVenue(){
   html += '<button class="small-btn primary" data-act="global-q-main-toggle" style="width:100%">'+(globalVenueQOpen ? 'סגירת השאלון המלא' : 'פתיחת השאלון המלא לבדיקת אולמות')+'</button>';
   
   if(globalVenueQOpen){
+    html += renderVenueGeneralTips();
     html += '<div style="margin-top:10px;border-top:1px dashed var(--rose-300);padding-top:8px">';
     var lastCat = "";
     VENUE_Q_SEED.forEach(function(item, qi){
       if(item.cat!==lastCat){ html += '<p class="qcat">'+esc(item.cat)+'</p>'; lastCat=item.cat; }
-      html += '<div class="qitem"><p class="qtext">'+esc(item.q)+'</p>'+(item.tip ? '<p class="qtip">💡 טיפ ממתת: '+esc(item.tip)+'</p>' : '')+'</div>';
+      html += '<div class="qitem"><p class="qtext'+(item.critical?' critical':'')+'">'+esc(item.q)+'</p>'+(item.tip ? '<p class="qtip">💡 טיפ ממתת: '+esc(item.tip)+'</p>' : '')+'</div>';
     });
     html += '</div>';
   }
   html += '</div>';
 
-  html += renderVenueDBList();
-  
+  html += '<div class="venue-db-wrap">';
+  html += '<button class="venue-db-toggle" data-act="venuedb-toggle" style="width:100%"><span>מאגר האולמות הארצי</span><span>'+(venueDBOpen ? 'סגירת הרשימה −' : 'פתיחת הרשימה +')+'</span></button>';
+  if(venueDBOpen){
+    html += '<div class="venue-db-content">'+renderVenueDBList()+'</div>';
+  }
+  html += '</div>';
+
   html += '<p class="sectionlabel">המעקב האישי שלכם</p>';
   state.venue.list.forEach(function(v){ html += renderVenueCard(v); });
   html += '<button class="primary" data-act="venue-add">+ הוספת אולם ידנית למעקב שלי</button>';
@@ -1865,6 +1913,7 @@ mainEl.addEventListener("click", function(e){
     saveVenue(); renderTab(); return;
   }
 
+  if(act==="venuedb-toggle"){ venueDBOpen = !venueDBOpen; renderTab(); return; }
   if(act==="venuedb-filter"){ window.venueDBRegionFilter = t.dataset.region; renderTab(); return; }
   if(act==="venue-add"){
     state.venue.list.push({id:uid(), name:"", region:"", price:"", capacity:"", status:"checking", answers:{}, chosenDate:""});
@@ -2182,6 +2231,16 @@ mainEl.addEventListener("input", function(e){
     return;
   }
   
+  if(act==="venue-answer"){
+    var venue = state.venue.list.find(function(x){return x.id===t.dataset.id;});
+    if(venue){
+      if(!venue.answers || typeof venue.answers !== "object") venue.answers = {};
+      venue.answers[t.dataset.qi] = t.value;
+      saveVenue();
+    }
+    return;
+  }
+
   if(act==="vendor-field"){
     var vn = state.vendors.find(function(x){return x.id===t.dataset.id;});
     if(vn){ vn[t.dataset.field] = t.value; saveVendors(); }
