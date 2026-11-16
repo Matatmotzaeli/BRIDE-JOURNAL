@@ -17,6 +17,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
+
+
+
+
 <style>
   :root{
     --cream:#FFFBF6;
@@ -159,6 +163,104 @@
   #undoToast button { background: var(--white); color: var(--rose-900); border: none; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
   ::selection{ background:var(--rose-100); }
+
+/* ===== Bride_Journal preview: home only ===== */
+/* Palette sampled from bride-journal-system/styles.css. Color-only app variables. */
+:root {
+  --cream:#FAF7F3; --rose-50:#F6EFEB; --rose-100:#E9D8D1;
+  --rose-300:#CFA9A2; --rose-600:#B77F79; --rose-900:#91605B;
+  --ink:#302B28; --muted:#81776F; --border:#E9E1D8;
+  --green:#7F8E7A; --green-bg:#EFF2EB;
+  --amber:#A47A52; --amber-bg:#F7EFE3;
+  --blue:#788999; --blue-bg:#EEF1F3;
+}
+.bj-home{color:var(--ink);display:flex;flex-direction:column;gap:7px;padding-bottom:4px}
+.bj-home .bj-welcome{background:#FAF7F3;border:1px solid var(--border);border-radius:12px;text-align:center;padding:10px 12px 8px}
+.bj-home .bj-eyebrow{letter-spacing:.5px;color:var(--rose-dark,#91605B);margin:0 0 2px}
+.bj-home .bj-name-input{display:block;background:transparent;border:0;border-bottom:1px solid #DCC7BE;border-radius:0;max-width:300px;margin:0 auto 3px;padding:1px 0;text-align:center;color:var(--ink)}
+.bj-home .bj-count-number{line-height:1;color:var(--rose-900)}
+.bj-home .bj-count-label{color:var(--muted);margin:2px 0}
+.bj-home .bj-date-row{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:3px;color:var(--muted)}
+.bj-home .bj-date-row input{width:auto;max-width:160px;background:#fff}
+.bj-home .bj-section-title{margin:0 0 5px;color:var(--ink)}
+.bj-home .bj-panel{background:#fff;border:1px solid var(--border);border-radius:12px;padding:9px 11px}
+.bj-home .bj-phase-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+.bj-home .bj-phase{display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;min-width:0;border:0;border-radius:9px;background:transparent;padding:2px 1px;cursor:pointer;color:inherit;font:inherit}
+.bj-home .bj-phase:focus-visible,.bj-home .bj-tool:focus-visible{outline:2px solid var(--rose-600);outline-offset:2px}
+.bj-home .bj-phase-icon{border:1px solid #E6DAD3;border-radius:50%;height:34px;width:34px;display:grid;place-items:center;background:#F7F2EE;color:#81776F}
+.bj-home .bj-phase-icon svg{height:18px;width:18px;display:block}
+.bj-home .bj-phase[data-status="done"] .bj-phase-icon{background:#EFF2EB;border-color:#BBC7B6;color:#627A61}
+.bj-home .bj-phase[data-status="current"] .bj-phase-icon{background:#F7EFE3;border-color:#D9C3A7;color:#916E4B}
+.bj-home .bj-phase-label{line-height:1.3;color:var(--ink)}
+.bj-home .bj-phase-status{color:var(--muted)}
+.bj-home .bj-phase[data-status="done"] .bj-phase-status{color:#627A61}
+.bj-home .bj-phase[data-status="current"] .bj-phase-status{color:#916E4B}
+.bj-home .bj-phase-hint{color:var(--muted);margin:5px 0 0;line-height:1.35;text-align:center}
+.bj-home .bj-phase-link{color:var(--rose-900);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.bj-home .bj-progress-area{display:flex;align-items:center;justify-content:center;gap:13px}
+.bj-home .bj-donut{width:78px;height:78px;flex:0 0 78px;border-radius:50%;display:grid;place-items:center;position:relative}
+.bj-home .bj-donut:after{content:"";position:absolute;inset:12px;border-radius:50%;background:white}
+.bj-home .bj-donut-center{position:relative;z-index:1;text-align:center;display:flex;flex-direction:column}
+.bj-home .bj-pct{color:var(--ink);line-height:1.15}
+.bj-home .bj-pct-caption{color:var(--muted)}
+.bj-home .bj-progress-copy{line-height:1.4;color:var(--muted)}
+.bj-home .bj-progress-copy strong{color:var(--ink);display:block}
+.bj-home .bj-legend{display:flex;gap:6px;align-items:center;margin-top:3px}
+.bj-home .bj-legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:#7F8E7A}
+.bj-home .bj-legend-dot.remaining{background:#EEE5DB}
+.bj-home .bj-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.bj-home .bj-tool{border:1px solid var(--border);border-radius:11px;min-height:57px;padding:6px;display:flex;align-items:center;justify-content:center;gap:8px;flex-direction:row;cursor:pointer;text-align:center;color:var(--ink);font-family:inherit;font-weight:800}
+.bj-home .bj-tool .bj-tool-icon{height:21px;width:21px;flex:none;display:grid;place-items:center;color:var(--rose-900)}
+.bj-home .bj-tool-icon svg{width:20px;height:20px;display:block}
+.bj-home .bj-tool.budget{background:#FAF4F0}
+.bj-home .bj-tool.alcohol{background:#F9F5ED}
+.bj-home .bj-tool.guests{background:#F1F4EF}
+.bj-home .bj-tool.equipment{background:#F3F2F0}
+/* Preserve the existing home preview's typography exactly; compactness uses spacing only. */
+.bj-home .bj-eyebrow{font-size:11px;font-weight:700}
+.bj-home .bj-name-input{font-size:20px;font-weight:800}
+.bj-home .bj-count-number{font-size:44px;font-weight:800}
+.bj-home .bj-count-label{font-size:13px;font-weight:700}
+.bj-home .bj-date-row{font-size:11px}
+.bj-home .bj-date-row input{font-size:11px}
+.bj-home .bj-section-title{font-size:16px;font-weight:800}
+.bj-home .bj-phase-label{font-size:10px;font-weight:700}
+.bj-home .bj-phase-status{font-size:9px}
+.bj-home .bj-phase-hint{font-size:10px}
+.bj-home .bj-pct{font-size:26px;font-weight:800}
+.bj-home .bj-pct-caption{font-size:10px}
+.bj-home .bj-progress-copy{font-size:12px}
+.bj-home .bj-progress-copy strong{font-size:19px}
+.bj-home .bj-legend{font-size:10px}
+.bj-home .bj-tool{font-size:13px}
+/* Task navigation shortcut: scoped only to the tasks page, no table or form changes. */
+.bj-phase-tasks{border:1px solid var(--border);background:#FAF7F3;border-radius:10px;padding:9px 10px;margin-bottom:8px}
+.bj-phase-tasks-title{font-weight:800;color:var(--ink);margin-bottom:6px}
+.bj-phase-tasks-row{display:flex;align-items:center;gap:7px;padding:4px 0;color:var(--ink)}
+.bj-phase-tasks-row + .bj-phase-tasks-row{border-top:1px solid var(--border)}
+.bj-phase-tasks-row input[type=checkbox]{accent-color:#7F8E7A;flex:none}
+.bj-phase-tasks-note{color:var(--muted);margin-top:4px}
+
+/* Preview-only compact header links and internal side-events link. No font/table/form overrides. */
+.bj-home .bj-events-link{display:flex;align-items:center;width:100%;gap:9px;padding:8px 11px;background:#F6F3EE;border:1px solid var(--border);border-radius:10px;color:var(--ink);text-align:right;cursor:pointer;font-family:inherit}
+.bj-home .bj-events-icon{flex:none;display:grid;place-items:center;width:24px;height:24px;color:var(--rose-900)}
+.bj-home .bj-events-icon svg{width:19px;height:19px;display:block}
+.bj-home .bj-events-content{display:flex;flex-direction:column;flex:1;gap:1px;min-width:0}
+.bj-home .bj-events-content strong{font-size:12px;font-weight:800}
+.bj-home .bj-events-content>span{font-size:10px;color:var(--muted)}
+.bj-home .bj-events-arrow{font-size:18px;color:var(--rose-900)}
+
+
+/* Preview-only topbar social icon group. No changes to typography, tables, or forms. */
+#shell .topbar .bj-header-social{display:flex;flex:none;align-items:center;gap:2px}
+#shell .topbar .bj-header-social a{display:grid;place-items:center;width:29px;height:30px;flex:none;text-decoration:none;color:var(--rose-900);border-radius:7px}
+#shell .topbar .bj-header-social a:hover{background:#F6EFEB}
+#shell .topbar .bj-header-social a:focus-visible{outline:2px solid var(--rose-600);outline-offset:1px}
+#shell .topbar .brand-wrap{min-width:0}
+@media(max-width:390px){#shell .topbar .bj-header-social{gap:0}#shell .topbar .bj-header-social a{width:25px}}
+
+/* ===== End home-only styles ===== */
+
 </style>
 </head>
 <body>
@@ -268,7 +370,7 @@
       <p class="brand">BRIDE_JOURNAL</p>
       <p class="sub">BY MATAT</p>
     </div>
-    <a href="https://www.tiktok.com/@bride_journal" target="_blank" class="icon-btn" title="TikTok">🎵</a>
+    <nav class="bj-header-social" aria-label="קישורי Bride Journal"><a href="https://www.instagram.com/bride_journal.bymatat/" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg></a><a href="https://www.tiktok.com/@bride_journal" target="_blank" rel="noopener noreferrer" title="TikTok" aria-label="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v11.2a4.2 4.2 0 1 1-4.2-4.2"/><path d="M14 3c.7 3.5 2.8 5.3 6 5.4"/></svg></a><a href="https://wa.me/972529247776" target="_blank" rel="noopener noreferrer" title="WhatsApp" aria-label="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.7 11.7a8.7 8.7 0 0 1-12.8 7.7L3 21l1.7-4.8a8.7 8.7 0 1 1 16-4.5Z"/><path d="M8.5 8.5c.2 3.3 3 6 6.5 7 .8.1 1.4-.6 1.7-1.3l-2.5-1.3-1.1 1c-1.4-.6-2.5-1.6-3.2-3l.9-1.1-1.1-2.4c-.5-.1-1 .3-1.2 1.1Z"/></svg></a><a href="https://bride-journal-catalog.web.app/" target="_blank" rel="noopener noreferrer" title="קטלוג Bride Journal" aria-label="קטלוג Bride Journal"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5h18v12.3H3zM3 7.5l2-4h14l2 4M8 7.5v12.3M12 11h5M12 15h5"/></svg></a></nav>
     <button class="icon-btn" id="btnLogout" title="התנתקות" style="font-size:14px;margin-right:4px">🚪</button>
   </header>
   <main id="main"><div id="tabContent"></div></main>
@@ -287,6 +389,7 @@
 
 <script>
 (function(){
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAppiXGXUpsX8c1ql0WfA3rGlRxggFiz9c",
@@ -308,6 +411,7 @@ db.enablePersistence().catch(function(err) {
 });
 
 var currentUser = null;
+
 
 var TASK_SEED = [
 {c:"מיד אחרי אירוסין",t:"להחליט על כמה תאריכים אופציונליים ויום בשבוע בעדיפות",m:7},
@@ -811,6 +915,23 @@ async function loadAll(){
   
   var tData = await getOrDefault("tasks", null);
   state.tasks = (tData && tData.length > 0) ? tData : seedTasks();
+  // Preview only: explicit task for the venue selection phase.
+  if (!state.meta.venuePhaseTaskInitialized) {
+    if (!state.tasks.some(function(t){ return t.t === "בחירת אולם וסגירת חוזה"; })) {
+      state.tasks.push({id:uid(),c:"מיד אחרי אירוסין",t:"בחירת אולם וסגירת חוזה",m:7,n:"מסמנים לאחר בחירת האולם וסגירת חוזה",done:false});
+      saveTasks();
+    }
+    state.meta.venuePhaseTaskInitialized = true;
+    save("meta", state.meta);
+  }
+
+  // Preview-only phase metadata: stable even when a couple edits the task text.
+  var guestPhaseTask = state.tasks.find(function(t){return t.phaseKey === "guest-list";}) || state.tasks.find(function(t){return t.t === "הכנת רשימת מוזמנים עקרונית לפני שרואים אולם";});
+  var venuePhaseTask = state.tasks.find(function(t){return t.phaseKey === "venue-booked";}) || state.tasks.find(function(t){return t.t === "בחירת אולם וסגירת חוזה";});
+  var phaseTagsChanged = false;
+  if(guestPhaseTask && guestPhaseTask.phaseKey !== "guest-list"){guestPhaseTask.phaseKey="guest-list";phaseTagsChanged=true;}
+  if(venuePhaseTask && venuePhaseTask.phaseKey !== "venue-booked"){venuePhaseTask.phaseKey="venue-booked";phaseTagsChanged=true;}
+  if(phaseTagsChanged) saveTasks();
 
   var budget = await getOrDefault("budget", null);
   if(budget && budget.cats){ state.budgetCats = budget.cats; state.income = budget.income; }
@@ -885,59 +1006,89 @@ function subMonths(base, months){
 function fmtDate(d){ return d.toLocaleDateString("he-IL",{day:"numeric",month:"long",year:"numeric"}); }
 function esc(s){ return (s===undefined||s===null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-function renderHome(){
-  var wed = state.profile.weddingDate;
-  var countdown = "";
+function bjHomeIcon(name){
+  var paths = {
+    guests:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+    venue:'<path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-7h6v7M9 10h.01M15 10h.01"/>',
+    vendors:'<path d="M2 12l4-4 5 4 3-2 4 3 4-3M2 16l5 5 5-5 5 5 5-5M7 8l3-3h5l3 3"/>',
+    final:'<rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 15l2 2 5-5"/>',
+    budget:'<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 9h18M16 15h2"/>',
+    alcohol:'<path d="M8 3h8l-1 8a5 5 0 0 1-10 0L4 3h4M10 16v5M6 21h8M5 9h10"/>',
+    equipment:'<rect x="5" y="5" width="14" height="17" rx="2"/><path d="M9 5V3h6v2M9 12h6M9 16h6"/>'
+  };
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[name]||paths.final)+'</svg>';
+}
+
+function bjPhaseTask(kind){
+  var namedKey = kind === 'guests' ? 'guest-list' : 'venue-booked';
+  var originalName = kind === 'guests' ? 'הכנת רשימת מוזמנים עקרונית לפני שרואים אולם' : 'בחירת אולם וסגירת חוזה';
+  return state.tasks.find(function(t){return t.phaseKey === namedKey;}) ||
+         state.tasks.find(function(t){return t.t === originalName;});
+}
+
+function bjPhaseStatus(){
+  var wed = state.profile.weddingDate || '';
+  var weddingDays = null;
   if(wed){
-    var days = Math.ceil((new Date(wed) - new Date())/86400000);
-    countdown = days>0 ? ("עוד "+days+" ימים לחתונה") : "מזל טוב!";
+    var p = wed.split('-').map(Number);
+    if(p.length===3 && p.every(function(v){return Number.isFinite(v);})){
+      var now = new Date();
+      weddingDays = Math.round((Date.UTC(p[0],p[1]-1,p[2])-Date.UTC(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+    }
   }
+  var guestTask = bjPhaseTask('guests');
+  var venueTask = bjPhaseTask('venue');
+  var guestDone = !!(guestTask && guestTask.done);
+  var venueDone = !!(venueTask && venueTask.done);
+  var atFinal = weddingDays !== null && weddingDays <= 45;
+  var index = atFinal ? 3 : !guestDone ? 0 : !venueDone ? 1 : 2;
+  return {days:weddingDays,index:index,guestDone:guestDone,venueDone:venueDone,atFinal:atFinal};
+}
 
-  var doneT = state.tasks.filter(function(t){return t.done;}).length;
+function renderHome(){
+  var phase = bjPhaseStatus();
+  var wed = state.profile.weddingDate || '';
+  var prog = taskProgress();
+  var steps=[
+    {name:'רשימת מוזמנים',icon:'guests'},
+    {name:'בחירת אולם',icon:'venue'},
+    {name:'תיאום ספקים',icon:'vendors'},
+    {name:'הכנות אחרונות',icon:'final'}
+  ];
+  var html='<div class="bj-home">';
 
-  var html = '<div class="card rose-accent" style="text-align:center;padding:12px 14px">'
-    + '<input type="text" data-act="profile-name" placeholder="השם שלכם (למשל: נועה ודני)" value="'+esc(state.profile.name)+'" style="text-align:center;font-size:15px;font-weight:800;border:none;background:transparent;margin-bottom:6px;color:var(--rose-900)">'
-    + '<p style="font-size:10.5px;color:var(--rose-600);font-weight:700;margin:0 0 4px">תאריך החתונה</p>'
-    + '<input type="date" data-act="wed-date" value="'+esc(wed)+'" style="max-width:200px;margin:0 auto;text-align:center">'
-    + (countdown ? '<p style="font-size:12px;font-weight:800;color:var(--rose-900);margin:8px 0 0">'+countdown+'</p>' : '')
-  + '</div>';
 
-  var openIdx = -1;
-  for(var i=0;i<4;i++){ if(!state.meta.onbDone[i]){ openIdx=i; break; } }
-  if(openIdx!==-1){
-    html += '<p class="sectionlabel">התחלת הדרך</p>';
-    ONB_STEPS.forEach(function(step, idx){
-      if(idx<openIdx){
-        html += '<div class="card green" style="padding:8px 10px;margin-bottom:6px"><span class="small" style="color:#085041;font-weight:700">✓ '+esc(step.label)+'</span></div>';
-      } else if(idx===openIdx){
-        html += '<div class="card" style="margin-bottom:8px">'
-          + '<p style="font-size:12.5px;font-weight:800;color:var(--rose-900);margin:0 0 2px">'+(idx+1)+'. '+esc(step.label)+'</p>'
-          + '<p class="small" style="color:var(--rose-600);margin:0 0 8px">'+esc(step.sub)+'</p>'
-          + '<button class="small-btn primary" data-act="onb-goto" data-tab="'+step.tab+'" style="width:100%;margin-bottom:4px">מעבר עכשיו</button>'
-          + '<button class="ghost" data-act="onb-complete" data-idx="'+idx+'">סימון כהושלם והמשך</button>'
-        + '</div>';
-      } else {
-        html += '<div class="card plain locked" style="padding:8px 10px;margin-bottom:6px"><span class="small muted">🔒 '+esc(step.label)+'</span></div>';
-      }
-    });
-  }
-
-  html += '<p class="sectionlabel">התכנון שלכם</p>'
-  + navcard("tasks","כל המשימות שלי", doneT+" / "+state.tasks.length+" הושלמו")
-  + navcard("venue","אולם ותאריכים", state.venue.list.length+" אולמות")
-  + navcard("alcohol","מחשבון אלכוהול","כמויות ותקציב בר")
-  + navcard("budget","תקציב החתונה","")
-  + navcard("vendors","מעקב ספקים", state.vendors.length+" ספקים")
-  + navcard("guests","רשימת מוזמנים", state.guests.length+" רשומות")
-  + navcard("equipment","ציוד ליום החתונה","")
-  + navcard("sideEvents","אירועים נלווים","הפרשת חלה, רווקות, מקווה")
-
-  + '<p class="sectionlabel">השראה ותוכן</p>'
-  + navcard("vendorGuides","מדריכים לבחירת ספקים","אולם, צלם, דיג'יי ועוד")
-  + navcard("inspiration","לוח השראה", state.inspiration.length+" שמורים")
-  + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">השראה לעיצוב הזמנה בקנבה</span><span class="tag tag-muted">בקרוב</span></div></div>'
-  + '<div class="card plain" style="opacity:0.6"><div class="between"><span style="font-size:12px;font-weight:700">המלצות להזמנות מהאינטרנט</span><span class="tag tag-muted">בקרוב</span></div></div>'
-  + '<p style="text-align:center;margin-top:14px"><button class="ghost plain" data-act="show-welcome" style="width:auto;padding:4px 12px">הצגת מסך הפתיחה מחדש</button></p>';
+  html += '<section class="bj-welcome" aria-label="פרטי החתונה">'
+    +'<p class="bj-eyebrow">BRIDE_JOURNAL · המסע שלכם לחתונה</p>'
+    +'<input class="bj-name-input" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" value="'+esc(state.profile.name)+'">';
+  if(phase.days===null){ html+='<div class="bj-count-label">בחרו תאריך חתונה לספירה לאחור</div>'; }
+  else if(phase.days>0){ html+='<div class="bj-count-number">'+phase.days+'</div><div class="bj-count-label">ימים עד החתונה</div>'; }
+  else if(phase.days===0){ html+='<div class="bj-count-label">היום הגדול הגיע! מזל טוב</div>'; }
+  else { html+='<div class="bj-count-label">מזל טוב על החתונה!</div>'; }
+  html+='<div class="bj-date-row"><span>תאריך החתונה</span><input type="date" data-act="wed-date" aria-label="תאריך החתונה" value="'+esc(wed)+'"></div></section>';
+  html+='<section class="bj-panel" aria-label="שלבי התכנון"><h2 class="bj-section-title">הדרך שלכם לחופה</h2><div class="bj-phase-list">';
+  steps.forEach(function(step,i){
+    var status=i<phase.index?'done':i===phase.index?'current':'upcoming';
+    var label=status==='done'?'הושלם':status==='current'?'כעת':'בהמשך';
+    // A later date transition never marks uncompleted guest/venue tasks complete.
+    if(i===0 && !phase.guestDone && phase.atFinal){status='upcoming';label='טרם הושלם';}
+    if(i===1 && !phase.venueDone && phase.atFinal){status='upcoming';label='טרם הושלם';}
+    html+='<button type="button" class="bj-phase" data-status="'+status+'" data-tab="tasks" title="מעבר למשימות" aria-label="'+step.name+' - '+label+'; מעבר למשימות"><span class="bj-phase-icon">'+bjHomeIcon(step.icon)+'</span><span class="bj-phase-label">'+step.name+'</span><span class="bj-phase-status">'+label+'</span></button>';
+  });
+  html+='</div><p class="bj-phase-hint">שלבי המוזמנים והאולם מסומנים בראש <span class="bj-phase-link" data-tab="tasks">רשימת המשימות</span>; ההכנות האחרונות מתחילות 45 ימים לפני החתונה.</p></section>';
+  html+='<section class="bj-panel" aria-label="התקדמות המשימות"><h2 class="bj-section-title">התקדמות בתכנון</h2>'
+    +'<div class="bj-progress-area"><div class="bj-donut" role="img" aria-label="'+prog.pct+' אחוז מהמשימות הושלמו" style="background:conic-gradient(#7F8E7A 0 '+prog.pct+'%,#EEE5DB '+prog.pct+'% 100%)">'
+    +'<div class="bj-donut-center"><span class="bj-pct">'+prog.pct+'%</span><span class="bj-pct-caption">הושלמו</span></div></div>'
+    +'<div class="bj-progress-copy"><strong>'+prog.done+' מתוך '+prog.total+'</strong>משימות הושלמו'
+    +'<div class="bj-legend"><span class="bj-legend-dot"></span>הושלמו</div><div class="bj-legend"><span class="bj-legend-dot remaining"></span>נותרו</div></div></div></section>';
+  html+='<section aria-label="כלים לתכנון"><h2 class="bj-section-title">הכלים שלכם</h2><div class="bj-tools">'
+    +'<button type="button" class="bj-tool budget" data-tab="budget"><span class="bj-tool-icon">'+bjHomeIcon('budget')+'</span>ניהול תקציב</button>'
+    +'<button type="button" class="bj-tool alcohol" data-tab="alcohol"><span class="bj-tool-icon">'+bjHomeIcon('alcohol')+'</span>מחשבון אלכוהול</button>'
+    +'<button type="button" class="bj-tool guests" data-tab="guests"><span class="bj-tool-icon">'+bjHomeIcon('guests')+'</span>רשימת מוזמנים</button>'
+    +'<button type="button" class="bj-tool equipment" data-tab="equipment"><span class="bj-tool-icon">'+bjHomeIcon('equipment')+'</span>רשימת ציוד</button>'
+    +'</div></section>';
+  html+='<button type="button" class="bj-events-link" data-tab="sideEvents" aria-label="מעבר לאירועים נלווים בתוך האפליקציה">'+'<span class="bj-events-icon">'+bjHomeIcon('final')+'</span>'+'<span class="bj-events-content"><strong>אירועים נלווים</strong><span>הפרשת חלה · מקווה · מסיבת רווקות</span></span>'+'<span class="bj-events-arrow" aria-hidden="true">‹</span></button>';
+  html+='</div>';
   return html;
 }
 
@@ -1148,6 +1299,18 @@ function renderSideEvents(){
   return html;
 }
 
+function bjPhaseTaskShortcuts(){
+  var guest = bjPhaseTask('guests');
+  var venue = bjPhaseTask('venue');
+  function row(task,label){
+    if(!task) return '<div class="bj-phase-tasks-row">'+label+' — לא נמצאה משימה מקושרת</div>';
+    return '<label class="bj-phase-tasks-row"><input type="checkbox" data-act="task-toggle" data-id="'+esc(task.id)+'" '+(task.done?'checked':'')+'><span>'+label+'</span></label>';
+  }
+  return '<div class="bj-phase-tasks" aria-label="השלמת שלבי התכנון"><div class="bj-phase-tasks-title">סימון שלבי הדרך לחופה</div>'
+    +row(guest,'הכנתי רשימת מוזמנים ראשונית')+row(venue,'בחרנו אולם וסגרנו חוזה')
+    +'<div class="bj-phase-tasks-note">הסימון כאן מסמן את אותה משימה ברשימה ומעדכן את מסך הבית.</div></div>';
+}
+
 function taskProgress(){
   var total = state.tasks.length;
   var done = state.tasks.filter(function(t){return t.done;}).length;
@@ -1158,6 +1321,7 @@ function renderTasks(){
   var buckets = [7,6,4,3,2,1.5,1];
   var prog = taskProgress();
   var html = '<h2 class="pagetitle">כל המשימות שלכם</h2><p class="pagesub">מסודר לפי כמה חודשים לפני החתונה.</p>';
+  html += bjPhaseTaskShortcuts();
   html += '<div class="card"><p class="small" style="color:var(--rose-600);font-weight:700;margin:0 0 4px">תאריך החתונה</p><input type="date" data-act="wed-date" value="'+esc(wed)+'"></div>';
   html += '<div class="card plain"><div class="between" style="margin-bottom:4px"><span class="small" style="font-weight:700">התקדמות כללית</span><span class="small muted">'+prog.done+'/'+prog.total+' · '+prog.pct+'%</span></div><div class="progress-track"><div class="progress-fill" style="width:'+prog.pct+'%"></div></div></div>';
   
@@ -1676,6 +1840,8 @@ document.getElementById("undoBtn").addEventListener("click", function(){
 mainEl.addEventListener("click", function(e){
   var navcardEl = e.target.closest(".navcard[data-tab]");
   if(navcardEl){ switchTab(navcardEl.dataset.tab); return; }
+  var homeTool = e.target.closest(".bj-home [data-tab]");
+  if(homeTool){ switchTab(homeTool.dataset.tab); return; }
 
   var t = e.target;
   var act = t.dataset.act;
