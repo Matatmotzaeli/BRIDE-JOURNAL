@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BRIDE JOURNAL | אזור מנהלת</title>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="./admin-defaults.js"></script>
+<style>
+:root{--ink:#302b28;--muted:#81776f;--paper:#faf7f3;--white:#fff;--line:#e9e1d8;--rose:#b77f79;--dark:#91605b;--sage:#7f8e7a}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);font-family:Assistant,sans-serif;color:var(--ink);font-size:15px}
+button,input,textarea,select{font:inherit}button{cursor:pointer}a{color:var(--dark)}
+.hidden{display:none!important}
+#login{max-width:410px;margin:9vh auto;padding:30px;background:white;border-radius:18px;border:1px solid var(--line)}
+#login h1{margin:8px 0}#login p{color:var(--muted)}
+input,textarea,select{padding:10px;border:1px solid var(--line);border-radius:9px;background:white;width:100%;color:var(--ink)}
+textarea{resize:vertical;min-height:72px}.field{display:block;margin:12px 0}.field>span{display:block;font-weight:700;margin-bottom:5px}
+.actions,.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.primary,.secondary,.warn{padding:9px 14px;border:1px solid var(--dark);border-radius:9px;background:var(--dark);color:white;font-weight:700}
+.secondary{background:white;color:var(--dark);border-color:var(--line)}.warn{background:white;color:#a04444;border-color:#d8aaaa}
+button:disabled{opacity:.5;cursor:not-allowed}
+#app{min-height:100vh}.shell{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:100vh}
+aside{background:#fff;border-left:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh;overflow:auto}
+.logo{font-size:20px;font-weight:800;color:var(--dark)}.sub{font-size:12px;color:var(--muted);margin-bottom:22px}
+.nav button{display:block;width:100%;text-align:right;border:0;background:transparent;padding:12px;border-radius:9px;color:var(--ink);font-weight:700}
+.nav button.active{background:#f4ebe6;color:var(--dark)}
+main{max-width:1040px;width:100%;padding:25px 32px 55px;margin:auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}
+.top h1{margin:0;font-size:25px}.top p{margin:5px 0;color:var(--muted)}
+.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:18px;margin:12px 0}
+.panel h2{font-size:18px;margin:0 0 10px}.panel h3{font-size:16px}
+.note{color:var(--muted);font-size:13px;line-height:1.5}
+.item{padding:13px 0;border-top:1px solid var(--line)}.item:first-child{border-top:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.count{background:#f5f0eb;border-radius:12px;padding:15px}
+.count strong{display:block;font-size:26px;color:var(--dark)}
+.preview-img{max-width:250px;max-height:170px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+#notice{padding:11px;margin-bottom:14px;border:1px solid var(--line);border-radius:10px;background:#f7f3ec}
+#notice.error{color:#963838;background:#fff2f0;border-color:#e8bbb7}
+.pill{font-size:12px;color:var(--muted)}.sticky-actions{position:sticky;bottom:0;background:#fffefaed;border:1px solid var(--line);backdrop-filter:blur(10px);padding:12px;border-radius:12px;display:flex;gap:9px;align-items:center;flex-wrap:wrap;z-index:5}
+@media(max-width:750px){.shell{display:block}aside{height:auto;position:relative;padding:12px}.nav{display:flex;overflow:auto;gap:5px}.nav button{width:auto;white-space:nowrap}.sub{margin:0}.top{display:block}main{padding:15px}.grid2,.grid3{grid-template-columns:1fr}#login{margin:25px 12px}}
+</style>
+</head>
+<body>
+<section id="login" class="hidden">
+<div class="logo">BRIDE JOURNAL / ADMIN</div>
+<h1>כניסה למנהלת</h1>
+<p>ניהול תוכן האפליקציה החינמית. האזור מיועד למנהלת בלבד.</p>
+<form id="loginForm">
+<label class="field"><span>אימייל</span><input id="email" type="email" autocomplete="username" required></label>
+<label class="field"><span>סיסמה</span><input id="password" type="password" autocomplete="current-password" required></label>
+<button type="submit" class="primary">כניסה</button>
+</form>
+<p id="loginError" role="alert"></p>
+<p class="note"><a href="./index.html">חזרה לאפליקציה</a></p>
+</section>
+<div id="app" class="hidden">
+<div class="shell">
+<aside>
+<div class="logo">BRIDE JOURNAL</div><div class="sub">ניהול האפליקציה החינמית</div>
+<nav class="nav" id="nav"></nav>
+<hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+<button class="secondary" id="signout">התנתקות</button>
+<p class="note">נתוני הזוגות לא מוצגים ולא נערכים במסך זה.</p>
+</aside>
+<main>
+<div class="top"><div><h1 id="pageTitle">ניהול תוכן</h1><p id="pageDescription"></p></div><a href="./index.html" target="_blank" rel="noopener noreferrer">לאפליקציה ↗</a></div>
+<div id="notice" role="status" class="hidden"></div>
+<div id="content"></div>
+<div class="sticky-actions">
+<button class="secondary" id="draftBtn">שמירת טיוטה במכשיר</button>
+<button class="secondary" id="exportBtn">ייצוא גיבוי JSON</button>
+<button class="secondary" id="resetBtn">איפוס השינויים בטיוטה</button>
+<button class="primary" id="publishBtn">פרסום התוכן</button>
+<span class="pill" id="status"></span>
+</div>
+</main>
+</div>
+</div>
+<script>
+(function(){
+'use strict';
+const firebaseConfig={apiKey:"AIzaSyAppiXGXUpsX8c1ql0WfA3rGlRxggFiz9c",authDomain:"bride-journal.firebaseapp.com",projectId:"bride-journal",storageBucket:"bride-journal.firebasestorage.app",messagingSenderId:"321925391638",appId:"1:321925391638:web:4b79d7b9ce9dd66cf31c37"};
+firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth(),db=firebase.firestore();
+const ADMIN_EMAIL="matatmail@gmail.com";
+const STORAGE_KEY="bj-free-editor-draft-v1";
+const DEFAULTS=window.BJ_ADMIN_DEFAULTS;
+let remote=null,form=clone(DEFAULTS),section="home",user=null,loaded=false,publishing=false;
+const $=(id)=>document.getElementById(id);
+const sections=[
+ ["home","מסך הבית","כותרות והנחיות במסך הבית"],
+ ["tasks","משימות ברירת מחדל","המשימות שייווצרו למשתמשים חדשים בלבד"],
+ ["budget","תקציב והערכת מחירים","שמות פריטים וטיפים למשתמשים חדשים בלבד"],
+ ["venueQuestions","שאלון אולם","עריכת נוסח שאלות בלי לשנות את סדר התשובות"],
+ ["vendorGuides","מדריכי ספקים","כותרות, דגשים וקישורי סרטונים"],
+ ["venueTips","טיפים לאולם","הסברים כלליים שלא משנים חישובים"],
+ ["sideEvents","אירועים נלווים","כותרות ותיאורים"],
+ ["recommendations","המלצות ותמונות","פרסום המלצות באמצעות כתובות תמונה וקישורים"]
+];
+function clone(obj){return JSON.parse(JSON.stringify(obj));}
+function say(message,error=false){$("notice").textContent=message;$("notice").classList.remove("hidden");$("notice").classList.toggle("error",error);}
+function esc(v){return String(v==null?"":v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function validUrl(v){try{const u=new URL(v);return u.protocol==="https:"||u.protocol==="http:";}catch(e){return false;}}
+function mergeContent(src){
+  const next=clone(DEFAULTS);
+  if(!src||typeof src!=="object")return next;
+  for(const key of Object.keys(next)){
+    if(key==="recommendations" && Array.isArray(src[key]))next[key]=src[key];
+    else if(Array.isArray(next[key]) && Array.isArray(src[key]))next[key]=src[key];
+    else if(next[key] && !Array.isArray(next[key]) && typeof next[key]==="object" && src[key] && typeof src[key]==="object"&&!Array.isArray(src[key]))next[key]={...next[key],...src[key]};
+  }
+  return next;
+}
+function getDraft(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"null");}catch(e){return null;}}
+function saveDraft(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(form));say("הטיוטה נשמרה בדפדפן הזה. היא עדיין לא פורסמה.");}catch(e){say("שמירת הטיוטה נכשלה: ייתכן שנפח האחסון מלא.",true);}}
+function input(label,value,field,opts={}){
+ const type=opts.type||"text";
+ const val=esc(value);
+ return '<label class="field"><span>'+esc(label)+'</span>'+(opts.multiline?'<textarea data-edit="'+esc(field)+'" rows="'+(opts.rows||3)+'">'+val+'</textarea>':'<input type="'+type+'" data-edit="'+esc(field)+'" value="'+val+'" '+(opts.placeholder?'placeholder="'+esc(opts.placeholder)+'"':'')+'>')+'</label>';
+}
+function objectEditor(key,labels){return '<section class="panel"><h2>'+esc(sections.find(x=>x[0]===key)[1])+'</h2>'+Object.keys(labels).map(k=>input(labels[k],form[key][k]||"",key+"."+k,{multiline:/hint|subtitle|attendance|commitment/.test(k),rows:3})).join("")+'</section>';}
+function tasksEditor(){
+ return '<section class="panel"><h2>משימות ברירת מחדל</h2><p class="note">עריכה כאן לא משנה משימות שזוגות כבר קיבלו או ערכו. אין מחיקה או הוספה כדי לשמור על זיהוי שלבי הדרך.</p>'+form.tasks.map((item,i)=>'<div class="item"><div class="grid3">'+input("משימה",item.t,"tasks."+i+".t")+input("קטגוריה",item.c,"tasks."+i+".c")+input("חודשים לפני חתונה",item.m,"tasks."+i+".m",{type:"number"})+'</div>'+input("דגשים",item.n||"","tasks."+i+".n",{multiline:true,rows:2})+'</div>').join("")+'</section>';
+}
+function budgetEditor(){
+ return '<section class="panel"><h2>טיפים ומחירי ייחוס</h2><p class="note">עריכה משפיעה על ברירות מחדל חדשות בלבד. סכומים שהוזנו במחשבון הזוגי אינם משתנים.</p>'+Object.keys(form.budget).map(k=>'<h3>'+esc(form.budget[k].label)+'</h3>'+form.budget[k].items.map((item,i)=>'<div class="grid2 item">'+input("סעיף",item.n,"budget."+k+".items."+i+".n")+input("טיפ / טווח מחיר",item.tip||"","budget."+k+".items."+i+".tip")+'</div>').join("")).join("")+'</section>';
+}
+function venueEditor(){
+ return '<section class="panel"><h2>שאלון אולם</h2><p class="note">שומרים על אותו מספר שאלות ועל אותו סדר, כדי שתשובות שנשמרו לפי מיקום לא יזוזו לשאלה אחרת.</p>'+form.venueQuestions.map((q,i)=>'<div class="item"><div class="grid2">'+input("קטגוריה",q.cat,"venueQuestions."+i+".cat")+input("שאלה",q.q,"venueQuestions."+i+".q")+'</div>'+input("טיפ ממתת",q.tip||"","venueQuestions."+i+".tip",{multiline:true,rows:2})+'</div>').join("")+'</section>';
+}
+function guidesEditor(){
+ return '<section class="panel"><h2>מדריכי ספקים</h2><p class="note">אפשר לעדכן טקסטים, קישורי סרטונים וכל דגש ברשימות. הסדר וכתובות הזיהוי נשמרים.</p>'+form.vendorGuides.map((g,i)=>'<div class="item"><h3>'+esc(g.id)+'</h3>'+input("כותרת",g.title,"vendorGuides."+i+".title")+input("תיאור",g.desc||"","vendorGuides."+i+".desc",{multiline:true})+input("קישור לסרטון",g.videoUrl||"","vendorGuides."+i+".videoUrl",{type:"url"})+(g.checklist||[]).map((t,j)=>input("דגש "+(j+1),t,"vendorGuides."+i+".checklist."+j,{multiline:true,rows:2})).join("")+'</div>').join("")+'</section>';
+}
+function recEditor(){
+ return '<section class="panel"><h2>המלצות ותמונות</h2><p class="note">העלאת תמונה ישירה תתווסף לאחר אימות הגדרות האחסון. כעת אפשר לשלב תמונה ציבורית דרך כתובת HTTPS. כל המלצה חדשה מתפרסמת רק בלחיצה על פרסום.</p><button class="secondary" data-action="add-rec">+ הוספת המלצה</button>'+form.recommendations.map((rec,i)=>{
+ const src=validUrl(rec.imageUrl||"")?esc(rec.imageUrl):"";
+ return '<div class="item"><div class="grid2">'+input("כותרת",rec.title||"","recommendations."+i+".title")+input("קטגוריה",rec.category||"","recommendations."+i+".category")+'</div>'+input("תיאור",rec.description||"","recommendations."+i+".description",{multiline:true})+'<div class="grid2">'+input("קישור להמלצה",rec.url||"","recommendations."+i+".url",{type:"url"})+input("כתובת תמונה",rec.imageUrl||"","recommendations."+i+".imageUrl",{type:"url"})+'</div>'+(src?'<img class="preview-img" src="'+src+'" alt="תצוגה מקדימה" loading="lazy">':'')+'<div class="actions"><button class="warn" data-action="delete-rec" data-index="'+i+'">מחיקת המלצה</button></div></div>';
+ }).join("")+'</section>';
+}
+function render(){
+ const info=sections.find(x=>x[0]===section);
+ $("pageTitle").textContent=info[1];$("pageDescription").textContent=info[2];
+ $("nav").innerHTML=sections.map(x=>'<button data-section="'+x[0]+'" class="'+(x[0]===section?"active":"")+'">'+x[1]+'</button>').join("");
+ let markup="";
+ if(section==="home")markup=objectEditor("home",{eyebrow:"כיתוב עליון",journeyTitle:"כותרת הדרך לחופה",journeyHint:"הסבר השלבים",progressTitle:"כותרת התקדמות",toolsTitle:"כותרת הכלים",eventsTitle:"כותרת האירועים",eventsSubtitle:"כותרת משנה"});
+ else if(section==="tasks")markup=tasksEditor();
+ else if(section==="budget")markup=budgetEditor();
+ else if(section==="venueQuestions")markup=venueEditor();
+ else if(section==="vendorGuides")markup=guidesEditor();
+ else if(section==="venueTips")markup=objectEditor("venueTips",{attendance:"הערכת מגיעים",commitment:"התחייבות לאולם"});
+ else if(section==="sideEvents")markup=objectEditor("sideEvents",{title:"כותרת המסך",subtitle:"תיאור",challahTitle:"הפרשת חלה",mikvehTitle:"מקווה",bacheloretteTitle:"מסיבת רווקות"});
+ else markup=recEditor();
+ $("content").innerHTML=markup;
+ $("status").textContent=(loaded?"נתוני ניהול נטענו":"מצב הכנה")+" · טיוטה מקומית עד לפרסום";
+ $("publishBtn").disabled=!loaded||publishing;
+}
+function updatePath(path,value){
+ let segments=path.split("."),cursor=form;
+ for(let i=0;i<segments.length-1;i++){if(cursor==null||!Object.prototype.hasOwnProperty.call(cursor,segments[i]))return;cursor=cursor[segments[i]];}
+ const field=segments[segments.length-1];
+ if(cursor==null||!Object.prototype.hasOwnProperty.call(cursor,field))return;
+ if(path.endsWith(".m")){const n=Number(value);cursor[field]=Number.isFinite(n)&&n>=0&&n<=24?n:7;}
+ else cursor[field]=value;
+ $("status").textContent="שינויים שטרם נשמרו";
+}
+function validate(){
+ if(form.venueQuestions.length!==DEFAULTS.venueQuestions.length)throw Error("מספר שאלות האולם השתנה.");
+ if(form.tasks.length!==DEFAULTS.tasks.length)throw Error("מספר משימות ברירת המחדל השתנה.");
+ if(form.vendorGuides.length!==DEFAULTS.vendorGuides.length)throw Error("מספר מדריכי הספקים השתנה.");
+ if(!Array.isArray(form.recommendations)||form.recommendations.length>100)throw Error("מספר ההמלצות אינו תקין.");
+ for(const rec of form.recommendations){
+  if(!rec.title||!rec.title.trim())throw Error("לכל המלצה חייבת להיות כותרת.");
+  for(const key of ["url","imageUrl"])if(rec[key]&&!validUrl(rec[key]))throw Error("יש להזין קישור תקין מסוג HTTP/HTTPS בהמלצות.");
+ }
+ for(const guide of form.vendorGuides)if(guide.videoUrl&&!validUrl(guide.videoUrl))throw Error("קישור סרטון במדריך אינו תקין.");
+}
+async function load(){
+ try{
+  const snap=await db.collection("siteContent").doc("editorial").get();
+  remote=snap.exists?snap.data():null;
+  form=mergeContent(remote);
+  const draft=getDraft();
+  if(draft&&confirm("נמצאה טיוטה שמורה בדפדפן הזה. לטעון אותה במקום התוכן שפורסם?"))form=mergeContent(draft);
+  loaded=true;say("התוכן נטען. שינויים נשמרים בטיוטה עד לפרסום.");
+ }catch(e){
+  loaded=false;form=mergeContent(getDraft());
+  say("לא ניתן לקרוא את מסמך התוכן מ-Firestore. אפשר לערוך ולייצא טיוטה, אך פרסום יישאר חסום עד להסדרת ההרשאות. "+(e.code||""),true);
+ }
+ render();
+}
+$("nav").addEventListener("click",e=>{const b=e.target.closest("[data-section]");if(b){section=b.dataset.section;render();}});
+$("content").addEventListener("input",e=>{if(e.target.matches("[data-edit]"))updatePath(e.target.dataset.edit,e.target.value);});
+$("content").addEventListener("click",e=>{
+ const b=e.target.closest("[data-action]");if(!b)return;
+ if(b.dataset.action==="add-rec"){form.recommendations.push({title:"",description:"",category:"",url:"",imageUrl:""});render();}
+ if(b.dataset.action==="delete-rec"){if(confirm("למחוק את ההמלצה מהטיוטה?")){form.recommendations.splice(Number(b.dataset.index),1);render();}}
+});
+$("draftBtn").addEventListener("click",saveDraft);
+$("exportBtn").addEventListener("click",()=>{
+ const blob=new Blob([JSON.stringify(form,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="bride-journal-editorial-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+$("resetBtn").addEventListener("click",()=>{
+ if(!confirm("לאפס את הטיוטה לשינויים האחרונים שפורסמו?"))return;
+ localStorage.removeItem(STORAGE_KEY);form=mergeContent(remote);render();say("הטיוטה אופסה.");
+});
+$("publishBtn").addEventListener("click",async()=>{
+ if(!loaded||publishing||!user||user.email.toLowerCase()!==ADMIN_EMAIL)return;
+ try{validate();}catch(e){say(e.message,true);return;}
+ if(!confirm("לפרסם את עדכוני התוכן לכלל המשתמשים? שינויים אישיים של זוגות לא ישתנו."))return;
+ publishing=true;render();
+ try{
+  await db.collection("siteContent").doc("editorial").set({...clone(form),schemaVersion:1,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),updatedBy:user.uid});
+  remote=clone(form);localStorage.removeItem(STORAGE_KEY);say("התוכן נשמר ב-Firestore. הוא יופיע למשתמשים לאחר טעינת האפליקציה מחדש.");
+ }catch(e){say("הפרסום נכשל. אין לעקוף הרשאות: "+(e.message||"יש לבדוק Firestore rules"),true);}
+ finally{publishing=false;render();}
+});
+$("loginForm").addEventListener("submit",async e=>{
+ e.preventDefault();$("loginError").textContent="";
+ try{await auth.signInWithEmailAndPassword($("email").value.trim(),$("password").value);}
+ catch(err){$("loginError").textContent="הכניסה נכשלה. בדקי את פרטי ההתחברות.";}
+});
+$("signout").addEventListener("click",()=>auth.signOut());
+auth.onAuthStateChanged(async next=>{
+ user=next&&next.email&&next.email.toLowerCase()===ADMIN_EMAIL?next:null;
+ $("login").classList.toggle("hidden",!!user);
+ $("app").classList.toggle("hidden",!user);
+ if(next&&!user){await auth.signOut();$("loginError").textContent="אין לחשבון זה הרשאת מנהלת.";}
+ if(user)await load();
+});
+})();
+</script>
+</body>
+</html>
