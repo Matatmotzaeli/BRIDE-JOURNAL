@@ -411,6 +411,35 @@ db.enablePersistence().catch(function(err) {
 });
 
 var currentUser = null;
+var editorial = null;
+
+/* Shared editorial content is separate from each couple's data. All failures fall back to bundled defaults. */
+async function bjLoadEditorial(){
+  editorial = null;
+  try {
+    var snap = await db.collection('siteContent').doc('editorial').get();
+    if(!snap.exists) return;
+    var value = snap.data();
+    if(!value || value.schemaVersion !== 1) return;
+    editorial = value;
+    if(Array.isArray(value.venueQuestions) && value.venueQuestions.length === VENUE_Q_SEED.length &&
+       value.venueQuestions.every(function(q){return q && typeof q.q === 'string' && typeof q.cat === 'string';})){
+      VENUE_Q_SEED = value.venueQuestions;
+    }
+    if(Array.isArray(value.vendorGuides) && value.vendorGuides.length === VENDOR_GUIDES_DATA.length &&
+       value.vendorGuides.every(function(g,i){return g && g.id === VENDOR_GUIDES_DATA[i].id && Array.isArray(g.checklist);})){
+      VENDOR_GUIDES_DATA = value.vendorGuides;
+    }
+  } catch(err){ console.warn('Editorial defaults unavailable; using built-in content.',err.code||err.message); }
+}
+function bjText(section,key,defaultText){
+  var part = editorial && editorial[section];
+  return part && typeof part[key] === 'string' ? part[key] : defaultText;
+}
+function bjSeedArray(section,reference,validator){
+  var a = editorial && editorial[section];
+  return Array.isArray(a) && a.length === reference.length && a.every(validator) ? a : reference;
+}
 
 
 var TASK_SEED = [
@@ -837,11 +866,13 @@ function showUndoToast(msg, restoreFn){
   }
 }
 
-function seedTasks(){ return TASK_SEED.map(function(x){ return {id:uid(), c:x.c, t:x.t, m:x.m, n:x.n||"", done:false}; }); }
+function seedTasks(){ return bjSeedArray('tasks',TASK_SEED,function(x){return x && typeof x.t==='string' && typeof x.c==='string' && typeof x.m==='number';}).map(function(x){ return {id:uid(), c:x.c, t:x.t, m:x.m, n:x.n||"", done:false}; }); }
 function seedBudget(){
   var out = {};
+  var budgetSource = editorial && editorial.budget && typeof editorial.budget==='object' ? editorial.budget : BUDGET_SEED;
   Object.keys(BUDGET_SEED).forEach(function(k){
-    out[k] = BUDGET_SEED[k].items.map(function(it){ return {id:uid(), name:it.n, tip:it.tip, cost:"", deposit:""}; });
+    var items=budgetSource[k] && Array.isArray(budgetSource[k].items) && budgetSource[k].items.length===BUDGET_SEED[k].items.length && budgetSource[k].items.every(function(it){return it && typeof it.n==='string' && typeof it.tip==='string';}) ? budgetSource[k].items : BUDGET_SEED[k].items;
+    out[k] = items.map(function(it){ return {id:uid(), name:it.n, tip:it.tip, cost:"", deposit:""}; });
   });
   return out;
 }
@@ -910,6 +941,7 @@ function scheduleSave(key, getter, delay){
 }
 
 async function loadAll(){
+  await bjLoadEditorial();
   state.profile = await getOrDefault("profile", {name:"", weddingDate:"", email:"", phone:"", brideName:"", groomName:""});
   state.meta = await getOrDefault("meta", {seenWelcome:false, onbDone:[false,false,false,false]});
   
@@ -1059,14 +1091,14 @@ function renderHome(){
 
 
   html += '<section class="bj-welcome" aria-label="פרטי החתונה">'
-    +'<p class="bj-eyebrow">BRIDE_JOURNAL · המסע שלכם לחתונה</p>'
+    +'<p class="bj-eyebrow">'+esc(bjText('home','eyebrow','BRIDE_JOURNAL · המסע שלכם לחתונה'))+'</p>'
     +'<input class="bj-name-input" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" value="'+esc(state.profile.name)+'">';
   if(phase.days===null){ html+='<div class="bj-count-label">בחרו תאריך חתונה לספירה לאחור</div>'; }
   else if(phase.days>0){ html+='<div class="bj-count-number">'+phase.days+'</div><div class="bj-count-label">ימים עד החתונה</div>'; }
   else if(phase.days===0){ html+='<div class="bj-count-label">היום הגדול הגיע! מזל טוב</div>'; }
   else { html+='<div class="bj-count-label">מזל טוב על החתונה!</div>'; }
   html+='<div class="bj-date-row"><span>תאריך החתונה</span><input type="date" data-act="wed-date" aria-label="תאריך החתונה" value="'+esc(wed)+'"></div></section>';
-  html+='<section class="bj-panel" aria-label="שלבי התכנון"><h2 class="bj-section-title">הדרך שלכם לחופה</h2><div class="bj-phase-list">';
+  html+='<section class="bj-panel" aria-label="שלבי התכנון"><h2 class="bj-section-title">'+esc(bjText('home','journeyTitle','הדרך שלכם לחופה'))+'</h2><div class="bj-phase-list">';
   steps.forEach(function(step,i){
     var status=i<phase.index?'done':i===phase.index?'current':'upcoming';
     var label=status==='done'?'הושלם':status==='current'?'כעת':'בהמשך';
@@ -1075,19 +1107,19 @@ function renderHome(){
     if(i===1 && !phase.venueDone && phase.atFinal){status='upcoming';label='טרם הושלם';}
     html+='<button type="button" class="bj-phase" data-status="'+status+'" data-tab="tasks" title="מעבר למשימות" aria-label="'+step.name+' - '+label+'; מעבר למשימות"><span class="bj-phase-icon">'+bjHomeIcon(step.icon)+'</span><span class="bj-phase-label">'+step.name+'</span><span class="bj-phase-status">'+label+'</span></button>';
   });
-  html+='</div><p class="bj-phase-hint">שלבי המוזמנים והאולם מסומנים בראש <span class="bj-phase-link" data-tab="tasks">רשימת המשימות</span>; ההכנות האחרונות מתחילות 45 ימים לפני החתונה.</p></section>';
-  html+='<section class="bj-panel" aria-label="התקדמות המשימות"><h2 class="bj-section-title">התקדמות בתכנון</h2>'
+  html+='</div><p class="bj-phase-hint">'+esc(bjText('home','journeyHint','שלבי המוזמנים והאולם מסומנים בראש רשימת המשימות; ההכנות האחרונות מתחילות 45 ימים לפני החתונה.'))+' <span class="bj-phase-link" data-tab="tasks">רשימת המשימות ↗</span></p></section>';
+  html+='<section class="bj-panel" aria-label="התקדמות המשימות"><h2 class="bj-section-title">'+esc(bjText('home','progressTitle','התקדמות בתכנון'))+'</h2>'
     +'<div class="bj-progress-area"><div class="bj-donut" role="img" aria-label="'+prog.pct+' אחוז מהמשימות הושלמו" style="background:conic-gradient(#7F8E7A 0 '+prog.pct+'%,#EEE5DB '+prog.pct+'% 100%)">'
     +'<div class="bj-donut-center"><span class="bj-pct">'+prog.pct+'%</span><span class="bj-pct-caption">הושלמו</span></div></div>'
     +'<div class="bj-progress-copy"><strong>'+prog.done+' מתוך '+prog.total+'</strong>משימות הושלמו'
     +'<div class="bj-legend"><span class="bj-legend-dot"></span>הושלמו</div><div class="bj-legend"><span class="bj-legend-dot remaining"></span>נותרו</div></div></div></section>';
-  html+='<section aria-label="כלים לתכנון"><h2 class="bj-section-title">הכלים שלכם</h2><div class="bj-tools">'
+  html+='<section aria-label="כלים לתכנון"><h2 class="bj-section-title">'+esc(bjText('home','toolsTitle','הכלים שלכם'))+'</h2><div class="bj-tools">'
     +'<button type="button" class="bj-tool budget" data-tab="budget"><span class="bj-tool-icon">'+bjHomeIcon('budget')+'</span>ניהול תקציב</button>'
     +'<button type="button" class="bj-tool alcohol" data-tab="alcohol"><span class="bj-tool-icon">'+bjHomeIcon('alcohol')+'</span>מחשבון אלכוהול</button>'
     +'<button type="button" class="bj-tool guests" data-tab="guests"><span class="bj-tool-icon">'+bjHomeIcon('guests')+'</span>רשימת מוזמנים</button>'
     +'<button type="button" class="bj-tool equipment" data-tab="equipment"><span class="bj-tool-icon">'+bjHomeIcon('equipment')+'</span>רשימת ציוד</button>'
     +'</div></section>';
-  html+='<button type="button" class="bj-events-link" data-tab="sideEvents" aria-label="מעבר לאירועים נלווים בתוך האפליקציה">'+'<span class="bj-events-icon">'+bjHomeIcon('final')+'</span>'+'<span class="bj-events-content"><strong>אירועים נלווים</strong><span>הפרשת חלה · מקווה · מסיבת רווקות</span></span>'+'<span class="bj-events-arrow" aria-hidden="true">‹</span></button>';
+  html+='<button type="button" class="bj-events-link" data-tab="sideEvents" aria-label="מעבר לאירועים נלווים בתוך האפליקציה">'+'<span class="bj-events-icon">'+bjHomeIcon('final')+'</span>'+'<span class="bj-events-content"><strong>'+esc(bjText('home','eventsTitle','אירועים נלווים'))+'</strong><span>'+esc(bjText('home','eventsSubtitle','הפרשת חלה · מקווה · מסיבת רווקות'))+'</span></span>'+'<span class="bj-events-arrow" aria-hidden="true">‹</span></button>';
   html+='</div>';
   return html;
 }
@@ -1238,12 +1270,12 @@ function renderAlcohol(){
 }
 
 function renderSideEvents(){
-  var html = '<h2 class="pagetitle">אירועים נלווים</h2><p class="pagesub">ריכוז המידע, הלו"ז והדגשים לאירועים שמסביב לחתונה</p>';
+  var html = '<h2 class="pagetitle">'+esc(bjText('sideEvents','title','אירועים נלווים'))+'</h2><p class="pagesub">'+esc(bjText('sideEvents','subtitle','ריכוז המידע, הלו"ז והדגשים לאירועים שמסביב לחתונה'))+'</p>';
   
   html += '<div class="segmented-control">';
-  html += '<button class="'+(currentSideSubtab==='challah'?'active':'')+'" data-act="side-subtab" data-sub="challah">🌾 הפרשת חלה</button>';
-  html += '<button class="'+(currentSideSubtab==='bachelorette'?'active':'')+'" data-act="side-subtab" data-sub="bachelorette">🎉 מסיבת רווקות</button>';
-  html += '<button class="'+(currentSideSubtab==='mikveh'?'active':'')+'" data-act="side-subtab" data-sub="mikveh">💧 מקווה</button>';
+  html += '<button class="'+(currentSideSubtab==='challah'?'active':'')+'" data-act="side-subtab" data-sub="challah">🌾 '+esc(bjText('sideEvents','challahTitle','הפרשת חלה'))+'</button>';
+  html += '<button class="'+(currentSideSubtab==='bachelorette'?'active':'')+'" data-act="side-subtab" data-sub="bachelorette">🎉 '+esc(bjText('sideEvents','bacheloretteTitle','מסיבת רווקות'))+'</button>';
+  html += '<button class="'+(currentSideSubtab==='mikveh'?'active':'')+'" data-act="side-subtab" data-sub="mikveh">💧 '+esc(bjText('sideEvents','mikvehTitle','מקווה'))+'</button>';
   html += '</div>';
 
   if(currentSideSubtab === 'challah'){
@@ -1605,9 +1637,9 @@ function renderVenueCalculatorBox(){
 function renderVenueGeneralTips(){
   return '<div style="margin:8px 0 12px;padding:9px 10px;background:var(--rose-50);border-radius:10px">'+
     '<p style="font-size:11.5px;font-weight:700;margin:0 0 5px">הערכת מגיעים</p>'+
-    '<p class="small" style="margin:0 0 9px">מוזמנים פחות 30% = יאשרו הגעה. מאשרים הגעה פחות 10% = מגיעים בפועל</p>'+
+    '<p class="small" style="margin:0 0 9px">'+esc(bjText('venueTips','attendance','מוזמנים פחות 30% = יאשרו הגעה. מאשרים הגעה פחות 10% = מגיעים בפועל'))+'</p>'+
     '<p style="font-size:11.5px;font-weight:700;margin:0 0 5px">התחייבות לאולם</p>'+
-    '<p class="small" style="margin:0">תגידו לאולם 100 אנשים פחות ממה שאתם מתכוונים להזמין בפועל. תתחייבו על המינימום שחייבים, תתעקשו על מדרגות תשלום (התחייבות ל350 - בפועל אם מגיעים 400 יירדו 10 שקלים למנה לדוגמא). מתחייבים לכמות האנשים שאתם מחשבים שמגיעים בפועל פחות 10%.</p>'+
+    '<p class="small" style="margin:0">'+esc(bjText('venueTips','commitment','תגידו לאולם 100 אנשים פחות ממה שאתם מתכוונים להזמין בפועל. תתחייבו על המינימום שחייבים, תתעקשו על מדרגות תשלום (התחייבות ל350 - בפועל אם מגיעים 400 יירדו 10 שקלים למנה לדוגמא). מתחייבים לכמות האנשים שאתם מחשבים שמגיעים בפועל פחות 10%.'))+'</p>'+
     '</div>';
 }
 
@@ -1701,6 +1733,21 @@ function classifyLinkLocal(url, note){
 
 function renderInspiration(){
   var html = '<h2 class="pagetitle">לוח השראה</h2><p class="pagesub">הדביקו קישורים או העלו תמונות</p>';
+  if(editorial && Array.isArray(editorial.recommendations) && editorial.recommendations.length){
+    html += '<section class="card plain" aria-label="ההמלצות של מתת"><h3 style="margin:0 0 8px;color:var(--rose-900)">ההמלצות של מתת</h3>';
+    editorial.recommendations.slice(0,40).forEach(function(r){
+      if(!r || typeof r.title !== 'string') return;
+      html += '<div class="itemwrap">';
+      if(typeof r.imageUrl==='string' && /^https?:\\/\\//i.test(r.imageUrl)) html+='<img loading="lazy" alt="" src="'+esc(r.imageUrl)+'" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px">';
+      html += '<p style="font-weight:800;margin:5px 0">'+esc(r.title)+'</p>';
+      if(r.category)html += '<p class="small muted">'+esc(r.category)+'</p>';
+      if(r.description)html += '<p class="small">'+esc(r.description)+'</p>';
+      if(typeof r.url==='string' && /^https?:\\/\\//i.test(r.url))html += '<a class="small-btn" target="_blank" rel="noopener noreferrer" href="'+esc(r.url)+'">לצפייה בהמלצה</a>';
+      html += '</div>';
+    });
+    html += '</section>';
+  }
+
   html += '<div class="card">'
     + '<input type="text" id="inspUrlInput" placeholder="קישור (אינסטגרם, פינטרסט וכו\')" style="margin-bottom:6px">'
     + '<input type="text" id="inspNoteInput" placeholder="הערה קצרה (אופציונלי)" style="margin-bottom:6px">'
