@@ -1,0 +1,65 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // The free app has its own Firebase Auth project.
+    // Match the authenticated email claim, never a client-supplied document field.
+    function admin() {
+      return signedIn()
+        && request.auth.token.email == 'matatmail@gmail.com';
+    }
+
+    // Every couple's editable data is under its own Firebase Auth UID.
+    match /users/{userId} {
+      allow get, list, create, update, delete: if signedIn()
+        && request.auth.uid == userId;
+
+      match /data/{dataId} {
+        allow get, list, create, update, delete: if signedIn()
+          && request.auth.uid == userId;
+      }
+    }
+
+    // Welcome-screen registration: only the currently signed-in user may
+    // submit their own lead. Only the administrator may read/manage leads.
+    match /leads/{leadId} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+          'brideName', 'groomName', 'email',
+          'phone', 'userId', 'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'brideName', 'groomName', 'email',
+          'phone', 'userId', 'createdAt'
+        ])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.brideName is string
+        && request.resource.data.groomName is string
+        && request.resource.data.email is string
+        && request.resource.data.phone is string
+        && request.resource.data.createdAt is timestamp;
+
+      allow get, list, update, delete: if admin();
+    }
+
+    // Publicly readable published editorial content; only admin can edit.
+    match /siteContent/{documentId} {
+      allow get: if documentId == 'editorial';
+      allow list: if false;
+      allow create, update: if documentId == 'editorial'
+        && admin()
+        && request.resource.data.schemaVersion == 1;
+      allow delete: if documentId == 'editorial' && admin();
+    }
+
+    // No open wildcard permissions.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
