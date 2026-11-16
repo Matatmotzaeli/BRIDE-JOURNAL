@@ -1738,11 +1738,11 @@ function renderInspiration(){
     editorial.recommendations.slice(0,40).forEach(function(r){
       if(!r || typeof r.title !== 'string') return;
       html += '<div class="itemwrap">';
-      if(typeof r.imageUrl==='string' && /^https?:\\/\\//i.test(r.imageUrl)) html+='<img loading="lazy" alt="" src="'+esc(r.imageUrl)+'" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px">';
+      if(typeof r.imageUrl==='string' && /^https?:\/\//i.test(r.imageUrl)) html+='<img loading="lazy" alt="" src="'+esc(r.imageUrl)+'" style="width:100%;max-height:180px;object-fit:cover;border-radius:8px">';
       html += '<p style="font-weight:800;margin:5px 0">'+esc(r.title)+'</p>';
       if(r.category)html += '<p class="small muted">'+esc(r.category)+'</p>';
       if(r.description)html += '<p class="small">'+esc(r.description)+'</p>';
-      if(typeof r.url==='string' && /^https?:\\/\\//i.test(r.url))html += '<a class="small-btn" target="_blank" rel="noopener noreferrer" href="'+esc(r.url)+'">לצפייה בהמלצה</a>';
+      if(typeof r.url==='string' && /^https?:\/\//i.test(r.url))html += '<a class="small-btn" target="_blank" rel="noopener noreferrer" href="'+esc(r.url)+'">לצפייה בהמלצה</a>';
       html += '</div>';
     });
     html += '</section>';
