@@ -21,20 +21,19 @@ The live Firestore rules are NOT stored in this repository and have not been ins
 
 ```
 // Example only. Merge with the EXISTING production rules; never deploy alone.
-// Prefer an explicitly confirmed Firebase Auth UID for the administrator.
-// Replace the placeholder with that UID and verify it from Auth before deployment.
+// Use the pre-existing Firebase Auth admin email claim, and verify the admin account exists in this project.
 match /siteContent/{documentId} {
   allow get: if documentId == 'editorial';
   allow list: if false;
   allow create, update, delete: if documentId == 'editorial'
     && request.auth != null
-    && request.auth.uid == 'REPLACE_WITH_VERIFIED_ADMIN_FIREBASE_UID';
+    && request.auth.token.email == 'matatmail@gmail.com';
 }
 ```
 
-This example intentionally permits the public app to read ONLY the published editorial document, and restricts writes to the verified admin UID. Never use `allow write: if true` or rely only on the page's admin login. Do not change user-specific rules.
+This example intentionally permits the public app to read ONLY the published editorial document, and restricts writes to the existing admin email as asserted in a Firebase Auth token. Never use `allow write: if true` or rely only on the page's admin login. Do not change user-specific rules.
 
-**Admin sign-in:** `admin.html` currently checks the intended admin email (`matatmail@gmail.com`) on the client. Server-side security MUST additionally enforce the admin UID in Firestore rules. The admin's login must exist in the **free-app Firebase Auth project**, not merely the catalog project.
+**Admin sign-in:** `admin.html` currently checks the intended admin email (`matatmail@gmail.com`) on the client. Server-side security MUST additionally enforce the authenticated admin email claim in Firestore rules. The admin's login must exist in the **free-app Firebase Auth project**, not merely the catalog project.
 
 The document contains editorial defaults, not personally identifiable couple data. Public users can read the published content by design.
 
@@ -59,7 +58,7 @@ The document contains editorial defaults, not personally identifiable couple dat
 ## Tests before approval
 1. Compare the PR against main; ensure no modification to the SYSTEM/catalog repositories.
 2. Preview with a test account on a local Cloud Shell web server, NOT the published production site. Do not enter production credentials into third-party HTML preview services.
-3. Confirm ordinary users cannot write `siteContent/editorial`; only the verified admin can, once secure rules are configured.
+3. Confirm ordinary users cannot write `siteContent/editorial`; only the authenticated admin email can, once secure rules are configured.
 4. Edit a home heading in admin, save draft, reload and restore the draft. Do not publish until rules are configured and approved.
 5. Confirm read-only public rendering after publish using a test document, with explicit approval.
 6. Confirm existing couples' saved tasks, budget and venue answers are untouched.
