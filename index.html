@@ -261,6 +261,50 @@
 
 /* ===== End home-only styles ===== */
 
+
+/* Single-screen first-use welcome: all essential content and CTA visible on mobile. */
+#welcomeScreen{padding:max(12px,env(safe-area-inset-top)) 14px max(12px,env(safe-area-inset-bottom));align-items:center;overscroll-behavior:contain}
+#welcomeScreen .welcome-inner{width:min(100%,420px);max-width:420px;display:grid;gap:12px;text-align:right;margin:auto}
+.welcome-heading{text-align:center;display:grid;gap:3px}
+.welcome-eyebrow{font-size:11px;font-weight:700;letter-spacing:.6px;color:var(--rose-600)}
+.welcome-heading h1{margin:0;color:var(--rose-900);font-size:clamp(27px,4vh,34px);font-weight:800;line-height:1.12}
+.welcome-heading p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.welcome-intro{display:flex;align-items:center;gap:11px;background:var(--rose-50);border:1px solid var(--rose-100);padding:12px;border-radius:14px}
+.welcome-avatar{width:40px;height:40px;flex:0 0 40px;border-radius:50%;background:var(--rose-100);display:grid;place-items:center;font-size:19px;color:var(--rose-900);font-weight:800}
+.welcome-intro-copy{min-width:0}
+.welcome-intro strong{font-size:14px;color:var(--rose-900)}
+.welcome-intro strong span{font-size:12px;font-weight:500;color:var(--rose-600)}
+.welcome-intro p{margin:3px 0 0;font-size:12px;line-height:1.45}
+.welcome-form-panel{border:1px solid var(--border);border-radius:14px;padding:12px;background:#fff}
+.welcome-form-panel h2{font-size:14px;color:var(--rose-900);margin:0 0 10px;font-weight:800}
+.welcome-form-panel h2 span{font-weight:400;color:var(--muted);font-size:12px}
+.welcome-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}
+#welcomeScreen .welcome-fields input{min-width:0;width:100%;height:42px;margin:0;padding:9px 10px;font-size:13px;line-height:1.25;border-radius:9px}
+.welcome-privacy{margin:0;color:var(--muted);font-size:11px;line-height:1.35;text-align:center}
+#welcomeScreen .welcome-cta{width:100%;min-height:46px;border-radius:11px;font-size:15px;font-weight:800;cursor:pointer}
+@media(max-width:360px){
+ #welcomeScreen{padding-inline:10px}
+ #welcomeScreen .welcome-inner{gap:9px}
+ .welcome-intro{padding:9px}
+ .welcome-form-panel{padding:10px}
+ .welcome-fields{gap:7px}
+ #welcomeScreen .welcome-fields input{font-size:12px;padding:7px}
+}
+@media(max-height:650px){
+ #welcomeScreen .welcome-inner{gap:8px}
+ .welcome-heading h1{font-size:27px}
+ .welcome-intro{padding:9px}
+ .welcome-form-panel{padding:9px}
+ .welcome-form-panel h2{margin-bottom:6px}
+ #welcomeScreen .welcome-fields input{height:38px}
+ #welcomeScreen .welcome-cta{min-height:42px}
+}
+@media(max-height:520px){
+ /* Accessibility fallback for landscape, onscreen keyboards and unusually short viewports. */
+ #welcomeScreen{align-items:flex-start}
+ #welcomeScreen .welcome-inner{margin:auto}
+}
+
 </style>
 </head>
 <body>
@@ -336,30 +380,35 @@
   </div>
 </div>
 
-<!-- Welcome Screen -->
+<!-- Welcome Screen: compact, readable single-screen onboarding -->
 <div id="welcomeScreen" class="overlay-screen" style="display:none">
-  <div class="inner">
-    <p style="font-size:26px;font-weight:800;color:var(--rose-600);margin:0 0 6px">מזל טוב!</p>
-    <p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:0 0 16px">אל תילחצו. אני כאן כדי לעזור לכם להתחיל בתכנון החתונה - צעד אחד בכל פעם.</p>
-    
-    <div class="card rose-accent" style="text-align:right;margin-bottom:14px">
-      <div class="row" style="margin-bottom:8px">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--rose-100);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--rose-900);font-weight:800">מ</div>
-        <div><p style="font-size:13px;font-weight:800;margin:0;color:var(--rose-900)">היי, אני מתת</p><p style="font-size:10.5px;color:var(--rose-600);margin:0">מלווה אתכם עד החופה</p></div>
+  <div class="inner welcome-inner">
+    <div class="welcome-heading">
+      <span class="welcome-eyebrow">BRIDE JOURNAL · מתחילים יחד</span>
+      <h1>מזל טוב!</h1>
+      <p>מתכננים חתונה? נעשה סדר יחד, צעד אחר צעד.</p>
+    </div>
+
+    <div class="welcome-intro">
+      <div class="welcome-avatar" aria-hidden="true">מ</div>
+      <div class="welcome-intro-copy">
+        <strong>היי, אני מתת <span>· מלווה אתכם עד החופה</span></strong>
+        <p>אני כאן לעזור לכם לאורך הדרך, וגם לענות על שאלות בקבוצת הוואטסאפ.</p>
       </div>
-      <p style="font-size:12px;line-height:1.5;color:var(--ink);margin:0">אני כאן איתכם מהרגע הזה ועד החופה. זמינה לכם בקבוצת הוואטסאפ לכל שאלה שתעלה בדרך - אין שאלות טיפשיות.</p>
     </div>
 
-    <div class="card plain" style="text-align:right;margin-bottom:14px">
-      <p style="font-size:12px;font-weight:700;margin:0 0 8px;color:var(--rose-900)">קצת עליכם (כדי שהיומן יהיה אישי)</p>
-      <input type="text" id="welcomeBride" placeholder="שם הכלה (שדה חובה)" style="margin-bottom:6px">
-      <input type="text" id="welcomeGroom" placeholder="שם החתן (שדה חובה)" style="margin-bottom:6px">
-      <input type="email" id="welcomeEmail" placeholder="Gmail / אימייל" style="margin-bottom:6px;direction:ltr;text-align:right">
-      <input type="tel" id="welcomePhone" placeholder="מספר טלפון (שדה חובה)" style="direction:ltr;text-align:right">
+    <div class="welcome-form-panel">
+      <h2>קצת עליכם <span>כדי שהיומן יהיה אישי</span></h2>
+      <div class="welcome-fields">
+        <input type="text" id="welcomeBride" placeholder="שם הכלה *" aria-label="שם הכלה - חובה" autocomplete="given-name">
+        <input type="text" id="welcomeGroom" placeholder="שם החתן *" aria-label="שם החתן - חובה">
+        <input type="email" id="welcomeEmail" placeholder="אימייל (לא חובה)" aria-label="כתובת אימייל" autocomplete="email">
+        <input type="tel" id="welcomePhone" placeholder="מספר טלפון *" aria-label="מספר טלפון - חובה" autocomplete="tel">
+      </div>
     </div>
 
-    <p class="small muted" style="margin:0 0 10px;line-height:1.4">הפרטים נשמרים ביומן שלכם בלבד.</p>
-    <button class="primary" data-act="welcome-start">להתחיל בתכנון</button>
+    <p class="welcome-privacy">הפרטים נשמרים ביומן שלכם בלבד. * שדה חובה</p>
+    <button class="primary welcome-cta" data-act="welcome-start">להתחיל בתכנון</button>
   </div>
 </div>
 
