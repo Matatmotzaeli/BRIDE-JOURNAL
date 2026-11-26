@@ -291,7 +291,7 @@ html,body,#shell,.overlay-screen,#bottomNav button,#main .segmented-control butt
 #main .remaining-filter {display:flex;align-items:center;gap:8px;font-size:13px;margin:8px 0;accent-color:#37895a}
 #main .task-date {margin:0;color:var(--muted);font-size:13px}
 #main .row-editor {flex:1;min-width:0}
-#main :is(.row-editor,.drink-editor) summary {cursor:pointer;padding:7px 2px;font:500 13px/1.4 var(--journal-font);overflow-wrap:anywhere}
+#main :is(.row-editor,.drink-editor) summary {cursor:pointer;padding:7px 2px;font:var(--journal-row-type);overflow-wrap:anywhere}
 #main .task-caption {font-size:11px;color:var(--muted);padding-inline-start:32px;margin-bottom:6px}
 #main .taskrow:has(:checked) summary {text-decoration:line-through;color:var(--muted)}
 #main .row-editor[open] summary {margin-bottom:4px;color:var(--rose-600)}
@@ -309,9 +309,9 @@ html,body,#shell,.overlay-screen,#bottomNav button,#main .segmented-control butt
 @media(prefers-reduced-transparency:reduce){#main .bj-v3-hero-grid {background:#74583f;backdrop-filter:none}}
 #main .card:has([data-act=vcalc-field])>.between>span,#main #vendorGrandTotal,#main #budgetGrandIncome,#main .venue-db-toggle span {font:600 13px/1.4 var(--journal-font)!important;white-space:normal}
 html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
-:root {--balance-label:800 11px/1.35 var(--journal-font)}
+:root {--journal-row-type:500 13px/1.4 var(--journal-font)}
 #main [data-screen] :is(.sectionlabel,.card>p:first-child,.between>.small,.grouphead>span:first-child,.qcat,.venue-db-toggle,.custom-drink>label),
-.overlay-screen .card>p:first-child {font:var(--balance-label)!important;letter-spacing:normal}
+.overlay-screen .card>p:first-child {font:var(--journal-row-type)!important;letter-spacing:normal}
 #main :is(summary,button,label,.sectionlabel,.pagesub,.itemwrap,.grouphead,.task-caption,.chip,.tag,.between>span) {overflow-wrap:anywhere;min-width:0;white-space:normal}
 #main :is(.between,.row) > :is(div,span,label,button) {max-width:100%}
 #main .custom-drink {margin:10px 0;padding:10px 12px;background:var(--paper);border-radius:12px}
@@ -334,14 +334,14 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #main :is([data-screen=tasks],[data-screen=inspiration]) .pagetitle::after {width:48px;height:33px;border-radius:22px;flex:none;background-size:720%;background-position:58% 88%}
 #main [data-screen=inspiration] .pagetitle::after {background-position:43% 48%}
 
-/* Use the balance label's type for paired figures as well as their captions. */
+/* Summary captions and figures share the typography of ordinary list rows. */
 #main #tabContent :is(
   .card:has(>.progress-track)>.between>span,
   .between:has(>#budgetGrandCost,>#budgetGrandRemaining,>#budgetGrandIncome,>#budgetGrandBalance,>#vendorGrandTotal,>#alcTotalBottlesSpan,>#alcTotalCostSpan)>span,
   [data-act="cal-prev"]+span,
   .card:has(#guestExcelInput)>p:first-child
 ) {
-  font:var(--balance-label)!important;
+  font:var(--journal-row-type)!important;
   letter-spacing:normal;
   overflow-wrap:anywhere;
 }
