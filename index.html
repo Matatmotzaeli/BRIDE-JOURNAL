@@ -1286,6 +1286,19 @@ function renderAlcohol(){
 
   var html = '<h2 class="pagetitle">מחשבון אלכוהול</h2><p class="pagesub">חישוב כמויות מומלצות לבקבוקים ותקציב בר</p>';
   
+  html += '<div class="card green" style="text-align:right">'
+    + '<p style="font-size:13px;font-weight:800;color:#085041;margin:0 0 6px">תוצאות והמלצת כמויות:</p>'
+    + '<div id="alcResultsContainer">'+calc.resultsHtml+'</div>'
+    + '<div style="border-top:1px dashed #BBE8D7;margin-top:8px;padding-top:6px" class="between">'
+      + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ בקבוקים לרכישה:</span>'
+      + '<span style="font-size:13px;font-weight:800;color:#085041" id="alcTotalBottlesSpan">'+calc.totalBottles+' יחידות</span>'
+    + '</div>'
+    + '<div style="margin-top:4px" class="between">'
+      + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ עלות אלכוהול לרכישה:</span>'
+      + '<span style="font-size:14px;font-weight:800;color:#085041" id="alcTotalCostSpan">'+ils(calc.totalCost)+'</span>'
+    + '</div>'
+  + '</div>';
+
   html += '<div class="card plain">'
     + '<p style="font-size:12px;font-weight:800;color:var(--rose-900);margin:0 0 6px">נתוני האירוע שלך</p>'
     + '<div class="grid2" style="margin-bottom:6px">'
@@ -1301,10 +1314,7 @@ function renderAlcohol(){
 
   drinksInfo.forEach(function(d){
     var isVenueProvides = d.canVenue && a["venue_"+d.k];
-    html += '<div class="card plain">'
-      + '<div class="between" style="margin-bottom:6px">'
-        + '<span style="font-size:13px;font-weight:800;color:var(--rose-900)">🍸 '+d.n+'</span>'
-      + '</div>'
+    html += '<details class="drink-editor"><summary>'+esc(d.n)+'</summary>'
       + '<div class="grid2" style="margin-bottom:4px">'
         + '<div><label class="small muted">כמות שותים לבקבוק אחד</label><input type="number" data-act="alc-field" data-field="'+d.k+'" value="'+esc(a[d.k])+'" '+(isVenueProvides?'disabled':'')+'></div>'
         + '<div><label class="small muted">מחיר לבקבוק (₪)</label><input type="text" inputmode="numeric" data-act="alc-field" data-field="'+d.k+'Price" value="'+esc(a[d.k+"Price"])+'" '+(isVenueProvides?'disabled':'')+'></div>'
@@ -1316,25 +1326,12 @@ function renderAlcohol(){
         + '<span style="font-size:11.5px;font-weight:700;color:var(--rose-600)">האולם מספק משקה זה</span>'
       + '</label>';
     }
-    html += '</div>';
+    html += '</details>';
   });
 
   html += '<div class="card plain">'
     + '<p style="font-size:12px;font-weight:800;color:var(--rose-900);margin:0 0 6px">תוספות מיוחדות (קרח יבש, משקאות אנרגיה, גומי וכו\')</p>'
     + '<div><label class="small muted">עלות תוספות משוערת</label><input type="number" data-act="alc-field" data-field="extrasCost" value="'+esc(a.extrasCost)+'"></div>'
-  + '</div>';
-
-  html += '<div class="card green" style="text-align:right">'
-    + '<p style="font-size:13px;font-weight:800;color:#085041;margin:0 0 6px">תוצאות והמלצת כמויות:</p>'
-    + '<div id="alcResultsContainer">'+calc.resultsHtml+'</div>'
-    + '<div style="border-top:1px dashed #BBE8D7;margin-top:8px;padding-top:6px" class="between">'
-      + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ בקבוקים לרכישה:</span>'
-      + '<span style="font-size:13px;font-weight:800;color:#085041" id="alcTotalBottlesSpan">'+calc.totalBottles+' יחידות</span>'
-    + '</div>'
-    + '<div style="margin-top:4px" class="between">'
-      + '<span style="font-size:12px;font-weight:800;color:#085041">סה"כ עלות אלכוהול לרכישה:</span>'
-      + '<span style="font-size:14px;font-weight:800;color:#085041" id="alcTotalCostSpan">'+ils(calc.totalCost)+'</span>'
-    + '</div>'
   + '</div>';
 
   return html;
@@ -1402,17 +1399,7 @@ function renderSideEvents(){
   return html;
 }
 
-function bjPhaseTaskShortcuts(){
-  var guest = bjPhaseTask('guests');
-  var venue = bjPhaseTask('venue');
-  function row(task,label){
-    if(!task) return '<div class="bj-phase-tasks-row">'+label+' — לא נמצאה משימה מקושרת</div>';
-    return '<label class="bj-phase-tasks-row"><input type="checkbox" data-act="task-toggle" data-id="'+esc(task.id)+'" '+(task.done?'checked':'')+'><span>'+label+'</span></label>';
-  }
-  return '<div class="bj-phase-tasks" aria-label="השלמת שלבי התכנון"><div class="bj-phase-tasks-title">סימון שלבי הדרך לחופה</div>'
-    +row(guest,'הכנתי רשימת מוזמנים ראשונית')+row(venue,'בחרנו אולם וסגרנו חוזה')
-    +'<div class="bj-phase-tasks-note">הסימון כאן מסמן את אותה משימה ברשימה ומעדכן את מסך הבית.</div></div>';
-}
+var remainingTasksOnly = false;
 
 function taskProgress(){
   var total = state.tasks.length;
@@ -1424,8 +1411,8 @@ function renderTasks(){
   var buckets = [7,6,4,3,2,1.5,1];
   var prog = taskProgress();
   var html = '<h2 class="pagetitle">כל המשימות שלכם</h2><p class="pagesub">מסודר לפי כמה חודשים לפני החתונה.</p>';
-  html += bjPhaseTaskShortcuts();
-  html += '<div class="card"><p class="small" style="color:var(--rose-600);font-weight:700;margin:0 0 4px">תאריך החתונה</p><input type="date" data-act="wed-date" value="'+esc(wed)+'"></div>';
+  html += '<p class="task-date">תאריך החתונה · '+(wed ? esc(fmtDate(new Date(wed+"T12:00:00"))) : "טרם נקבע במסך הבית")+'</p>';
+  html += '<label class="remaining-filter"><input type="checkbox" data-act="remaining-only" '+(remainingTasksOnly?'checked':'')+'> רק משימות שנותרו</label>';
   html += '<div class="card plain"><div class="between" style="margin-bottom:4px"><span class="small" style="font-weight:700">התקדמות כללית</span><span class="small muted">'+prog.done+'/'+prog.total+' · '+prog.pct+'%</span></div><div class="progress-track"><div class="progress-fill" style="width:'+prog.pct+'%"></div></div></div>';
   
   buckets.forEach(function(mo){
@@ -1434,6 +1421,8 @@ function renderTasks(){
     var allDone = group.length > 0 && doneCount===group.length;
     var groupDate = wed ? subMonths(wed, mo) : null;
     var dateLabel = groupDate ? fmtDate(groupDate) : (group.length+" משימות");
+    var visibleTasks = remainingTasksOnly ? group.filter(function(t){ return !t.done; }) : group;
+    if(remainingTasksOnly && !visibleTasks.length) return;
     var open = groupOpen[mo] !== false;
     html += '<div class="groupwrap'+(allDone?' done':'')+'">'
       + '<div class="grouphead" data-act="group-toggle" data-months="'+mo+'">'
@@ -1442,16 +1431,15 @@ function renderTasks(){
       + '</div>';
     if(open){
       html += '<div style="padding:4px 10px 8px">';
-      group.forEach(function(item){
+      visibleTasks.forEach(function(item){
         html += '<div class="taskrow" style="align-items:center">'
           + '<input type="checkbox" data-act="task-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'
-          + '<div style="flex:1">'
-            + '<input type="text" data-act="task-text-edit" data-id="'+item.id+'" value="'+esc(item.t)+'" style="border:none;background:transparent;font-size:12.5px;width:100%;'+(item.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
-            + '<span style="display:block;font-size:9.5px;color:var(--muted);margin-top:1px">'+esc(item.c)+'</span>'
-            + (item.n?('<span style="display:block;font-size:9.5px;color:var(--rose-600);margin-top:1px">'+esc(item.n)+'</span>'):'')
-          + '</div>'
-          + '<button class="icon-del" data-act="task-del" data-id="'+item.id+'">×</button>'
-          + '</div>';
+          + '<details class="row-editor"><summary>'+esc(item.t)+'</summary>'
+          + '<input type="text" aria-label="עריכת משימה" data-act="task-text-edit" data-id="'+esc(item.id)+'" value="'+esc(item.t)+'">'
+          + '<button class="small-btn" data-act="task-del" data-id="'+esc(item.id)+'">מחיקת משימה</button>'
+          + '<button class="small-btn" data-act="task-add-to-month" data-months="'+mo+'">הוספת משימה</button></details>'
+          + '</div><div class="task-caption">'+esc(item.c)+(item.n?' · '+esc(item.n):'')+'</div>';
+
       });
       html += '<button class="ghost" data-act="task-add-to-month" data-months="'+mo+'" style="margin-top:6px">+ הוספת משימה לחודש זה</button>';
       html += '</div>';
@@ -1488,7 +1476,7 @@ function renderBudget(){
     + '<input type="number" data-act="income-field" data-field="savings" placeholder="חיסכון משותף" value="'+esc(state.income.savings)+'">'
   + '</div>';
 
-  var catClass = {big:"card rose-accent", look:"card plain", rab:"card plain", other:"card plain"};
+  var catClass = {big:"card plain", look:"card plain", rab:"card plain", other:"card plain"};
   var orderedCatIds = ["big"];
   Object.keys(state.budgetCats).forEach(function(k){ if(!orderedCatIds.includes(k)) orderedCatIds.push(k); });
   
@@ -1497,12 +1485,11 @@ function renderBudget(){
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
     html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+(catClass[catId]||"card plain")+'">';
     state.budgetCats[catId].forEach(function(item){
-      html += '<div class="itemwrap"><div class="between" style="gap:6px;margin-bottom:'+(item.tip?'4px':'0')+'">'
-        + '<span style="font-size:12px;font-weight:700;flex:1;color:var(--ink)">'+esc(item.name)+'</span>'
+      html += '<details class="itemwrap row-editor"><summary><span>'+esc(item.name)+'</span> <small>'+ils(Number(item.cost)||0)+'</small></summary><input type="text" aria-label="שם ההוצאה" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="name" value="'+esc(item.name)+'"><div class="row">'
         + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="cost" placeholder="עלות" value="'+esc(item.cost)+'" style="width:62px;padding:4px 6px;font-size:11px">'
         + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="deposit" placeholder="מקדמה" value="'+esc(item.deposit)+'" style="width:56px;padding:4px 6px;font-size:11px">'
         + '<button class="icon-del" data-act="budget-del" data-cat="'+catId+'" data-id="'+item.id+'">×</button>'
-      + '</div>'+(item.tip?'<p class="tip">💡 '+esc(item.tip)+'</p>':'')+'</div>';
+      + '</div>'+(item.tip?'<p class="tip">💡 '+esc(item.tip)+'</p>':'')+'</details>';
     });
     html += '<button class="ghost" data-act="budget-add" data-cat="'+catId+'">+ הוספת משימה</button></div>';
   });
@@ -1515,7 +1502,7 @@ function renderVendors(){
   var html = '<h2 class="pagetitle">מעקב ספקים</h2><p class="pagesub">כל הספקים שנסגרו, במקום אחד</p>';
   html += '<div class="card plain between" style="margin-bottom:10px"><span class="small muted">סה"כ שנותר לשלם</span><span id="vendorGrandTotal" style="font-weight:800;color:var(--rose-600);font-size:14px">'+ils(grand)+'</span></div>';
   state.vendors.forEach(function(v){
-    html += '<div class="card plain">'
+    html += '<details class="card plain row-editor"><summary>'+esc(v.name||'ספק חדש')+'</summary>'
       + '<div class="row" style="margin-bottom:6px"><input type="text" data-act="vendor-field" data-id="'+v.id+'" data-field="name" placeholder="שם הספק" value="'+esc(v.name)+'" style="font-weight:700"><button class="icon-del" data-act="vendor-del" data-id="'+v.id+'">×</button></div>'
       + '<input type="tel" data-act="vendor-field" data-id="'+v.id+'" data-field="phone" placeholder="טלפון" value="'+esc(v.phone)+'" style="direction:ltr;text-align:right;margin-bottom:6px">'
       + '<div class="row" style="margin-bottom:8px"><input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="price" placeholder="מחיר" value="'+esc(v.price)+'"><input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="deposit" placeholder="מקדמה" value="'+esc(v.deposit)+'"></div>'
@@ -1529,7 +1516,7 @@ function renderVendors(){
           + '</label>'
         + '</div>'
       + '</div>'
-    + '</div>';
+    + '</details>';
   });
   html += '<button class="primary" data-act="vendor-add">+ הוספת ספק</button>';
   return html;
@@ -1862,6 +1849,7 @@ function renderInspiration(){
 var RENDERERS = { home:renderHome, meal:renderVenueCalculatorBox, tasks:renderTasks, budget:renderBudget, vendors:renderVendors, guests:renderGuests, equipment:renderEquipment, sideEvents:renderSideEvents, venue:renderVenue, alcohol:renderAlcohol, inspiration:renderInspiration, vendorGuides:renderVendorGuides };
 function renderTab(){
   if(!RENDERERS[currentTab]) currentTab = "home";
+  document.getElementById("tabContent").dataset.screen=currentTab;
   document.getElementById("tabContent").innerHTML = RENDERERS[currentTab]();
   document.querySelectorAll("#bottomNav button").forEach(function(b){ b.classList.toggle("active", b.dataset.tab===currentTab); });
 }
@@ -1997,6 +1985,7 @@ mainEl.addEventListener("click", function(e){
     return;
   }
 
+  if(act==="remaining-only"){remainingTasksOnly=t.checked;renderTab();return;}
   if(act==="task-toggle"){
     var taskItem = state.tasks.find(function(x){ return x.id === t.dataset.id; });
     if(taskItem){
@@ -2428,6 +2417,7 @@ mainEl.addEventListener("input", function(e){
     var taskItem = state.tasks.find(function(x){ return x.id === t.dataset.id; });
     if(taskItem){
       taskItem.t = t.value;
+      t.closest("details").querySelector("summary").textContent=t.value || "משימה";
       saveTasks();
     }
     return;
@@ -2442,6 +2432,9 @@ mainEl.addEventListener("input", function(e){
       item[field] = t.value;
       saveBudget();
 
+      if(field==="name") t.closest("details").querySelector("summary span").textContent=t.value || "הוצאה";
+      var subtotalLabel=t.closest("details").querySelector("summary small");
+      subtotalLabel.textContent=ils(Number(item.cost)||0);
       var catSubEl = document.getElementById("catsub-" + catId);
       if(catSubEl) catSubEl.textContent = ils(budgetCatTotal(catId));
 
@@ -2550,7 +2543,11 @@ mainEl.addEventListener("input", function(e){
 
   if(act==="vendor-field"){
     var vn = state.vendors.find(function(x){return x.id===t.dataset.id;});
-    if(vn){ vn[t.dataset.field] = t.value; saveVendors(); }
+    if(vn){
+      vn[t.dataset.field]=t.value;
+      if(t.dataset.field==="name") t.closest("details").querySelector("summary").textContent=t.value || "ספק חדש";
+      saveVendors();
+    }
     return;
   }
 
