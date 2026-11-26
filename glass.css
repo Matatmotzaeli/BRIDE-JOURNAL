@@ -333,3 +333,15 @@ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #main :is([data-screen=tasks],[data-screen=inspiration]) .pagetitle {display:flex;align-items:center;justify-content:space-between;gap:8px}
 #main :is([data-screen=tasks],[data-screen=inspiration]) .pagetitle::after {width:48px;height:33px;border-radius:22px;flex:none;background-size:720%;background-position:58% 88%}
 #main [data-screen=inspiration] .pagetitle::after {background-position:43% 48%}
+
+/* Use the balance label's type for paired figures as well as their captions. */
+#main #tabContent :is(
+  .card:has(>.progress-track)>.between>span,
+  .between:has(>#budgetGrandCost,>#budgetGrandRemaining,>#budgetGrandIncome,>#budgetGrandBalance,>#vendorGrandTotal,>#alcTotalBottlesSpan,>#alcTotalCostSpan)>span,
+  [data-act="cal-prev"]+span,
+  .card:has(#guestExcelInput)>p:first-child
+) {
+  font:var(--balance-label)!important;
+  letter-spacing:normal;
+  overflow-wrap:anywhere;
+}
