@@ -125,3 +125,89 @@ nav#bottomNav {box-shadow:inset 0 1px 0 #ffffffed,0 5px 20px #50392c1b}
   .bj-v3-tiles {border-color:var(--espresso);background:var(--espresso)}
   #bottomNav button.active {outline:2px solid var(--burgundy)}
 }
+
+/* Journal surfaces and typography */
+:root {
+  --paper:#fffdf9;
+  --canvas:#f3f0e9;
+  --hairline:#e5ded4;
+  --rose-50:#f3e8e6;
+  --rose-300:#d6b8b9;
+  --green-bg:#e8ede2;
+  --green:#506a50;
+}
+#shell {background:var(--canvas)}
+#shell header.topbar {background:rgba(247,244,238,.9)}
+#shell .topbar .brand {letter-spacing:.045em;font-weight:630}
+#shell main:not(:has(.bj-home-v3)) {padding:20px 16px calc(92px + env(safe-area-inset-bottom))}
+#main .pagetitle {font-size:32px;font-weight:650;letter-spacing:-.025em;margin:5px 0}
+#main .pagesub {font-size:14px;line-height:1.5;color:var(--muted);margin-bottom:20px}
+#main .sectionlabel {font-size:13px;letter-spacing:0;margin:19px 5px 7px}
+#main .card,#main .groupwrap,#main .venue-db-wrap,.overlay-screen .card {
+  background:var(--paper);border:0;border-radius:19px;
+  box-shadow:0 1px 2px #45342b0c;
+}
+#main .card,.overlay-screen .card {padding:14px 15px;margin-bottom:10px}
+#main .card.green {background:#e7eddf}
+#main .card.amber {background:#f6ecda}
+#main .card.blue {background:#e9eef1}
+#main .card.rose-accent {background:#f4e6e3}
+#main .itemwrap,#main .navcard {background:var(--paper);border:0;border-radius:13px;padding:12px}
+#main .grouphead,#main .venue-db-toggle {background:var(--paper);color:var(--espresso);padding:13px 14px}
+#main .groupwrap.done .grouphead {background:var(--green-bg)}
+#main .taskrow {min-height:43px;align-items:center;padding:8px 4px;gap:10px;border-color:var(--hairline)}
+#main .taskrow input[type=checkbox],#main input.check-lg {width:20px;height:20px;accent-color:var(--burgundy)}
+#main .segmented-control {padding:3px;background:#e6e1d9;border:0;border-radius:13px}
+#main .segmented-control button {padding:8px 5px;border-radius:10px;font:500 13px system-ui}
+#main .segmented-control .active {background:var(--paper);box-shadow:0 1px 4px #48392d25}
+:is(#shell,.overlay-screen) :is(button,input,select,textarea) {font-family:inherit}
+:is(#main,.overlay-screen) :is(input[type=text],input[type=tel],input[type=email],input[type=password],input[type=number],input[type=date],select,textarea):not(.bj-v3-names):not(.bj-v3-date input) {
+  background:#f6f3ed;border:1px solid #e7e0d7;border-radius:11px;
+  color:var(--espresso);min-width:0;min-height:37px;padding:7px 9px;font-size:16px;
+}
+:is(#main,.overlay-screen) :is(.primary,.secondary,.ghost) {border-radius:13px;min-height:39px;font-size:14px;font-weight:550}
+:is(#main,.overlay-screen) button.primary {background:var(--burgundy);color:white}
+:is(#main,.overlay-screen) button.secondary {background:#ede7df;border-color:transparent;color:var(--espresso)}
+#main button.ghost {background:#f4ede9;border:0;color:var(--burgundy)}
+#main .small-btn {border-radius:10px;min-height:32px}
+#main .calcell,#main .chip {border-radius:99px}
+#authScreen,#welcomeScreen {background:radial-gradient(ellipse at 85% 12%,#eddbd6,transparent 52%),var(--ivory)}
+#authScreen .inner {max-width:365px}
+#authScreen .inner>p:first-child {letter-spacing:.07em;font-weight:550!important}
+#authScreen :is(#loginCard,#signupCard) {padding:21px;border-radius:23px}
+#authScreen .card>p:first-child {font-size:18px!important;font-weight:550!important;margin-bottom:12px!important}
+#authScreen input {min-height:44px}
+
+/* The countdown is the focal point. Keep the rest of the home quiet. */
+.bj-home-v3 .bj-v3-hero {
+  background:radial-gradient(ellipse at 0% 8%,#a97779 0%,transparent 56%),linear-gradient(120deg,#875c66,#603f4c 76%);
+  color:#fffaf5;border:0;border-radius:25px;padding:clamp(13px,2.3dvh,22px) 18px;
+  box-shadow:inset 0 1px 0 #ffffff40,0 5px 14px #53394118;
+}
+.bj-v3-hero .bj-v3-couple :is(.name-display,.bj-v3-names),.bj-v3-hero .bj-v3-counter strong,.bj-v3-hero .bj-v3-progress-head strong {color:#fffaf5}
+.bj-v3-hero .bj-v3-couple .bj-v3-names {background:transparent}
+.bj-v3-hero .bj-v3-couple input::placeholder {color:#f6e5dc}
+.bj-v3-hero :is(.bj-v3-eyebrow,.bj-v3-counter span,.bj-v3-date,.bj-v3-date input) {color:#f4e4e0}
+.bj-v3-date input {color-scheme:dark}
+.bj-v3-hero .bj-v3-counter {border-color:#ffffff45}
+.bj-v3-hero .bj-v3-counter strong {font-size:clamp(42px,7dvh,62px);font-weight:320}
+.bj-v3-hero .bj-v3-progress {border-color:#ffffff38}
+.bj-v3-hero .bj-v3-track {background:#ffffff33;height:4px}
+.bj-v3-hero .bj-v3-track i {background:#cedcc2}
+.bj-home-v3 .daily-links {gap:5px}
+.bj-home-v3 .daily-links button {border:0;background:transparent;padding:3px;box-shadow:none}
+.bj-home-v3 .daily-links svg {width:22px;height:22px;padding:8px;border-radius:13px}
+.bj-home-v3 .bj-v3-tiles {background:var(--paper);border:0;gap:0;padding:1px 10px;border-radius:19px}
+.bj-home-v3 .bj-v3-tool {border-bottom:1px solid var(--hairline);font-size:14px;gap:5px;padding:7px 4px}
+.bj-home-v3 .bj-v3-tool:nth-last-child(-n+2) {border-bottom:0}
+.bj-home-v3 .bj-v3-more {background:#e8ecdf;border:0;box-shadow:none}
+#bottomNav button.active {font-weight:600}
+#bottomNav button[data-tab=home] span {background:var(--espresso)}
+@media(max-height:700px) {
+  .bj-home-v3 .bj-v3-tool {min-height:44px}
+  .bj-home-v3 .daily-links svg {padding:5px}
+}
+@media(prefers-contrast:more) {
+  .bj-home-v3 .bj-v3-hero {background:#50323e}
+  #shell header.topbar {background:var(--paper)}
+}
