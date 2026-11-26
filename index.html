@@ -1165,15 +1165,15 @@ function bjPhaseStatus(){
 function renderHome(){
  var phase=bjPhaseStatus(),wed=state.profile.weddingDate||'',prog=taskProgress();
  var html='<div class="bj-home-v3">';
- html+='<section class="bj-v3-hero" aria-label="החתונה וההתקדמות"><div class="bj-v3-hero-grid"><div class="bj-v3-couple"><span class="bj-v3-eyebrow">היום המיוחד שלנו</span>'
+ html+='<section class="bj-v3-hero" aria-label="החתונה וההתקדמות"><div class="bj-v3-hero-grid"><div class="bj-v3-couple"><span class="bj-v3-eyebrow">'+esc(bjText('home','eyebrow','היום המיוחד שלנו'))+'</span>'
    +'<button type="button" class="name-display" aria-label="עריכת שמות בני הזוג" '+((state.profile.name||'').trim()?'':'hidden')+'>'+esc(state.profile.name)+'</button>'
    +'<input class="bj-v3-names" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" '+((state.profile.name||'').trim()?'hidden':'')+' value="'+esc(state.profile.name)+'">'
    +'<div class="bj-v3-date"><span>תאריך החתונה</span><input type="date" data-act="wed-date" aria-label="תאריך החתונה" value="'+esc(wed)+'"></div></div>';
  if(phase.days===null)html+='<div class="bj-v3-counter bj-v3-no-date"><strong>—</strong><span>בחרו תאריך</span></div>';
  else if(phase.days>0)html+='<div class="bj-v3-counter"><strong>'+phase.days+'</strong><span>ימים לחתונה</span></div>';
  else html+='<div class="bj-v3-counter bj-v3-celebrate"><strong>♡</strong><span>'+ (phase.days===0?'היום הגדול!':'מזל טוב!')+'</span></div>';
- html+='</div><div class="bj-v3-progress"><div class="bj-v3-progress-head"><span>התקדמות בתכנון · '+prog.done+' מתוך '+prog.total+' משימות</span><strong>'+prog.pct+'%</strong></div><div class="bj-v3-track" role="progressbar" aria-label="התקדמות בתכנון" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+prog.pct+'"><i style="width:'+Math.max(0,Math.min(100,Number(prog.pct)||0))+'%"></i></div></div></section>';
- html+='<section><div class="bj-v3-tools-head"><h2>מה נעשה היום?</h2></div><div class="daily-links">';
+ html+='</div><div class="bj-v3-progress"><div class="bj-v3-progress-head"><span>'+esc(bjText('home','progressTitle','התקדמות בתכנון'))+' · '+prog.done+' מתוך '+prog.total+' משימות</span><strong>'+prog.pct+'%</strong></div><div class="bj-v3-track" role="progressbar" aria-label="התקדמות בתכנון" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+prog.pct+'"><i style="width:'+Math.max(0,Math.min(100,Number(prog.pct)||0))+'%"></i></div></div></section>';
+ html+='<section><div class="bj-v3-tools-head"><h2>'+esc(bjText('home','dailyTitle','מה נעשה היום?'))+'</h2></div><div class="daily-links">';
  [['tasks','tasks','משימות'],['budget','budget','ניהול תקציב'],['venue','venue','אולם'],['vendors','vendors','ספקים']].forEach(function(item){
    html+='<button type="button" data-tab="'+item[0]+'">'+bjHomeIcon(item[1])+'<span>'+item[2]+'</span></button>';
  });
@@ -1934,7 +1934,10 @@ mainEl.addEventListener("submit", function(e){
 });
 document.getElementById("openGuide").addEventListener("click",function(){
   var dialog=document.getElementById("guideModal");
-  dialog.querySelectorAll("details").forEach(function(section){section.open=section.dataset.guide===currentTab;});
+  dialog.querySelectorAll("details").forEach(function(section){section.open=section.dataset.guide===currentTab;
+    var paragraph=section.querySelector("p");
+    if(!paragraph.dataset.defaultCopy) paragraph.dataset.defaultCopy=paragraph.textContent;
+    paragraph.textContent=bjText("home","guide_"+section.dataset.guide,paragraph.dataset.defaultCopy);});
   var active=dialog.querySelector("details[open]");
   if(active) dialog.querySelector("header").after(active);
   dialog.showModal();

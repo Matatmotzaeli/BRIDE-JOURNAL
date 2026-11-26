@@ -94,6 +94,7 @@ let remote=null,form=clone(DEFAULTS),section="home",user=null,loaded=false,publi
 const $=(id)=>document.getElementById(id);
 const sections=[
  ["home","מסך הבית","כותרות והנחיות במסך הבית"],
+ ["help","המדריך בסימן השאלה","ההסבר שנפתח בכל מסך ביומן"],
  ["tasks","משימות ברירת מחדל","המשימות שייווצרו למשתמשים חדשים בלבד"],
  ["budget","תקציב והערכת מחירים","שמות פריטים וטיפים למשתמשים חדשים בלבד"],
  ["venueQuestions","שאלון אולם","עריכת נוסח שאלות בלי לשנות את סדר התשובות"],
@@ -147,7 +148,8 @@ function render(){
  $("pageTitle").textContent=info[1];$("pageDescription").textContent=info[2];
  $("nav").innerHTML=sections.map(x=>'<button data-section="'+x[0]+'" class="'+(x[0]===section?"active":"")+'">'+x[1]+'</button>').join("");
  let markup="";
- if(section==="home")markup=objectEditor("home",{eyebrow:"כיתוב עליון",journeyTitle:"כותרת הדרך לחופה",journeyHint:"הסבר השלבים",progressTitle:"כותרת התקדמות",toolsTitle:"כותרת הכלים",eventsTitle:"כותרת האירועים",eventsSubtitle:"כותרת משנה"});
+ if(section==="home")markup=objectEditor("home",{eyebrow:"כיתוב מעל שמות הזוג",dailyTitle:"כותרת ארבע הפעולות הראשיות",progressTitle:"כותרת התקדמות",toolsTitle:"כותרת הכלים",eventsTitle:"כותרת האירועים",eventsSubtitle:"כותרת משנה"});
+ else if(section==="help")markup='<section class="panel"><h2>הסברים לפי מסך</h2>'+[["home","בית"],["tasks","משימות"],["budget","ניהול תקציב"],["venue","אולם"],["meal","מחשבון מחיר מנה"],["vendors","מעקב ספקים"],["alcohol","מחשבון אלכוהול"],["guests","אורחים"],["equipment","רשימת ציוד"],["vendorGuides","מדריכי ספקים"],["sideEvents","אירועים נלווים"],["inspiration","השראה"]].map(([key,label])=>input(label,form.home["guide_"+key],"home.guide_"+key,{multiline:true})).join("")+'</section>';
  else if(section==="tasks")markup=tasksEditor();
  else if(section==="budget")markup=budgetEditor();
  else if(section==="venueQuestions")markup=venueEditor();
