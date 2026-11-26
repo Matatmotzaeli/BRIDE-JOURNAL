@@ -457,13 +457,16 @@
 
 <div id="shell" style="display:none">
   <header class="topbar">
-    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">❓</button>
+    <div class="header-actions">
+    <button class="icon-btn" onclick="document.getElementById('guideModal').style.display='flex'" title="מדריך למשתמש">?</button>
+    <button class="icon-btn" id="btnLogout" title="התנתקות"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10 4H4v16h6M9 12h12m-5-5 5 5-5 5"/></svg></button>
+    </div>
     <div class="brand-wrap">
       <p class="brand">BRIDE_JOURNAL</p>
       <p class="sub">BY MATAT</p>
     </div>
     <nav class="bj-header-social" aria-label="קישורי Bride Journal"><a href="https://www.instagram.com/bride_journal.bymatat/" target="_blank" rel="noopener noreferrer" title="Instagram" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".7" fill="currentColor" stroke="none"/></svg></a><a href="https://www.tiktok.com/@bride_journal" target="_blank" rel="noopener noreferrer" title="TikTok" aria-label="TikTok"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3v11.2a4.2 4.2 0 1 1-4.2-4.2"/><path d="M14 3c.7 3.5 2.8 5.3 6 5.4"/></svg></a><a href="https://wa.me/972529247776" target="_blank" rel="noopener noreferrer" title="WhatsApp" aria-label="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.7 11.7a8.7 8.7 0 0 1-12.8 7.7L3 21l1.7-4.8a8.7 8.7 0 1 1 16-4.5Z"/><path d="M8.5 8.5c.2 3.3 3 6 6.5 7 .8.1 1.4-.6 1.7-1.3l-2.5-1.3-1.1 1c-1.4-.6-2.5-1.6-3.2-3l.9-1.1-1.1-2.4c-.5-.1-1 .3-1.2 1.1Z"/></svg></a><a href="https://bride-journal-catalog.web.app/" target="_blank" rel="noopener noreferrer" title="קטלוג Bride Journal" aria-label="קטלוג Bride Journal"><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5h18v12.3H3zM3 7.5l2-4h14l2 4M8 7.5v12.3M12 11h5M12 15h5"/></svg></a></nav>
-    <button class="icon-btn" id="btnLogout" title="התנתקות" style="font-size:14px;margin-right:4px">🚪</button>
+
   </header>
   <main id="main"><div id="tabContent"></div></main>
   <nav class="bottom" id="bottomNav" aria-label="ניווט ראשי">
@@ -1169,15 +1172,19 @@ function bjPhaseStatus(){
 function renderHome(){
  var phase=bjPhaseStatus(),wed=state.profile.weddingDate||'',prog=taskProgress();
  var html='<div class="bj-home-v3">';
- html+='<div class="bj-v3-hello"><h1>היומן שלנו ♡</h1><span>כל מה שצריך, במקום אחד</span></div>';
- html+='<section class="bj-v3-hero" aria-label="החתונה וההתקדמות"><div class="bj-v3-hero-grid"><div class="brand-photo" aria-hidden="true">BJ</div><div class="bj-v3-couple"><span class="bj-v3-eyebrow">היום המיוחד שלנו</span>'
-   +'<input class="bj-v3-names" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" value="'+esc(state.profile.name)+'">'
+ html+='<section class="bj-v3-hero" aria-label="החתונה וההתקדמות"><div class="bj-v3-hero-grid"><div class="bj-v3-couple"><span class="bj-v3-eyebrow">היום המיוחד שלנו</span>'
+   +'<button type="button" class="name-display" aria-label="עריכת שמות בני הזוג" '+((state.profile.name||'').trim()?'':'hidden')+'>'+esc(state.profile.name)+'</button>'
+   +'<input class="bj-v3-names" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" '+((state.profile.name||'').trim()?'hidden':'')+' value="'+esc(state.profile.name)+'">'
    +'<div class="bj-v3-date"><span>תאריך החתונה</span><input type="date" data-act="wed-date" aria-label="תאריך החתונה" value="'+esc(wed)+'"></div></div>';
  if(phase.days===null)html+='<div class="bj-v3-counter bj-v3-no-date"><strong>—</strong><span>בחרו תאריך</span></div>';
  else if(phase.days>0)html+='<div class="bj-v3-counter"><strong>'+phase.days+'</strong><span>ימים לחתונה</span></div>';
  else html+='<div class="bj-v3-counter bj-v3-celebrate"><strong>♡</strong><span>'+ (phase.days===0?'היום הגדול!':'מזל טוב!')+'</span></div>';
  html+='</div><div class="bj-v3-progress"><div class="bj-v3-progress-head"><span>התקדמות בתכנון · '+prog.done+' מתוך '+prog.total+' משימות</span><strong>'+prog.pct+'%</strong></div><div class="bj-v3-track" role="progressbar" aria-label="התקדמות בתכנון" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+prog.pct+'"><i style="width:'+Math.max(0,Math.min(100,Number(prog.pct)||0))+'%"></i></div></div></section>';
- html+='<section class="bj-v3-tools" aria-label="כלי התכנון"><div class="bj-v3-tools-head"><h2>מה נעשה היום?</h2><span>הכלים שלכם</span></div><div class="bj-v3-tiles">';
+ html+='<section><div class="bj-v3-tools-head"><h2>מה נעשה היום?</h2></div><div class="daily-links">';
+ [['tasks','final','משימות'],['budget','budget','ניהול תקציב'],['venue','venue','אולם'],['vendors','vendors','ספקים']].forEach(function(item){
+   html+='<button type="button" data-tab="'+item[0]+'">'+bjHomeIcon(item[1])+'<span>'+item[2]+'</span></button>';
+ });
+ html+='</div></section><section class="bj-v3-tools"><div class="bj-v3-tools-head"><h2>הכלים שלכם</h2></div><div class="bj-v3-tiles">';
  [['meal','budget','מחשבון מחיר מנה'],['alcohol','alcohol','מחשבון אלכוהול'],['guests','guests','אורחים'],['equipment','equipment','רשימות ציוד'],['inspiration','inspiration','השראה'],['vendorGuides','final','מדריכי ספקים']].forEach(function(item){
    html+='<button type="button" class="bj-v3-tool" data-tab="'+item[0]+'"><span class="bj-v3-glyph">'+bjHomeIcon(item[1])+'</span><span>'+item[2]+'</span></button>';
  });
@@ -2373,6 +2380,26 @@ mainEl.addEventListener("change", function(e){
     if(totalCostSpan) totalCostSpan.textContent = ils(calc.totalCost);
     return;
   }
+});
+
+mainEl.addEventListener("click", function(e){
+  var label=e.target.closest(".name-display");
+  if(!label) return;
+  var field=label.nextElementSibling;
+  label.hidden=true;
+  field.hidden=false;
+  field.focus();
+});
+mainEl.addEventListener("keydown", function(e){
+  if(e.target.dataset.act==="profile-name" && e.key==="Enter" && !e.isComposing) e.target.blur();
+});
+mainEl.addEventListener("focusout", function(e){
+  var field=e.target;
+  if(field.dataset.act!=="profile-name" || !field.value.trim()) return;
+  var label=field.previousElementSibling;
+  label.textContent=field.value.trim();
+  label.hidden=false;
+  field.hidden=true;
 });
 
 mainEl.addEventListener("input", function(e){
