@@ -305,6 +305,48 @@
 }
 /* Accessibility: on small/zoomed screens scrolling remains possible rather than clipping content. */
 
+
+/* Bride Journal free app home v3 — approved visual preview, real user data and working navigation. */
+#shell:has(.bj-home-v3){height:100dvh;min-height:0;overflow:hidden}
+#shell:has(.bj-home-v3)>main{min-height:0;padding:8px 16px calc(70px + env(safe-area-inset-bottom));overflow-y:auto;background:#fff}
+.bj-home-v3{--v3-rose:#91605B;display:flex;flex-direction:column;justify-content:center;gap:clamp(13px,2vh,19px);min-height:100%;margin:auto;max-width:450px;color:var(--ink)}
+.bj-v3-hello{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.bj-v3-hello h1{font-size:23px;margin:0;font-weight:800;line-height:1.2}
+.bj-v3-hello span{color:var(--muted);font-size:12px}
+.bj-v3-hero{border-radius:17px;background:var(--cream);border:1px solid #e8e0d8;padding:20px 17px 16px}
+.bj-v3-hero-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.bj-v3-eyebrow{color:var(--v3-rose);letter-spacing:.3px;font-size:11px;font-weight:700}
+.bj-v3-names{display:block;font-size:25px;font-weight:800;line-height:1.2;color:var(--ink);width:100%;max-width:200px;background:transparent;border:0;border-bottom:1px solid transparent;border-radius:0;padding:4px 0}
+.bj-v3-names:focus{outline:0;border-bottom-color:var(--v3-rose)}
+.bj-v3-date{display:flex;align-items:center;gap:5px;margin-top:8px;color:var(--muted);font-size:12px}
+.bj-v3-date input{width:125px;min-width:0;border:0;background:transparent;color:var(--v3-rose);font-size:12px;padding:1px;height:auto;text-align:right}
+.bj-v3-counter{border-right:1px solid #ddcec3;padding-right:14px;text-align:center;min-width:95px}
+.bj-v3-counter strong{display:block;color:var(--v3-rose);font-weight:800;line-height:1;font-size:49px;font-variant-numeric:tabular-nums}
+.bj-v3-counter span{font-size:11px;font-weight:700;color:var(--muted)}
+.bj-v3-progress{border-top:1px solid #e9dfd8;margin-top:17px;padding-top:13px}
+.bj-v3-progress-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;font-size:12px;font-weight:700}
+.bj-v3-progress-head strong{color:var(--v3-rose);font-size:15px;white-space:nowrap}
+.bj-v3-track{height:7px;border-radius:20px;background:#e9dfd8;overflow:hidden}
+.bj-v3-track i{display:block;height:100%;background:var(--green);border-radius:20px}
+.bj-v3-tools-head{display:flex;align-items:baseline;justify-content:space-between}
+.bj-v3-tools-head h2{font-size:19px;line-height:1.2;margin:0;font-weight:800}
+.bj-v3-tools-head span{font-size:12px;color:var(--muted)}
+.bj-v3-tiles{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:10px}
+.bj-v3-tool{border:1px solid var(--border);border-radius:13px;min-height:92px;background:#fff;display:flex;align-items:center;justify-content:flex-start;gap:13px;text-align:right;padding:14px 13px;color:var(--ink);font-size:15px;font-weight:800;font-family:inherit;cursor:pointer}
+.bj-v3-tool:nth-child(2){background:#fbf8f5}.bj-v3-tool:nth-child(3){background:#f7f7f2}.bj-v3-tool:nth-child(4){background:#faf8f6}
+.bj-v3-glyph{display:grid;place-items:center;flex:none;width:37px;height:37px;border-radius:11px;background:#f1e6e0;color:var(--v3-rose)}
+.bj-v3-tool:nth-child(3) .bj-v3-glyph{background:#e8ece6;color:#6c8065}
+.bj-v3-glyph svg{width:21px;height:21px;display:block}
+.bj-v3-more{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:right;padding:12px 15px;border:1px solid var(--border);background:white;border-radius:12px;color:var(--ink);font-family:inherit;cursor:pointer}
+.bj-v3-more span{display:flex;flex-direction:column}
+.bj-v3-more strong{font-size:14px;font-weight:800}.bj-v3-more small{display:block;color:var(--muted);font-size:11px;font-weight:400}
+.bj-v3-more b{font-size:21px;color:var(--v3-rose);font-weight:400}
+.bj-home-v3 button:focus-visible{outline:2px solid var(--rose-600);outline-offset:2px}
+@media(max-height:760px){#shell:has(.bj-home-v3)>main{padding:8px 13px calc(67px + env(safe-area-inset-bottom))}.bj-home-v3{gap:10px}.bj-v3-hello h1{font-size:21px}.bj-v3-hero{padding:14px 15px 12px}.bj-v3-counter strong{font-size:43px}.bj-v3-progress{margin-top:12px;padding-top:10px}.bj-v3-tiles{gap:8px;margin-top:7px}.bj-v3-tool{min-height:76px;padding:9px;font-size:14px;gap:9px}.bj-v3-glyph{width:33px;height:33px}.bj-v3-more{padding:8px 12px}}
+@media(max-height:630px){.bj-home-v3{justify-content:flex-start}.bj-v3-tool{min-height:66px}.bj-v3-hero{padding:10px 13px}.bj-v3-hello h1{font-size:19px}.bj-v3-names{font-size:21px}.bj-v3-counter strong{font-size:37px}}
+@media(max-width:355px){#shell:has(.bj-home-v3)>main{padding-inline:11px}.bj-v3-tool{font-size:13px;gap:7px}.bj-v3-glyph{width:30px;height:30px}.bj-v3-hero-grid{gap:3px}.bj-v3-counter{min-width:84px;padding-right:9px}.bj-v3-names{font-size:21px}}
+/* Small screens and large fonts retain scrolling instead of clipping controls. */
+
 </style>
 </head>
 <body>
@@ -1127,50 +1169,23 @@ function bjPhaseStatus(){
 }
 
 function renderHome(){
-  var phase = bjPhaseStatus();
-  var wed = state.profile.weddingDate || '';
-  var prog = taskProgress();
-  var steps=[
-    {name:'רשימת מוזמנים',icon:'guests'},
-    {name:'בחירת אולם',icon:'venue'},
-    {name:'תיאום ספקים',icon:'vendors'},
-    {name:'הכנות אחרונות',icon:'final'}
-  ];
-  var html='<div class="bj-home">';
-
-
-  html += '<section class="bj-welcome" aria-label="פרטי החתונה">'
-    +'<p class="bj-eyebrow">'+esc(bjText('home','eyebrow','BRIDE_JOURNAL · המסע שלכם לחתונה'))+'</p>'
-    +'<input class="bj-name-input" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" value="'+esc(state.profile.name)+'">';
-  if(phase.days===null){ html+='<div class="bj-count-label">בחרו תאריך חתונה לספירה לאחור</div>'; }
-  else if(phase.days>0){ html+='<div class="bj-count-number">'+phase.days+'</div><div class="bj-count-label">ימים עד החתונה</div>'; }
-  else if(phase.days===0){ html+='<div class="bj-count-label">היום הגדול הגיע! מזל טוב</div>'; }
-  else { html+='<div class="bj-count-label">מזל טוב על החתונה!</div>'; }
-  html+='<div class="bj-date-row"><span>תאריך החתונה</span><input type="date" data-act="wed-date" aria-label="תאריך החתונה" value="'+esc(wed)+'"></div></section>';
-  html+='<section class="bj-panel" aria-label="שלבי התכנון"><h2 class="bj-section-title">'+esc(bjText('home','journeyTitle','הדרך שלכם לחופה'))+'</h2><div class="bj-phase-list">';
-  steps.forEach(function(step,i){
-    var status=i<phase.index?'done':i===phase.index?'current':'upcoming';
-    var label=status==='done'?'הושלם':status==='current'?'כעת':'בהמשך';
-    // A later date transition never marks uncompleted guest/venue tasks complete.
-    if(i===0 && !phase.guestDone && phase.atFinal){status='upcoming';label='טרם הושלם';}
-    if(i===1 && !phase.venueDone && phase.atFinal){status='upcoming';label='טרם הושלם';}
-    html+='<button type="button" class="bj-phase" data-status="'+status+'" data-tab="tasks" title="מעבר למשימות" aria-label="'+step.name+' - '+label+'; מעבר למשימות"><span class="bj-phase-icon">'+bjHomeIcon(step.icon)+'</span><span class="bj-phase-label">'+step.name+'</span><span class="bj-phase-status">'+label+'</span></button>';
-  });
-  html+='</div><p class="bj-phase-hint">'+esc(bjText('home','journeyHint','שלבי המוזמנים והאולם מסומנים בראש רשימת המשימות; ההכנות האחרונות מתחילות 45 ימים לפני החתונה.'))+' <span class="bj-phase-link" data-tab="tasks">רשימת המשימות ↗</span></p></section>';
-  html+='<section class="bj-panel" aria-label="התקדמות המשימות"><h2 class="bj-section-title">'+esc(bjText('home','progressTitle','התקדמות בתכנון'))+'</h2>'
-    +'<div class="bj-progress-area"><div class="bj-donut" role="img" aria-label="'+prog.pct+' אחוז מהמשימות הושלמו" style="background:conic-gradient(#7F8E7A 0 '+prog.pct+'%,#EEE5DB '+prog.pct+'% 100%)">'
-    +'<div class="bj-donut-center"><span class="bj-pct">'+prog.pct+'%</span><span class="bj-pct-caption">הושלמו</span></div></div>'
-    +'<div class="bj-progress-copy"><strong>'+prog.done+' מתוך '+prog.total+'</strong>משימות הושלמו'
-    +'<div class="bj-legend"><span class="bj-legend-dot"></span>הושלמו</div><div class="bj-legend"><span class="bj-legend-dot remaining"></span>נותרו</div></div></div></section>';
-  html+='<section aria-label="כלים לתכנון"><h2 class="bj-section-title">'+esc(bjText('home','toolsTitle','הכלים שלכם'))+'</h2><div class="bj-tools">'
-    +'<button type="button" class="bj-tool budget" data-tab="budget"><span class="bj-tool-icon">'+bjHomeIcon('budget')+'</span>ניהול תקציב</button>'
-    +'<button type="button" class="bj-tool alcohol" data-tab="alcohol"><span class="bj-tool-icon">'+bjHomeIcon('alcohol')+'</span>מחשבון אלכוהול</button>'
-    +'<button type="button" class="bj-tool guests" data-tab="guests"><span class="bj-tool-icon">'+bjHomeIcon('guests')+'</span>רשימת מוזמנים</button>'
-    +'<button type="button" class="bj-tool equipment" data-tab="equipment"><span class="bj-tool-icon">'+bjHomeIcon('equipment')+'</span>רשימת ציוד</button>'
-    +'</div></section>';
-  html+='<button type="button" class="bj-events-link" data-tab="sideEvents" aria-label="מעבר לאירועים נלווים בתוך האפליקציה">'+'<span class="bj-events-icon">'+bjHomeIcon('final')+'</span>'+'<span class="bj-events-content"><strong>'+esc(bjText('home','eventsTitle','אירועים נלווים'))+'</strong><span>'+esc(bjText('home','eventsSubtitle','הפרשת חלה · מקווה · מסיבת רווקות'))+'</span></span>'+'<span class="bj-events-arrow" aria-hidden="true">‹</span></button>';
-  html+='</div>';
-  return html;
+ var phase=bjPhaseStatus(),wed=state.profile.weddingDate||'',prog=taskProgress();
+ var html='<div class="bj-home-v3">';
+ html+='<div class="bj-v3-hello"><h1>היומן שלנו ♡</h1><span>כל מה שצריך, במקום אחד</span></div>';
+ html+='<section class="bj-v3-hero" aria-label="החתונה וההתקדמות"><div class="bj-v3-hero-grid"><div class="bj-v3-couple"><span class="bj-v3-eyebrow">היום המיוחד שלנו</span>'
+   +'<input class="bj-v3-names" type="text" data-act="profile-name" aria-label="שמות בני הזוג" placeholder="השמות שלכם" value="'+esc(state.profile.name)+'">'
+   +'<div class="bj-v3-date"><span>תאריך החתונה</span><input type="date" data-act="wed-date" aria-label="תאריך החתונה" value="'+esc(wed)+'"></div></div>';
+ if(phase.days===null)html+='<div class="bj-v3-counter bj-v3-no-date"><strong>—</strong><span>בחרו תאריך</span></div>';
+ else if(phase.days>0)html+='<div class="bj-v3-counter"><strong>'+phase.days+'</strong><span>ימים לחתונה</span></div>';
+ else html+='<div class="bj-v3-counter bj-v3-celebrate"><strong>♡</strong><span>'+ (phase.days===0?'היום הגדול!':'מזל טוב!')+'</span></div>';
+ html+='</div><div class="bj-v3-progress"><div class="bj-v3-progress-head"><span>התקדמות בתכנון · '+prog.done+' מתוך '+prog.total+' משימות</span><strong>'+prog.pct+'%</strong></div><div class="bj-v3-track" role="progressbar" aria-label="התקדמות בתכנון" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+prog.pct+'"><i style="width:'+Math.max(0,Math.min(100,Number(prog.pct)||0))+'%"></i></div></div></section>';
+ html+='<section class="bj-v3-tools" aria-label="כלי התכנון"><div class="bj-v3-tools-head"><h2>מה נעשה היום?</h2><span>הכלים שלכם</span></div><div class="bj-v3-tiles">';
+ [['tasks','final','משימות'],['budget','budget','תקציב'],['guests','guests','מוזמנים'],['alcohol','alcohol','אלכוהול']].forEach(function(item){
+   html+='<button type="button" class="bj-v3-tool" data-tab="'+item[0]+'"><span class="bj-v3-glyph">'+bjHomeIcon(item[1])+'</span><span>'+item[2]+'</span></button>';
+ });
+ html+='</div></section>';
+ html+='<button type="button" class="bj-v3-more" data-tab="sideEvents" aria-label="אירועים נלווים"><span><strong>'+esc(bjText('home','eventsTitle','אירועים נלווים'))+'</strong><small>'+esc(bjText('home','eventsSubtitle','הפרשת חלה · מקווה · מסיבת רווקות'))+'</small></span><b aria-hidden="true">‹</b></button>';
+ return html+'</div>';
 }
 
 function navcard(tab,label,meta){
