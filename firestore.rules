@@ -11,17 +11,34 @@ service cloud.firestore {
     // Match the authenticated email claim, never a client-supplied document field.
     function admin() {
       return signedIn()
+        && request.auth.token.email_verified == true
         && request.auth.token.email == 'matatmail@gmail.com';
+    }
+
+    // Legacy journals already have at least one of these core documents.
+    // A fresh account cannot create its first core document until it accepts.
+    function initialized(uid) {
+      return exists(/databases/$(database)/documents/users/$(uid)/agreements/registration)
+        || exists(/databases/$(database)/documents/users/$(uid)/data/meta)
+        || exists(/databases/$(database)/documents/users/$(uid)/data/profile)
+        || exists(/databases/$(database)/documents/users/$(uid)/data/tasks);
     }
 
     // Every couple's editable data is under its own Firebase Auth UID.
     match /users/{userId} {
-      allow get, list, create, update, delete: if signedIn()
-        && request.auth.uid == userId;
+      allow read, update, delete: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn() && request.auth.uid == userId && initialized(userId);
 
+      match /agreements/registration {
+        allow get: if signedIn() && request.auth.uid == userId;
+        allow create: if signedIn() && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['version','acceptedAt'])
+          && request.resource.data.version == '2026-11-26'
+          && request.resource.data.acceptedAt == request.time;
+      }
       match /data/{dataId} {
-        allow get, list, create, update, delete: if signedIn()
-          && request.auth.uid == userId;
+        allow read, update, delete: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn() && request.auth.uid == userId && initialized(userId);
       }
     }
 
@@ -37,12 +54,13 @@ service cloud.firestore {
           'brideName', 'groomName', 'email',
           'phone', 'userId', 'createdAt'
         ])
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid)/agreements/registration)
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.brideName is string
         && request.resource.data.groomName is string
         && request.resource.data.email is string
         && request.resource.data.phone is string
-        && request.resource.data.createdAt is timestamp;
+        && request.resource.data.createdAt == request.time;
 
       allow get, list, update, delete: if admin();
     }
