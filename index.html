@@ -2,18 +2,18 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>BRIDE_JOURNAL | by Matat</title>
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 <!-- Canvas Confetti Library -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" integrity="sha384-HAH79XdRvHr6axVGh4xQWVCp14kcd32bNk4Xu0sHDHtFQ42n6BAM8ykvB47dGz6D" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" integrity="sha384-4gq9w/AGf72FXdNQ3Kn3EqWP7633NbCMjpYHt8YCZyXf23o2opcuAr4cif41tLrC" crossorigin="anonymous"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" integrity="sha384-xtdq4MQqPj1dB5DQsuw9O7dh4kHhMP/Wp5u8O1jiaWiou13ZfJIgiccjtVK2pBhL" crossorigin="anonymous"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" integrity="sha384-Qgqc/HETq5lqJnRDqWnV1AZGw3pgMYNUVaqLLN1W/55XuWK94epwbCQrOvdoh1Zo" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
 
 
@@ -363,7 +363,6 @@
     <p style="font-size:11px;color:var(--rose-600);font-weight:800;margin:0 0 14px">BY MATAT</p>
     <p style="font-size:12.5px;color:var(--muted);line-height:1.5;margin:0 0 16px">המקום האישי שלכם לניהול ותכנון החתונה בראש שקט. התחברו כדי לשמור את המידע באופן מאובטח.</p>
     
-    <p class="small">הזדהות באמצעות Google Firebase לצורך הפעלת החשבון. בהרשמה חדשה נדרש אישור <a href="./privacy-2026-11-26.html" target="_blank" rel="noopener noreferrer">תנאי השימוש ומדיניות הפרטיות</a>.</p>
     <!-- Login Card -->
     <div id="loginCard" class="card plain" style="text-align:right;margin-bottom:12px">
       <p style="font-size:12px;font-weight:700;margin:0 0 6px">התחברות למערכת</p>
@@ -393,13 +392,12 @@
       </div>
     </div>
 
-    <a href="https://www.tiktok.com/@bride_journal" target="_blank" rel="noopener noreferrer" class="tiktok-link">
+    <a href="https://www.tiktok.com/@bride_journal" target="_blank" class="tiktok-link">
       🎵 עקבו אחרי ב-TikTok לקבלת טיפים
     </a>
   </div>
 </div>
 
-<div id="registrationGate" class="overlay-screen" style="display:none"><div class="inner"><h1>השלמת ההרשמה ליומן</h1><p>היומן מנוהל על ידי מתת מוצאלי. השמות ופרטי הקשר מתועדים גם לצורכי ניהול ההרשמה. השימוש בשירות הוא לבחירתכם.</p><p><a href="./privacy-2026-11-26.html" target="_blank" rel="noopener noreferrer">תנאי השימוש ומדיניות הפרטיות</a></p><label><input type="checkbox" id="acceptPolicy"> קראתי ואני מאשר/ת את תנאי השימוש ומדיניות הפרטיות. אני מסכים/ה שיישמר אצל מתת מוצאלי עותק משמות בני הזוג, מספר הטלפון וכתובת הדוא״ל שאמסור בטופס (אם אמסור), בצירוף מזהה החשבון ומועד ההרשמה, לתיעוד פנימי בלבד. הפרטים לא ישמשו לשיווק ולא יימסרו לספקי חתונה.</label><p role="status" id="policyStatus"></p><button class="primary" id="finishPolicy" disabled>אישור והמשך להרשמה</button><button class="secondary" id="leaveRegistration">יציאה</button></div></div>
 <!-- Guide Modal -->
 <dialog id="guideModal" aria-labelledby="guideTitle"><form method="dialog"><header class="between"><h2 id="guideTitle">המדריך ליומן</h2><button aria-label="סגירת המדריך">✕</button></header><details data-guide="home"><summary>בית</summary><p>לחצו על שמות הזוג כדי לערוך אותם. שינוי תאריך החתונה כאן מעדכן את הספירה לאחור ואת התאריכים במסך המשימות. הפלוס במרכז הסרגל מחזיר לכאן מכל מסך.</p></details>
 <details data-guide="tasks"><summary>משימות</summary><p>המשימות מסודרות לפי חודשים. סמנו משימה שהושלמה כדי לעדכן את הפס הירוק, או הפעילו „רק משימות שנותרו”. לחצו על שם משימה כדי לערוך, למחוק או להוסיף משימה לאותו חודש.</p></details>
@@ -412,7 +410,7 @@
 <details data-guide="equipment"><summary>רשימת ציוד</summary><p>סמנו כל פריט שנארז ברשימות הכלה והחתן. אפשר לערוך פריט או להוסיף ציוד משלכם.</p></details>
 <details data-guide="vendorGuides"><summary>מדריכי ספקים</summary><p>בחרו סוג ספק כדי לפתוח את רשימת הדגשים ואת הקישור לסרטון שלו.</p></details>
 <details data-guide="sideEvents"><summary>אירועים נלווים</summary><p>בחרו הפרשת חלה, מקווה או מסיבת רווקות כדי לראות את ההכנות והטיפים לאירוע.</p></details>
-<details data-guide="inspiration"><summary>השראה</summary><p>שמרו תמונות וקישורים וסננו את אוסף ההשראה לפי קטגוריה.</p></details><p><a href="./privacy-2026-11-26.html" target="_blank" rel="noopener noreferrer">תנאי השימוש ומדיניות הפרטיות</a></p><button class="primary">הבנתי, תודה!</button></form></dialog>
+<details data-guide="inspiration"><summary>השראה</summary><p>שמרו תמונות וקישורים וסננו את אוסף ההשראה לפי קטגוריה.</p></details><button class="primary">הבנתי, תודה!</button></form></dialog>
 
 <!-- Welcome Screen: compact, readable single-screen onboarding -->
 <div id="welcomeScreen" class="overlay-screen" style="display:none">
@@ -441,7 +439,7 @@
       </div>
     </div>
 
-    <p class="welcome-privacy">שמות ופרטי קשר נשמרים גם אצל מתת מוצאלי לתיעוד פנימי של ההרשמה. * שדה חובה</p>
+    <p class="welcome-privacy">הפרטים נשמרים ביומן שלכם בלבד. * שדה חובה</p>
     <button class="primary welcome-cta" data-act="welcome-start">להתחיל בתכנון</button>
   </div>
 </div>
@@ -484,16 +482,13 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+if (firebase.analytics) {
+  firebase.analytics();
+}
 var db = firebase.firestore();
-// Existing disk caches may contain pending offline writes. Reopen them for sync.
-var storageReady=(async function(){
-  try{
-    var databases=window.indexedDB?.databases ? await indexedDB.databases() : [];
-    if(databases.some(entry=>entry.name && entry.name.startsWith("firestore/") && entry.name.includes("/bride-journal/"))) await db.enablePersistence();
-  }catch(e){console.info("Using memory cache");}
-})();
-function readBackup(key){return sessionStorage.getItem(key) ?? localStorage.getItem(key);}
-function writeBackup(key,value){try{sessionStorage.setItem(key,value);}catch(e){/* Cloud save remains available. */}}
+db.enablePersistence().catch(function(err) {
+    console.log("Persistence error: ", err.code);
+});
 
 var currentUser = null;
 var editorial = null;
@@ -972,8 +967,8 @@ async function getOrDefault(key, def){
   try{
     if(currentUser){
       var localKey = "bj_"+currentUser.uid+"_"+key;
-      var local = readBackup(localKey);
-      if(key==="venue" && readBackup(localKey+"_pending") && local){
+      var local = localStorage.getItem(localKey);
+      if(key==="venue" && localStorage.getItem(localKey+"_pending") && local){
         var pendingVenue = JSON.parse(local);
         save("venue", pendingVenue);
         return pendingVenue;
@@ -982,7 +977,6 @@ async function getOrDefault(key, def){
       if(userDoc.exists){
         return userDoc.data().value;
       } else {
-        if(userDoc.metadata.fromCache && !local)throw new Error("Cloud journal not available yet");
         return local ? JSON.parse(local) : def;
       }
     } else {
@@ -993,25 +987,25 @@ async function getOrDefault(key, def){
     console.error("Error reading key: ", key, e);
     if(key==="venue" && currentUser){
       try{
-        var fallback = readBackup("bj_"+currentUser.uid+"_venue");
+        var fallback = localStorage.getItem("bj_"+currentUser.uid+"_venue");
         if(fallback) return JSON.parse(fallback);
       }catch(localError){
         console.error("Local venue recovery failed:", localError);
       }
     }
-    throw e;
+    return def;
   }
 }
 
-async function save(key, value, owner = currentUser){
+async function save(key, value){
   try{
-    if(owner){
-      writeBackup("bj_"+owner.uid+"_"+key, JSON.stringify(value));
-      await db.collection("users").doc(owner.uid).collection("data").doc(key).set({
+    if(currentUser){
+      localStorage.setItem("bj_"+currentUser.uid+"_"+key, JSON.stringify(value));
+      await db.collection("users").doc(currentUser.uid).collection("data").doc(key).set({
         value: value, 
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      if(key==="venue"){var pendingKey="bj_"+owner.uid+"_venue_pending";sessionStorage.removeItem(pendingKey);localStorage.removeItem(pendingKey);}
+      if(key==="venue") localStorage.removeItem("bj_"+currentUser.uid+"_venue_pending");
     } else {
       localStorage.setItem("bj_guest_"+key, JSON.stringify(value));
     }
@@ -1022,10 +1016,8 @@ async function save(key, value, owner = currentUser){
 
 var timers = {};
 function scheduleSave(key, getter, delay){
-  if(!currentUser) return;
-  var owner=currentUser, slot=owner.uid+"/"+key, value=JSON.parse(JSON.stringify(getter()));
-  clearTimeout(timers[slot]);
-  timers[slot]=setTimeout(function(){delete timers[slot];save(key,value,owner);},delay||300);
+  clearTimeout(timers[key]);
+  timers[key] = setTimeout(function(){ save(key, getter()); }, delay||300);
 }
 
 async function loadAll(){
@@ -1103,8 +1095,8 @@ function saveEquip(){ scheduleSave("equipment", function(){ return state.equipme
 function saveVenue(){
   try{
     var localKey = currentUser ? "bj_"+currentUser.uid+"_venue" : "bj_guest_venue";
-    writeBackup(localKey, JSON.stringify(state.venue));
-    if(currentUser) writeBackup(localKey+"_pending", String(Date.now()));
+    localStorage.setItem(localKey, JSON.stringify(state.venue));
+    if(currentUser) localStorage.setItem(localKey+"_pending", String(Date.now()));
   }catch(e){
     console.error("Local venue save failed:", e);
   }
@@ -1124,12 +1116,6 @@ function subMonths(base, months){
   return d;
 }
 function fmtDate(d){ return d.toLocaleDateString("he-IL",{day:"numeric",month:"long",year:"numeric"}); }
-function safeResource(value,attachment){
-  if(typeof value!=="string") return "#";
-  if(attachment && /^data:image\/(png|jpeg|gif|webp|avif|bmp);base64,[a-z0-9+/=]+$/i.test(value))return value;
-  if(attachment==="contract" && /^data:application\/pdf;base64,[a-z0-9+/=]+$/i.test(value))return value;
-  try{var url=new URL(value);return ["https:","http:"].includes(url.protocol)?url.href:"#";}catch(e){return "#";}
-}
 function esc(s){ return (s===undefined||s===null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
 function bjHomeIcon(name){
@@ -1214,7 +1200,7 @@ function renderVendorGuides(){
       
       html += '<div class="card rose-accent" style="text-align:center;padding:14px;margin-bottom:10px">';
       html += '<p style="font-size:13px;font-weight:800;color:var(--rose-900);margin:0 0 6px">🎬 מסך מקדים לסרטון הטיקטוק</p>';
-      html += '<a href="'+esc(safeResource(g.videoUrl))+'" target="_blank" rel="noopener noreferrer" class="tiktok-link" style="font-size:12.5px;padding:8px 16px">🎵 צפו בסרטון המלא ב-TikTok</a>';
+      html += '<a href="'+esc(g.videoUrl)+'" target="_blank" class="tiktok-link" style="font-size:12.5px;padding:8px 16px">🎵 צפו בסרטון המלא ב-TikTok</a>';
       html += '</div>';
 
       if(g.checklist && g.checklist.length > 0){
@@ -1437,7 +1423,7 @@ function renderTasks(){
       html += '<div style="padding:4px 10px 8px">';
       visibleTasks.forEach(function(item){
         html += '<div class="taskrow" style="align-items:center">'
-          + '<input type="checkbox" data-act="task-toggle" data-id="'+esc(item.id)+'" '+(item.done?'checked':'')+'>'
+          + '<input type="checkbox" data-act="task-toggle" data-id="'+item.id+'" '+(item.done?'checked':'')+'>'
           + '<details class="row-editor"><summary>'+esc(item.t)+'</summary>'
           + '<input type="text" aria-label="עריכת משימה" data-act="task-text-edit" data-id="'+esc(item.id)+'" value="'+esc(item.t)+'">'
           + '<button class="small-btn" data-act="task-del" data-id="'+esc(item.id)+'">מחיקת משימה</button>'
@@ -1487,7 +1473,7 @@ function renderBudget(){
   orderedCatIds.forEach(function(catId){
     if(!state.budgetCats[catId]) return;
     var label = BUDGET_SEED[catId] ? BUDGET_SEED[catId].label : catId;
-    html += '<p class="sectionlabel">'+esc(label)+' <span class="muted" id="catsub-'+esc(catId)+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+(catClass[catId]||"card plain")+'">';
+    html += '<p class="sectionlabel">'+label+' <span class="muted" id="catsub-'+catId+'" style="float:left">'+ils(budgetCatTotal(catId))+'</span></p><div class="'+(catClass[catId]||"card plain")+'">';
     state.budgetCats[catId].forEach(function(item){
       html += '<details class="itemwrap row-editor"><summary><span>'+esc(item.name)+'</span> <small>'+ils(Number(item.cost)||0)+'</small></summary><input type="text" aria-label="שם ההוצאה" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="name" value="'+esc(item.name)+'"><div class="row">'
         + '<input type="number" data-act="budget-field" data-cat="'+catId+'" data-id="'+item.id+'" data-field="cost" placeholder="עלות" value="'+esc(item.cost)+'" style="width:62px;padding:4px 6px;font-size:11px">'
@@ -1507,13 +1493,13 @@ function renderVendors(){
   html += '<div class="card plain between" style="margin-bottom:10px"><span class="small muted">סה"כ שנותר לשלם</span><span id="vendorGrandTotal" style="font-weight:800;color:var(--rose-600);font-size:14px">'+ils(grand)+'</span></div>';
   state.vendors.forEach(function(v){
     html += '<details class="card plain row-editor"><summary>'+esc(v.name||'ספק חדש')+'</summary>'
-      + '<div class="row" style="margin-bottom:6px"><input type="text" data-act="vendor-field" data-id="'+esc(v.id)+'" data-field="name" placeholder="שם הספק" value="'+esc(v.name)+'" style="font-weight:700"><button class="icon-del" data-act="vendor-del" data-id="'+v.id+'">×</button></div>'
+      + '<div class="row" style="margin-bottom:6px"><input type="text" data-act="vendor-field" data-id="'+v.id+'" data-field="name" placeholder="שם הספק" value="'+esc(v.name)+'" style="font-weight:700"><button class="icon-del" data-act="vendor-del" data-id="'+v.id+'">×</button></div>'
       + '<input type="tel" data-act="vendor-field" data-id="'+v.id+'" data-field="phone" placeholder="טלפון" value="'+esc(v.phone)+'" style="direction:ltr;text-align:right;margin-bottom:6px">'
       + '<div class="row" style="margin-bottom:8px"><input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="price" placeholder="מחיר" value="'+esc(v.price)+'"><input type="number" data-act="vendor-field" data-id="'+v.id+'" data-field="deposit" placeholder="מקדמה" value="'+esc(v.deposit)+'"></div>'
       + '<div class="between" style="border-top:1px solid var(--border);padding-top:6px">'
         + '<span class="small muted">נותר: <b id="vrem-'+v.id+'" style="color:var(--rose-900)">'+ils(vendorRemain(v))+'</b></span>'
         + '<div class="row" style="gap:4px;">'
-          + (v.contractName ? '<a href="'+esc(safeResource(v.contractUrl,'contract'))+'" target="_blank" rel="noopener noreferrer" class="small-btn" style="color:#1D9E75;text-decoration:none;">📄 '+esc(v.contractName)+'</a>' : '')
+          + (v.contractName ? '<a href="'+(v.contractUrl||'#')+'" target="_blank" class="small-btn" style="color:#1D9E75;text-decoration:none;">📄 '+esc(v.contractName)+'</a>' : '')
           + '<label class="small-btn" style="cursor:pointer;background:#fff;border:1px dashed '+(v.contractName?'#1D9E75':'#CFC7B9')+';color:'+(v.contractName?'#1D9E75':'var(--muted)')+'">'
             + (v.contractName ? 'החלפת חוזה' : 'העלאת חוזה חתום')
             + '<input type="file" data-act="vendor-contract-file" data-id="'+v.id+'" style="display:none" accept=".pdf,image/*">'
@@ -1578,7 +1564,7 @@ function renderEquipment(){
   html += '<p class="sectionlabel">כלה</p><div class="card rose-accent">';
   state.equipment.bride.forEach(function(it){
     html += '<label class="row" style="padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)">'
-      + '<input type="checkbox" data-act="equip-toggle" data-side="bride" data-id="'+esc(it.id)+'" '+(it.done?'checked':'')+'>'
+      + '<input type="checkbox" data-act="equip-toggle" data-side="bride" data-id="'+it.id+'" '+(it.done?'checked':'')+'>'
       + '<input type="text" data-act="equip-field" data-side="bride" data-id="'+it.id+'" value="'+esc(it.text)+'" style="flex:1;border:none;background:transparent;font-size:12px;'+(it.done?'text-decoration:line-through;color:var(--muted)':'')+'">'
       + '<button class="icon-del" data-act="equip-del" data-side="bride" data-id="'+it.id+'">×</button>'
       + '</label>';
@@ -1831,7 +1817,7 @@ function renderInspiration(){
   list.slice().reverse().forEach(function(it){
     html += '<div class="card plain">';
     if(it.type==="image") {
-      html += '<img src="'+esc(safeResource(it.dataUrl,'image'))+'" style="width:100%;max-height:250px;object-fit:cover;border-radius:6px;margin-bottom:6px;display:block">';
+      html += '<img src="'+it.dataUrl+'" style="width:100%;max-height:250px;object-fit:cover;border-radius:6px;margin-bottom:6px;display:block">';
     }
     html += '<div class="between" style="margin-bottom:4px"><span style="font-size:12px;font-weight:800;color:var(--rose-900)">'+esc(it.title||it.url||"תמונה מעולה")+'</span>'
       + '<select data-act="insp-cat-change" data-id="'+it.id+'" style="width:110px;padding:2px 4px;font-size:10px;font-weight:700">'
@@ -1841,7 +1827,7 @@ function renderInspiration(){
     if(it.note) html += '<p class="small muted" style="margin:0 0 6px">'+esc(it.note)+'</p>';
     
     if(it.url) {
-      html += '<div class="row"><a href="'+esc(safeResource(it.url))+'" target="_blank" rel="noopener" class="small-btn" style="flex:1;text-align:center;text-decoration:none;color:var(--ink)">פתיחת הקישור</a><button class="icon-del" data-act="insp-del" data-id="'+it.id+'">×</button></div>';
+      html += '<div class="row"><a href="'+esc(it.url)+'" target="_blank" rel="noopener" class="small-btn" style="flex:1;text-align:center;text-decoration:none;color:var(--ink)">פתיחת הקישור</a><button class="icon-del" data-act="insp-del" data-id="'+it.id+'">×</button></div>';
     } else {
       html += '<button class="ghost plain" data-act="insp-del" data-id="'+it.id+'">מחיקה</button>';
     }
@@ -1859,61 +1845,26 @@ function renderTab(){
 }
 function switchTab(tab){ currentTab = tab; importMsg=""; activeVendorGuideId=null; renderTab(); window.scrollTo(0,0); }
 
-var byId=id=>document.getElementById(id);
-var activeSessionUid=null;
-var agreementRef=user=>db.collection("users").doc(user.uid).collection("agreements").doc("registration");
-
-async function hasJournalOrAgreement(user){
-  var account=db.collection("users").doc(user.uid);
-  // A cache miss is not evidence of a new registration.
-  var meta=await account.collection("data").doc("meta").get();
-  if(meta.exists && meta.data().value?.seenWelcome===true) return true;
-  return (await agreementRef(user).get()).exists;
-}
-
-async function enterJournal(user){
-  await loadAll();
-  if(firebase.auth().currentUser?.uid!==user.uid) return;
-  byId("authScreen").style.display="none";
-  byId("registrationGate").style.display="none";
-  byId("shell").style.display="flex";
-  byId("welcomeScreen").style.display=state.meta.seenWelcome?"none":"flex";
-  byId("bottomNav").style.display=state.meta.seenWelcome?"flex":"none";
-  switchTab("home");
-}
-firebase.auth().onAuthStateChanged(async function(user){
-  if(activeSessionUid && activeSessionUid!==user?.uid){location.reload();return;}
-  if(!user){byId("shell").style.display="none";byId("authScreen").style.display="flex";return;}
-  activeSessionUid=user.uid;currentUser=user;
-  await storageReady;
-  byId("authScreen").style.display="none";
-  byId("shell").style.display="none";
-  try{
-    if(await hasJournalOrAgreement(user)){await enterJournal(user);return;}
-    byId("registrationGate").style.display="flex";
-  }catch(error){
-    byId("registrationGate").style.display="flex";
-    byId("acceptPolicy").disabled=true;
-    byId("policyStatus").textContent="לא ניתן לאמת את מצב החשבון. התחברו לאינטרנט ורעננו את העמוד.";
+firebase.auth().onAuthStateChanged(async function(user) {
+  if (user) {
+    currentUser = user;
+    document.getElementById("authScreen").style.display = "none";
+    document.getElementById("shell").style.display = "flex";
+    await loadAll();
+    if(!state.meta.seenWelcome){
+      document.getElementById("welcomeScreen").style.display = "flex";
+      document.getElementById("bottomNav").style.display = "none";
+    } else {
+      document.getElementById("welcomeScreen").style.display = "none";
+      document.getElementById("bottomNav").style.display = "flex";
+    }
+    switchTab("home");
+  } else {
+    currentUser = null;
+    document.getElementById("authScreen").style.display = "flex";
+    document.getElementById("shell").style.display = "none";
   }
 });
-byId("leaveRegistration").onclick=()=>firebase.auth().signOut();
-byId("acceptPolicy").onchange=function(){byId("finishPolicy").disabled=!this.checked;};
-byId("finishPolicy").onclick=async function(){
-  var user=firebase.auth().currentUser;
-  if(!user||!byId("acceptPolicy").checked||this.disabled)return;
-  this.disabled=true;byId("acceptPolicy").disabled=true;
-  try{
-    var ref=agreementRef(user);
-    await db.runTransaction(async tx=>{
-      if(!(await tx.get(ref)).exists) tx.set(ref,{version:"2026-11-26",acceptedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    });
-    await enterJournal(user);
-  }catch(error){
-    byId("policyStatus").textContent="האישור לא הושלם. בדקו את החיבור ונסו שוב.";
-    byId("acceptPolicy").disabled=false;this.disabled=false;
-  }
-};
 
 firebase.auth().getRedirectResult().catch(function(error) {
   alert("שגיאה בהתחברות: " + error.message);
@@ -2629,7 +2580,7 @@ mainEl.addEventListener("input", function(e){
   }
 });
 
-document.addEventListener("click", async function(e){
+document.addEventListener("click", function(e){
   if(e.target && e.target.dataset.act === "welcome-start"){
     var b = document.getElementById("welcomeBride").value.trim();
     var g = document.getElementById("welcomeGroom").value.trim();
@@ -2641,28 +2592,31 @@ document.addEventListener("click", async function(e){
       return;
     }
 
-    var button=e.target, owner=firebase.auth().currentUser;
-    if(!owner||button.disabled)return;
-    button.disabled=true;
-    var account=db.collection("users").doc(owner.uid).collection("data");
-    var profile={...state.profile,brideName:b,groomName:g,name:b+" ו"+g,email:em,phone:ph};
-    var info={bride:b,groom:g,email:em,phone:ph};
-    try{
-      var lead=db.collection("leads").doc();
-      await db.runTransaction(async tx=>{
-        var meta=await tx.get(account.doc("meta"));
-        if(meta.exists && meta.data().value?.seenWelcome)return;
-        var timestamp=firebase.firestore.FieldValue.serverTimestamp();
-        tx.set(lead,{brideName:b,groomName:g,email:em,phone:ph,userId:owner.uid,createdAt:timestamp});
-        tx.set(account.doc("profile"),{value:profile,updatedAt:timestamp});
-        tx.set(account.doc("coupleInfo"),{value:info,updatedAt:timestamp});
-        tx.set(account.doc("meta"),{value:{...state.meta,seenWelcome:true},updatedAt:timestamp});
+    state.profile.brideName = b;
+    state.profile.groomName = g;
+    state.profile.name = b + " ו" + g;
+    state.profile.email = em;
+    state.profile.phone = ph;
+    saveProfile();
+
+    state.coupleInfo = {bride: b, groom: g, email: em, phone: ph};
+    save("coupleInfo", state.coupleInfo);
+
+    try {
+      db.collection("leads").add({
+        brideName: b,
+        groomName: g,
+        email: em,
+        phone: ph,
+        userId: currentUser ? currentUser.uid : null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
-      await loadAll();
-    }catch(error){
-      alert("ההרשמה לא הושלמה או שלא התקבל אישור מהשרת. אפשר לנסות שוב בלי ליצור עותק נוסף.");
-      return;
-    }finally{button.disabled=false;}
+    } catch(err) {
+      console.error("Error writing lead:", err);
+    }
+
+    state.meta.seenWelcome = true;
+    saveMeta();
     document.getElementById("welcomeScreen").style.display = "none";
     document.getElementById("bottomNav").style.display = "flex";
     switchTab("home");
