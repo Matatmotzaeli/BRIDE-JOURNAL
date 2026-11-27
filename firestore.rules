@@ -19,6 +19,18 @@ service cloud.firestore {
       allow get, list, create, update, delete: if signedIn()
         && request.auth.uid == userId;
 
+      match /agreements/registration {
+        allow get: if signedIn()
+          && request.auth.uid == userId;
+
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasAll(['version', 'acceptedAt'])
+          && request.resource.data.keys().hasOnly(['version', 'acceptedAt'])
+          && request.resource.data.version == '2026-11-26'
+          && request.resource.data.acceptedAt == request.time;
+      }
+
       match /data/{dataId} {
         allow get, list, create, update, delete: if signedIn()
           && request.auth.uid == userId;
