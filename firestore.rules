@@ -20,13 +20,9 @@ service cloud.firestore {
         && request.auth.uid == userId;
 
       match /agreements/registration {
-        allow get: if signedIn()
-          && request.auth.uid == userId;
-
-        allow create: if signedIn()
-          && request.auth.uid == userId
-          && request.resource.data.keys().hasAll(['version', 'acceptedAt'])
-          && request.resource.data.keys().hasOnly(['version', 'acceptedAt'])
+        allow get: if signedIn() && request.auth.uid == userId;
+        allow create: if signedIn() && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['version','acceptedAt'])
           && request.resource.data.version == '2026-11-26'
           && request.resource.data.acceptedAt == request.time;
       }
@@ -67,6 +63,18 @@ service cloud.firestore {
         && admin()
         && request.resource.data.schemaVersion == 1;
       allow delete: if documentId == 'editorial' && admin();
+    }
+
+    match /communitySubscriptions/{userId} {
+      allow list: if admin();
+      allow delete: if admin();
+      allow create: if signedIn() && request.auth.uid == userId
+        && existsAfter(/databases/$(database)/documents/users/$(userId)/agreements/registration)
+        && request.resource.data.keys().hasOnly(['email', 'version', 'acceptedAt'])
+        && request.resource.data.email is string
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.version == '2026-11-28'
+        && request.resource.data.acceptedAt == request.time;
     }
 
     // No open wildcard permissions.

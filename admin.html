@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BRIDE JOURNAL | אזור מנהלת</title>
 <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" integrity="sha384-4gq9w/AGf72FXdNQ3Kn3EqWP7633NbCMjpYHt8YCZyXf23o2opcuAr4cif41tLrC" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js" integrity="sha384-xtdq4MQqPj1dB5DQsuw9O7dh4kHhMP/Wp5u8O1jiaWiou13ZfJIgiccjtVK2pBhL" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" integrity="sha384-Qgqc/HETq5lqJnRDqWnV1AZGw3pgMYNUVaqLLN1W/55XuWK94epwbCQrOvdoh1Zo" crossorigin="anonymous"></script>
 <script src="./admin-defaults.js"></script>
 <style>
 :root{--ink:#302b28;--muted:#81776f;--paper:#faf7f3;--white:#fff;--line:#e9e1d8;--rose:#b77f79;--dark:#91605b;--sage:#7f8e7a}
@@ -93,6 +93,7 @@ const DEFAULTS=window.BJ_ADMIN_DEFAULTS;
 let remote=null,form=clone(DEFAULTS),section="home",user=null,loaded=false,publishing=false;
 const $=(id)=>document.getElementById(id);
 const sections=[
+ ["community","רשימת דיוור","חשבונות שבחרו לקבל עדכונים בדוא״ל"],
  ["home","מסך הבית","כותרות והנחיות במסך הבית"],
  ["help","המדריך בסימן השאלה","ההסבר שנפתח בכל מסך ביומן"],
  ["tasks","משימות ברירת מחדל","המשימות שייווצרו למשתמשים חדשים בלבד"],
@@ -143,12 +144,30 @@ function recEditor(){
  return '<div class="item"><div class="grid2">'+input("כותרת",rec.title||"","recommendations."+i+".title")+input("קטגוריה",rec.category||"","recommendations."+i+".category")+'</div>'+input("תיאור",rec.description||"","recommendations."+i+".description",{multiline:true})+'<div class="grid2">'+input("קישור להמלצה",rec.url||"","recommendations."+i+".url",{type:"url"})+input("כתובת תמונה",rec.imageUrl||"","recommendations."+i+".imageUrl",{type:"url"})+'</div>'+(src?'<img class="preview-img" src="'+src+'" alt="תצוגה מקדימה" loading="lazy">':'')+'<div class="actions"><button class="warn" data-action="delete-rec" data-index="'+i+'">מחיקת המלצה</button></div></div>';
  }).join("")+'</section>';
 }
+async function loadCommunityList(panel){
+  try{
+    const result=await db.collection("communitySubscriptions").orderBy("acceptedAt","desc").get();
+    panel.textContent=result.empty?"עדיין אין אישורי דיוור.":"";
+    for(const entry of result.docs){
+      const data=entry.data(),row=document.createElement("div"),remove=document.createElement("button");
+      row.className="item";
+      row.textContent=data.email+" · "+data.acceptedAt.toDate().toLocaleString("he-IL");
+      remove.textContent="הסרה";
+      remove.onclick=async()=>{
+        if(!confirm("להסיר את הכתובת מרשימת הדיוור?"))return;
+        try{await entry.ref.delete();await loadCommunityList(panel);}catch(e){say("ההסרה נכשלה",true);}
+      };
+      row.append(" ",remove);panel.append(row);
+    }
+  }catch(e){panel.textContent="לא ניתן לטעון את רשימת הדיוור. יש לבדוק את הרשאות המנהלת.";}
+}
 function render(){
  const info=sections.find(x=>x[0]===section);
  $("pageTitle").textContent=info[1];$("pageDescription").textContent=info[2];
  $("nav").innerHTML=sections.map(x=>'<button data-section="'+x[0]+'" class="'+(x[0]===section?"active":"")+'">'+x[1]+'</button>').join("");
  let markup="";
  if(section==="home")markup=objectEditor("home",{eyebrow:"כיתוב מעל שמות הזוג",dailyTitle:"כותרת ארבע הפעולות הראשיות",progressTitle:"כותרת התקדמות",toolsTitle:"כותרת הכלים",eventsTitle:"כותרת האירועים",eventsSubtitle:"כותרת משנה"});
+ else if(section==="community")markup='<section class="panel"><h2>רשימת דיוור</h2><p id="communityList" role="status">טוען…</p></section>';
  else if(section==="help")markup='<section class="panel"><h2>הסברים לפי מסך</h2>'+[["home","בית"],["tasks","משימות"],["budget","ניהול תקציב"],["venue","אולם"],["meal","מחשבון מחיר מנה"],["vendors","מעקב ספקים"],["alcohol","מחשבון אלכוהול"],["guests","אורחים"],["equipment","רשימת ציוד"],["vendorGuides","מדריכי ספקים"],["sideEvents","אירועים נלווים"],["inspiration","השראה"]].map(([key,label])=>input(label,form.home["guide_"+key],"home.guide_"+key,{multiline:true})).join("")+'</section>';
  else if(section==="tasks")markup=tasksEditor();
  else if(section==="budget")markup=budgetEditor();
@@ -158,6 +177,7 @@ function render(){
  else if(section==="sideEvents")markup=objectEditor("sideEvents",{title:"כותרת המסך",subtitle:"תיאור",challahTitle:"הפרשת חלה",mikvehTitle:"מקווה",bacheloretteTitle:"מסיבת רווקות"});
  else markup=recEditor();
  $("content").innerHTML=markup;
+ if(section==="community")loadCommunityList($("communityList"));
  $("status").textContent=(loaded?"נתוני ניהול נטענו":"מצב הכנה")+" · טיוטה מקומית עד לפרסום";
  $("publishBtn").disabled=!loaded||publishing;
 }
